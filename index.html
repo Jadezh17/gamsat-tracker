@@ -1137,30 +1137,6 @@
 
 <div class="wide-wrap">
   <section class="card">
-    <h2>Redo bank</h2>
-    <div class="card-note">Screenshot a question you got wrong and drop it in below — paste it (click the box first, then Ctrl/Cmd+V), drag an image in, or upload a file. Come back and redo it whenever you like. Once you get it right, mark it done and it disappears.</div>
-
-    <div class="mistake-add-row">
-      <select id="mistakeSubjectSelect">
-        <option>Physics</option>
-        <option>Chemistry</option>
-        <option>Math</option>
-        <option>Other</option>
-      </select>
-      <input type="text" id="mistakeNoteInput" placeholder="optional note — topic, why you got it wrong">
-      <label class="file-btn" for="mistakeFileInput">Upload image</label>
-      <input type="file" id="mistakeFileInput" accept="image/*" multiple style="display:none;">
-    </div>
-
-    <div class="paste-zone" id="pasteZone" tabindex="0">Click here, then paste a screenshot — or drag an image in</div>
-    <div class="status-text" id="mistakeStatus"></div>
-
-    <div class="mistake-grid" id="mistakeGrid"></div>
-  </section>
-</div>
-
-<div class="wide-wrap">
-  <section class="card">
     <h2>Formula sheet builder</h2>
     <div class="card-note">Every built-in formula has been checked and has a name, what its symbols mean, and a worked example; edit any cell and it saves. Type a new formula using plain text — <span class="mono">/</span> for a fraction, <span class="mono">^</span> for an exponent, <span class="mono">_</span> for a subscript (e.g. "1/2 mv^2", "H_2O"). For a fraction with more than one term on top or bottom, wrap it in brackets, e.g. "(Gm1m2)/(r^2)". You can also write <span class="mono">sqrt(...)</span> for a root, Greek letters by name (pi, theta, Delta, lambda), charges like "SO4^2-", and <span class="mono">-&gt;</span> for an arrow. It's formatted the moment you add it, right here in the browser — no lookups, nothing sent anywhere.</div>
 
@@ -1219,13 +1195,37 @@
   </section>
 </div>
 
+<div class="wide-wrap">
+  <section class="card">
+    <h2>Redo bank</h2>
+    <div class="card-note">Screenshot a question you got wrong and drop it in below — paste it (click the box first, then Ctrl/Cmd+V), drag an image in, or upload a file. Come back and redo it whenever you like. Once you get it right, mark it done and it disappears.</div>
+
+    <div class="mistake-add-row">
+      <select id="mistakeSubjectSelect">
+        <option>Physics</option>
+        <option>Chemistry</option>
+        <option>Math</option>
+        <option>Other</option>
+      </select>
+      <input type="text" id="mistakeNoteInput" placeholder="optional note — topic, why you got it wrong">
+      <label class="file-btn" for="mistakeFileInput">Upload image</label>
+      <input type="file" id="mistakeFileInput" accept="image/*" multiple style="display:none;">
+    </div>
+
+    <div class="paste-zone" id="pasteZone" tabindex="0">Click here, then paste a screenshot — or drag an image in</div>
+    <div class="status-text" id="mistakeStatus"></div>
+
+    <div class="mistake-grid" id="mistakeGrid"></div>
+  </section>
+</div>
+
 <div class="lightbox-overlay" id="lightboxOverlay">
   <button class="lightbox-close" id="lightboxClose">&times;</button>
   <img id="lightboxImg" src="" alt="enlarged screenshot">
 </div>
 
 <footer id="storageFooter">logged to your account &middot; nothing shared</footer>
-<div class="version-stamp" id="versionStamp">Tracker version: 12 Oct 2026, 3:05 pm</div>
+<div class="version-stamp" id="versionStamp">Tracker version: 12 Oct 2026, 3:11 pm</div>
 
 <script>
 const $ = (id) => document.getElementById(id);
