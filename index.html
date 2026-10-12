@@ -854,6 +854,20 @@
   .essay-done input{ width:17px; height:17px; accent-color:var(--teal); }
 
   .version-stamp{ text-align:center; font-size:12px; color:var(--text-muted); margin:-26px 0 30px; }
+  /* ===== GitHub sync ===== */
+  .sync-box{ margin-top:22px; padding-top:18px; border-top:1px solid var(--line-soft); }
+  .sync-box[hidden]{ display:none; }
+  .sync-box h3{ font-size:18px; margin-bottom:4px; }
+  .sync-steps{ margin:4px 0 12px; padding-left:20px; font-size:13.5px; color:var(--ink-soft); line-height:1.6; max-width:70ch; }
+  .sync-steps a{ color:var(--ink); }
+  .sync-row{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+  .sync-row input[type="password"]{ flex:1; min-width:220px; border:1px solid var(--line); border-radius:8px; padding:9px 10px; font-family:var(--f-body); font-size:13.5px; background:#fff; color:var(--ink); }
+  .sync-remember{ display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--ink-soft); margin-top:8px; }
+  .sync-on{ font-weight:700; color:var(--ink); margin-right:6px; }
+  .sync-on::before{ content:""; display:inline-block; width:8px; height:8px; border-radius:50%; background:#3FB16A; margin-right:7px; vertical-align:middle; }
+  .sync-choice-text{ font-size:14px; color:var(--ink); margin:4px 0 10px; }
+  [hidden]{ display:none !important; }
+
   footer{
     text-align:center;
     font-size:12px;
@@ -1192,6 +1206,41 @@
       <button class="ghost-btn" id="restoreCancel" type="button">Cancel</button>
     </div>
     <div class="status-text" id="backupStatus" style="margin-bottom:0"></div>
+
+    <div class="sync-box" id="syncBox">
+      <h3>Sync with GitHub</h3>
+      <div class="card-note">Use the same data in every browser — your phone, your laptop, even a private or incognito window — by saving it to a secret gist on your GitHub account. Changes upload automatically a few seconds after you make them.</div>
+
+      <div id="syncSetup">
+        <ol class="sync-steps">
+          <li>On GitHub, open <a href="https://github.com/settings/tokens/new?scopes=gist&amp;description=GAMSAT%20tracker%20sync" target="_blank" rel="noopener noreferrer">Settings → Developer settings → Personal access tokens → Generate new token (classic)</a>. The link opens it with the right box ticked.</li>
+          <li>Leave only <b>gist</b> ticked, pick an expiry, click <b>Generate token</b> and copy it.</li>
+          <li>Paste it here and click Connect. Use the same token in each browser.</li>
+        </ol>
+        <div class="sync-row">
+          <input type="password" id="syncToken" placeholder="Paste your GitHub token (starts with ghp_)" autocomplete="off" spellcheck="false">
+          <button class="add-btn" id="syncConnectBtn" type="button">Connect</button>
+        </div>
+        <label class="sync-remember"><input type="checkbox" id="syncRemember" checked> Remember on this device (untick on a shared computer)</label>
+      </div>
+
+      <div id="syncChoice" hidden>
+        <p class="sync-choice-text" id="syncChoiceText">You already have tracker data saved on GitHub. Which copy should this browser use?</p>
+        <div class="sync-row">
+          <button class="add-btn" id="syncUseRemote" type="button">Load my data from GitHub</button>
+          <button class="ghost-btn" id="syncUseLocal" type="button">Replace GitHub's copy with this browser's data</button>
+        </div>
+      </div>
+
+      <div id="syncConnected" hidden>
+        <div class="sync-row">
+          <span class="sync-on">Connected to GitHub</span>
+          <button class="ghost-btn" id="syncNowBtn" type="button">Save to GitHub now</button>
+          <button class="del-btn" id="syncDisconnectBtn" type="button">Disconnect</button>
+        </div>
+      </div>
+      <div class="status-text" id="syncStatus" style="margin-bottom:0"></div>
+    </div>
   </section>
 </div>
 
@@ -1225,7 +1274,7 @@
 </div>
 
 <footer id="storageFooter">logged to your account &middot; nothing shared</footer>
-<div class="version-stamp" id="versionStamp">Tracker version: 12 Oct 2026, 3:11 pm</div>
+<div class="version-stamp" id="versionStamp">Tracker version: 12 Oct 2026, 3:50 pm</div>
 
 <script>
 const $ = (id) => document.getElementById(id);
@@ -3298,6 +3347,222 @@ $('restoreGo').addEventListener('click', async ()=>{
   setTimeout(()=>location.reload(), 600);
 });
 
+// ---- Sync with GitHub (secret gist) ----
+// Saves everything this page stores to one secret gist, so any browser (including a
+// private/incognito window) can load the same data after you connect it with your token.
+const SYNC_PREFIX = 'gamsat-sync:';
+const SYNC_GIST_DESC = 'GAMSAT tracker sync (gamsat-tracker)';
+const SYNC_FILE = 'gamsat-tracker.json';
+const SYNC_SKIP = new Set(['last-backup']);
+const syncLS = {
+  get(k){ try{ return localStorage.getItem(SYNC_PREFIX + k); }catch(e){ return null; } },
+  set(k, v){ try{ localStorage.setItem(SYNC_PREFIX + k, v); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(SYNC_PREFIX + k); }catch(e){} }
+};
+let syncCfg = null;            // {token, gistId}
+let syncPushTimer = null;
+let syncBusy = false;
+let syncPaused = false;        // true while applying data from GitHub
+let syncReady = false;         // ignore the page's own start-up writes (seeding, migrations)
+
+function syncAvailable(){ return !(window.claude && window.claude.use); }   // the Claude viewer can't reach GitHub
+function syncStatus(msg){ const el = $('syncStatus'); if(el) el.textContent = msg || ""; }
+function fmtTime(d){ return new Date(d).toLocaleString(undefined,{day:"numeric", month:"short", hour:"numeric", minute:"2-digit"}); }
+
+async function gh(path, opts){
+  const res = await fetch("https://api.github.com" + path, Object.assign({}, opts, {
+    headers: Object.assign({
+      "Accept":"application/vnd.github+json",
+      "Authorization":"Bearer " + syncCfg.token,
+      "X-GitHub-Api-Version":"2022-11-28"
+    }, (opts && opts.headers) || {})
+  }));
+  if(res.status === 401) throw new Error("token");
+  if(res.status === 404) throw new Error("notfound");
+  if(!res.ok) throw new Error("http " + res.status);
+  return res.status === 204 ? null : res.json();
+}
+
+async function collectSyncData(){
+  const data = {};
+  for(const k of await allStorageKeys()){
+    if(SYNC_SKIP.has(k)) continue;
+    try{ const r = await storage.get(k, false); if(r && r.value !== undefined && r.value !== null) data[k] = r.value; }catch(e){}
+  }
+  return data;
+}
+
+async function readRemote(){
+  const g = await gh("/gists/" + syncCfg.gistId);
+  const f = g.files && g.files[SYNC_FILE];
+  if(!f) return null;
+  let text = f.content;
+  if(f.truncated && f.raw_url){ text = await (await fetch(f.raw_url)).text(); }
+  try{ const v = JSON.parse(text); return (v && v.app === BACKUP_APP && v.data) ? v : null; }catch(e){ return null; }
+}
+
+async function pushNow(force){
+  if(!syncCfg || syncPaused) return;
+  if(syncBusy){ schedulePush(1500); return; }
+  syncBusy = true;
+  try{
+    syncStatus("Saving to GitHub…");
+    if(!force){
+      // another device saved since we last synced: don't overwrite it blindly
+      const remote = await readRemote();
+      if(remote && remote.updated && remote.updated !== syncLS.get('remoteUpdated')){
+        $('syncChoiceText').textContent = "Your data changed on another device since this browser last synced. Which copy should win?";
+        showSyncPanel('syncChoice'); syncStatus("");
+        return;
+      }
+    }
+    const updated = new Date().toISOString();
+    const payload = JSON.stringify({app:BACKUP_APP, version:1, updated, data: await collectSyncData()});
+    await gh("/gists/" + syncCfg.gistId, {method:"PATCH", body: JSON.stringify({files:{[SYNC_FILE]:{content:payload}}})});
+    syncLS.set('remoteUpdated', updated);
+    syncLS.set('dirty', '0');
+    syncStatus("Saved to GitHub " + fmtTime(Date.now()));
+  }catch(err){
+    syncStatus(err.message === "token" ? "GitHub rejected the token — it may have expired. Disconnect and connect again with a new one."
+      : "Couldn't save to GitHub (" + err.message + "). Your changes are still saved in this browser and will retry.");
+    schedulePush(30000);
+  }finally{ syncBusy = false; }
+}
+function schedulePush(ms){ clearTimeout(syncPushTimer); syncPushTimer = setTimeout(pushNow, ms); }
+
+// every save on the page marks the data as changed and queues an upload
+(function hookStorage(){
+  const set0 = storage.set, del0 = storage.delete;
+  storage.set = async function(k, v, s){
+    const r = await set0.call(storage, k, v, s);
+    if(syncReady && !syncPaused && !SYNC_SKIP.has(k)){ syncLS.set('dirty', '1'); if(syncCfg) schedulePush(2500); }
+    return r;
+  };
+  storage.delete = async function(k, s){
+    const r = await del0.call(storage, k, s);
+    if(syncReady && !syncPaused && !SYNC_SKIP.has(k)){ syncLS.set('dirty', '1'); if(syncCfg) schedulePush(2500); }
+    return r;
+  };
+  storage._rawSet = set0; storage._rawDelete = del0;
+})();
+
+async function applyRemote(remote){
+  syncPaused = true;
+  const keep = new Set(Object.keys(remote.data));
+  for(const k of await allStorageKeys()){
+    if(!keep.has(k) && !SYNC_SKIP.has(k)){ try{ await storage._rawDelete.call(storage, k, false); }catch(e){} }
+  }
+  for(const [k, v] of Object.entries(remote.data)){ try{ await storage._rawSet.call(storage, k, v, false); }catch(e){} }
+  syncLS.set('remoteUpdated', remote.updated);
+  syncLS.set('dirty', '0');
+  location.reload();
+}
+
+function showSyncPanel(which){
+  ['syncSetup','syncConnected','syncChoice'].forEach(id=>{ const el = $(id); if(el) el.hidden = id !== which; });
+}
+
+async function startSync(){
+  showSyncPanel('syncConnected');
+  syncStatus("Checking GitHub…");
+  let remote = null;
+  try{ remote = await readRemote(); }
+  catch(err){
+    if(err.message === "token"){ syncStatus("GitHub rejected the token — it may have expired. Disconnect and connect again with a new one."); return; }
+    if(err.message === "notfound"){ syncStatus("The sync gist was deleted on GitHub. Disconnect and connect again to make a new one."); return; }
+    syncStatus("Couldn't reach GitHub right now. Your data is still saved in this browser."); return;
+  }
+  const dirty = syncLS.get('dirty') === '1';
+  const remoteChanged = !!(remote && remote.updated && remote.updated !== syncLS.get('remoteUpdated'));
+  if(remoteChanged && !dirty){ syncStatus("Loading your data from GitHub…"); await applyRemote(remote); return; }
+  if(remoteChanged && dirty){
+    $('syncChoiceText').textContent = "Your data changed both here and on another device since this browser last synced. Which copy should win?";
+    showSyncPanel('syncChoice'); syncStatus(""); return;
+  }
+  if(!remote || !remote.updated || dirty){ await pushNow(true); return; }
+  syncStatus("Up to date with GitHub (last saved " + fmtTime(remote.updated) + ")");
+}
+
+async function connectSync(){
+  const token = $('syncToken').value.trim();
+  if(!token){ syncStatus("Paste your GitHub token first."); $('syncToken').focus(); return; }
+  syncCfg = { token, gistId: null };
+  $('syncConnectBtn').disabled = true;
+  syncStatus("Connecting…");
+  try{
+    await gh("/user");
+    // look for an existing sync gist on this account
+    let found = null;
+    for(let page=1; page<=5 && !found; page++){
+      const list = await gh(`/gists?per_page=100&page=${page}`);
+      found = list.find(g=>g.description === SYNC_GIST_DESC && g.files && g.files[SYNC_FILE]);
+      if(list.length < 100) break;
+    }
+    if(found){
+      syncCfg.gistId = found.id;
+      saveSyncCfg();
+      $('syncChoiceText').textContent = "You already have tracker data saved on GitHub. Which copy should this browser use?";
+      showSyncPanel('syncChoice');
+      syncStatus("");
+      return;
+    }
+    const updated = new Date().toISOString();
+    const payload = JSON.stringify({app:BACKUP_APP, version:1, updated, data: await collectSyncData()});
+    const g = await gh("/gists", {method:"POST", body: JSON.stringify({description:SYNC_GIST_DESC, public:false, files:{[SYNC_FILE]:{content:payload}}})});
+    syncCfg.gistId = g.id;
+    syncLS.set('remoteUpdated', updated); syncLS.set('dirty', '0');
+    saveSyncCfg();
+    showSyncPanel('syncConnected');
+    syncStatus("Connected. Your data is saved to a secret gist on GitHub.");
+  }catch(err){
+    syncCfg = null;
+    syncStatus(err.message === "token" ? "GitHub didn't accept that token. Check you copied all of it and ticked the “gist” scope."
+      : "Couldn't connect to GitHub (" + err.message + ").");
+  }finally{ $('syncConnectBtn').disabled = false; }
+}
+
+function saveSyncCfg(){
+  syncLS.set('gistId', syncCfg.gistId);
+  if($('syncRemember').checked) syncLS.set('token', syncCfg.token); else syncLS.del('token');
+  try{ sessionStorage.setItem(SYNC_PREFIX + 'token', syncCfg.token); }catch(e){}
+}
+
+function disconnectSync(){
+  syncLS.del('remoteUpdated');
+  clearTimeout(syncPushTimer);
+  syncCfg = null;
+  syncLS.del('token'); syncLS.del('gistId');
+  try{ sessionStorage.removeItem(SYNC_PREFIX + 'token'); }catch(e){}
+  $('syncToken').value = "";
+  showSyncPanel('syncSetup');
+  syncStatus("Disconnected. Your data stays in this browser and in the gist on GitHub.");
+}
+
+async function initSync(){
+  const box = $('syncBox');
+  if(!box) return;
+  if(!syncAvailable()){ box.hidden = true; return; }
+  let token = syncLS.get('token');
+  if(!token){ try{ token = sessionStorage.getItem(SYNC_PREFIX + 'token'); }catch(e){} }
+  const gistId = syncLS.get('gistId');
+  $('syncConnectBtn').addEventListener('click', connectSync);
+  $('syncToken').addEventListener('keydown', e=>{ if(e.key === "Enter"){ e.preventDefault(); connectSync(); } });
+  $('syncNowBtn').addEventListener('click', ()=>pushNow(false));
+  $('syncDisconnectBtn').addEventListener('click', disconnectSync);
+  $('syncUseRemote').addEventListener('click', async ()=>{
+    syncStatus("Loading your data from GitHub…");
+    try{ const remote = await readRemote(); if(remote){ await applyRemote(remote); return; } }catch(e){}
+    syncStatus("The gist was empty, so this browser's data was saved to it instead.");
+    showSyncPanel('syncConnected'); await pushNow(true);
+  });
+  $('syncUseLocal').addEventListener('click', async ()=>{
+    showSyncPanel('syncConnected'); await pushNow(true);
+  });
+  syncReady = true;
+  if(token && gistId){ syncCfg = { token, gistId }; await startSync(); }
+  else showSyncPanel('syncSetup');
+}
+
 (async function init(){
   await loadExamDate();
   await loadWeek();
@@ -3307,6 +3572,7 @@ $('restoreGo').addEventListener('click', async ()=>{
   await loadEssays();
   await loadWords();
   showLastBackup();
+  await initSync();
 })();
 </script>
 </body>
