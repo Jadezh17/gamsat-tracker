@@ -855,9 +855,9 @@
 
   .version-stamp{ text-align:center; font-size:12px; color:var(--text-muted); margin:-26px 0 30px; }
   /* ===== GitHub sync ===== */
-  .sync-box{ margin-top:22px; padding-top:18px; border-top:1px solid var(--line-soft); }
+  .sync-box{ }
   .sync-box[hidden]{ display:none; }
-  .sync-box h3{ font-size:18px; margin-bottom:4px; }
+
   .sync-steps{ margin:4px 0 12px; padding-left:20px; font-size:13.5px; color:var(--ink-soft); line-height:1.6; max-width:70ch; }
   .sync-steps a{ color:var(--ink); }
   .sync-row{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
@@ -1186,29 +1186,34 @@
   </section>
 </div>
 
-<div class="wide-wrap" id="backupWrap">
-  <section class="card backup-card">
-    <div class="backup-row">
-      <div>
-        <h2>Back up your data</h2>
-        <div class="card-note" style="margin-bottom:0" id="backupNote">Everything on this page is saved in this browser only. Download a backup now and then, and restore it after clearing your browser or on a new device.</div>
-        <div class="backup-last mono" id="backupLast"></div>
-      </div>
-      <div class="backup-actions">
-        <button class="add-btn" id="backupBtn" type="button">Back up everything</button>
-        <label class="ghost-btn" for="restoreFile">Restore from backup</label>
-        <input type="file" id="restoreFile" accept=".json,application/json" style="display:none;">
-      </div>
-    </div>
-    <div class="restore-confirm" id="restoreConfirm" hidden>
-      <span id="restoreSummary"></span>
-      <button class="miss-btn" id="restoreGo" type="button">Replace my data</button>
-      <button class="ghost-btn" id="restoreCancel" type="button">Cancel</button>
-    </div>
-    <div class="status-text" id="backupStatus" style="margin-bottom:0"></div>
+<div class="wide-wrap">
+  <section class="card">
+    <h2>Redo bank</h2>
+    <div class="card-note">Screenshot a question you got wrong and drop it in below — paste it (click the box first, then Ctrl/Cmd+V), drag an image in, or upload a file. Come back and redo it whenever you like. Once you get it right, mark it done and it disappears.</div>
 
+    <div class="mistake-add-row">
+      <select id="mistakeSubjectSelect">
+        <option>Physics</option>
+        <option>Chemistry</option>
+        <option>Math</option>
+        <option>Other</option>
+      </select>
+      <input type="text" id="mistakeNoteInput" placeholder="optional note — topic, why you got it wrong">
+      <label class="file-btn" for="mistakeFileInput">Upload image</label>
+      <input type="file" id="mistakeFileInput" accept="image/*" multiple style="display:none;">
+    </div>
+
+    <div class="paste-zone" id="pasteZone" tabindex="0">Click here, then paste a screenshot — or drag an image in</div>
+    <div class="status-text" id="mistakeStatus"></div>
+
+    <div class="mistake-grid" id="mistakeGrid"></div>
+  </section>
+</div>
+
+<div class="wide-wrap" id="syncWrap">
+  <section class="card">
     <div class="sync-box" id="syncBox">
-      <h3>Sync with GitHub</h3>
+      <h2>Sync with GitHub</h2>
       <div class="card-note">Use the same data in every browser — your phone, your laptop, even a private or incognito window — by saving it to a secret gist on your GitHub account. Changes upload automatically a few seconds after you make them.</div>
 
       <div id="syncSetup">
@@ -1244,37 +1249,13 @@
   </section>
 </div>
 
-<div class="wide-wrap">
-  <section class="card">
-    <h2>Redo bank</h2>
-    <div class="card-note">Screenshot a question you got wrong and drop it in below — paste it (click the box first, then Ctrl/Cmd+V), drag an image in, or upload a file. Come back and redo it whenever you like. Once you get it right, mark it done and it disappears.</div>
-
-    <div class="mistake-add-row">
-      <select id="mistakeSubjectSelect">
-        <option>Physics</option>
-        <option>Chemistry</option>
-        <option>Math</option>
-        <option>Other</option>
-      </select>
-      <input type="text" id="mistakeNoteInput" placeholder="optional note — topic, why you got it wrong">
-      <label class="file-btn" for="mistakeFileInput">Upload image</label>
-      <input type="file" id="mistakeFileInput" accept="image/*" multiple style="display:none;">
-    </div>
-
-    <div class="paste-zone" id="pasteZone" tabindex="0">Click here, then paste a screenshot — or drag an image in</div>
-    <div class="status-text" id="mistakeStatus"></div>
-
-    <div class="mistake-grid" id="mistakeGrid"></div>
-  </section>
-</div>
-
 <div class="lightbox-overlay" id="lightboxOverlay">
   <button class="lightbox-close" id="lightboxClose">&times;</button>
   <img id="lightboxImg" src="" alt="enlarged screenshot">
 </div>
 
 <footer id="storageFooter">logged to your account &middot; nothing shared</footer>
-<div class="version-stamp" id="versionStamp">Tracker version: 12 Oct 2026, 3:50 pm</div>
+<div class="version-stamp" id="versionStamp">Tracker version: 12 Oct 2026, 3:46 pm</div>
 
 <script>
 const $ = (id) => document.getElementById(id);
@@ -3258,95 +3239,6 @@ async function allStorageKeys(){
   return keys;
 }
 
-async function offerFile(filename, text){
-  if(downloadsApi){
-    try{ await downloadsApi.save({filename, data:text}); return "saved"; }
-    catch(err){
-      if(err && err.code === "declined") return "declined";
-      if(err && err.code === "rate_limited") return "busy";
-    }
-  }
-  if(!(window.claude && window.claude.use)){
-    try{
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([text], {type:"application/json"}));
-      a.download = filename;
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
-      return "saved";
-    }catch(e){}
-  }
-  return "failed";
-}
-
-function showLastBackup(){
-  if(hasCloudStorage) $('backupNote').textContent = "Everything here is saved to your Claude account. Download a backup to keep your own copy, or to move your data to another copy of this tracker (such as your GitHub site).";
-  let last = null;
-  try{ last = localStorage.getItem(LOCAL_PREFIX + 'last-backup'); }catch(e){}
-  const el = $('backupLast');
-  if(!last){ el.textContent = "No backup downloaded from this browser yet."; el.classList.add('is-stale'); return; }
-  const days = Math.floor((Date.now() - new Date(last).getTime()) / DAY_MS);
-  el.textContent = "Last backup: " + fmtShort(last) + (days >= 1 ? ` (${days} day${days===1?"":"s"} ago)` : " (today)");
-  el.classList.toggle('is-stale', days >= 7);
-}
-
-$('backupBtn').addEventListener('click', async ()=>{
-  $('backupStatus').textContent = "Preparing backup…";
-  const data = {};
-  for(const k of await allStorageKeys()){
-    if(k === 'last-backup') continue;
-    try{ const r = await storage.get(k, false); if(r && r.value !== undefined && r.value !== null) data[k] = r.value; }catch(e){}
-  }
-  const payload = JSON.stringify({app:BACKUP_APP, version:1, exported:new Date().toISOString(), data});
-  const name = "gamsat-backup-" + localDateStr(new Date()) + ".json";
-  const res = await offerFile(name, payload);
-  if(res === "saved"){
-    try{ localStorage.setItem(LOCAL_PREFIX + 'last-backup', new Date().toISOString()); }catch(e){}
-    $('backupStatus').textContent = `Saved ${name} (${Object.keys(data).length} items). Keep it somewhere safe, like Google Drive or iCloud.`;
-    showLastBackup();
-  } else if(res === "declined"){
-    $('backupStatus').textContent = "Backup cancelled.";
-  } else if(res === "busy"){
-    $('backupStatus').textContent = "A save prompt is already open — finish that one first.";
-  } else {
-    $('backupStatus').textContent = "Couldn't save a file here. Open the page in your browser and try again.";
-  }
-});
-
-let pendingRestore = null;
-$('restoreFile').addEventListener('change', async e=>{
-  const file = e.target.files && e.target.files[0]; e.target.value = "";
-  if(!file) return;
-  try{
-    const parsed = JSON.parse(await file.text());
-    if(!parsed || parsed.app !== BACKUP_APP || typeof parsed.data !== "object") throw new Error("not a backup");
-    pendingRestore = parsed;
-    const keys = Object.keys(parsed.data);
-    let nWords = 0, nFormulas = 0, nWeeks = keys.filter(k=>k.startsWith('week:')).length, nMistakes = keys.filter(k=>k.startsWith('mistake:')).length;
-    try{ nWords = JSON.parse(parsed.data['word-notebook'] || "[]").length; }catch(err){}
-    try{ nFormulas = JSON.parse(parsed.data['formula-sheet'] || "[]").length; }catch(err){}
-    $('restoreSummary').textContent = `Backup from ${fmtShort(parsed.exported)}: ${nWeeks} week${nWeeks===1?"":"s"} of sessions, ${nWords} words, ${nFormulas} formulas, ${nMistakes} redo screenshots. Restoring replaces those on this page.`;
-    $('restoreConfirm').hidden = false;
-    $('backupStatus').textContent = "";
-  }catch(err){
-    pendingRestore = null;
-    $('restoreConfirm').hidden = true;
-    $('backupStatus').textContent = "That file isn't a backup from this tracker.";
-  }
-});
-$('restoreCancel').addEventListener('click', ()=>{ pendingRestore = null; $('restoreConfirm').hidden = true; });
-$('restoreGo').addEventListener('click', async ()=>{
-  if(!pendingRestore) return;
-  $('restoreGo').disabled = true;
-  $('backupStatus').textContent = "Restoring…";
-  let n = 0;
-  for(const [k, v] of Object.entries(pendingRestore.data)){
-    try{ await storage.set(k, v, false); n++; }catch(e){}
-  }
-  $('backupStatus').textContent = `Restored ${n} items. Reloading…`;
-  setTimeout(()=>location.reload(), 600);
-});
-
 // ---- Sync with GitHub (secret gist) ----
 // Saves everything this page stores to one secret gist, so any browser (including a
 // private/incognito window) can load the same data after you connect it with your token.
@@ -3541,7 +3433,7 @@ function disconnectSync(){
 async function initSync(){
   const box = $('syncBox');
   if(!box) return;
-  if(!syncAvailable()){ box.hidden = true; return; }
+  if(!syncAvailable()){ $('syncWrap').hidden = true; return; }
   let token = syncLS.get('token');
   if(!token){ try{ token = sessionStorage.getItem(SYNC_PREFIX + 'token'); }catch(e){} }
   const gistId = syncLS.get('gistId');
@@ -3571,7 +3463,6 @@ async function initSync(){
   await loadDaily();
   await loadEssays();
   await loadWords();
-  showLastBackup();
   await initSync();
 })();
 </script>
