@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GAMSAT Study Chart</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#262A4D;
@@ -27,7 +27,7 @@
   html{ scroll-behavior:smooth; }
   body{
     margin:0;
-    font-family:"IBM Plex Sans",sans-serif;
+    font-family:var(--f-body);
     color:var(--text);
     -webkit-font-smoothing:antialiased;
     background-color:var(--parchment);
@@ -38,11 +38,11 @@
     background-position:-1px -1px;
   }
   h1,h2,h3{
-    font-family:"Source Serif 4",serif;
+    font-family:var(--f-display);
     margin:0;
     font-weight:600;
   }
-  .mono{ font-family:"IBM Plex Mono",monospace; }
+  .mono{ font-family:var(--f-num); }
 
   /* ===== Header ===== */
   header.chart-head{
@@ -71,7 +71,7 @@
     gap:6px;
   }
   .eyebrow{
-    font-family:"IBM Plex Mono",monospace;
+    font-family:var(--f-num);
     font-size:11px;
     color:var(--ink-soft);
     letter-spacing:0.4px;
@@ -93,7 +93,7 @@
     gap:2px;
   }
   .countdown .num{
-    font-family:"IBM Plex Mono",monospace;
+    font-family:var(--f-num);
     font-size:clamp(38px,6vw,58px);
     line-height:1;
     color:var(--ink);
@@ -109,7 +109,7 @@
     background:rgba(255,255,255,0.55);
     border:1px solid rgba(38,42,77,0.3);
     color:var(--ink);
-    font-family:"IBM Plex Mono",monospace;
+    font-family:var(--f-num);
     font-size:12px;
     padding:5px 8px;
     border-radius:3px;
@@ -163,14 +163,14 @@
   }
   .phase-body{ padding-top:16px; padding-left:2px; }
   .phase .p-name{
-    font-family:"Source Serif 4",serif;
+    font-family:var(--f-display);
     font-size:15px;
     font-weight:600;
     color:var(--text-muted);
   }
   .phase.current .p-name{ color:var(--ink); }
   .phase .p-range{
-    font-family:"IBM Plex Mono",monospace;
+    font-family:var(--f-num);
     font-size:10.5px;
     color:var(--text-muted);
     margin-top:2px;
@@ -227,7 +227,7 @@
     margin-bottom:6px;
   }
   .week-nav .wk-label{
-    font-family:"IBM Plex Mono",monospace;
+    font-family:var(--f-num);
     font-size:12px;
     color:var(--text-muted);
   }
@@ -253,9 +253,9 @@
   table.sessions tr.is-done{ background:linear-gradient(90deg, var(--success-soft), transparent 70%); }
   .day-cell{ display:flex; flex-direction:column; }
   .day-cell .dname{ font-weight:600; }
-  .day-cell .ddate{ font-size:11px; color:var(--text-muted); font-family:"IBM Plex Mono",monospace;}
+  .day-cell .ddate{ font-size:11px; color:var(--text-muted); font-family:var(--f-num);}
   select.focus-select{
-    font-family:"IBM Plex Sans",sans-serif;
+    font-family:var(--f-body);
     font-size:13px;
     border:1px solid var(--line);
     background:#fff;
@@ -266,7 +266,7 @@
   }
   input.hours-input{
     width:54px;
-    font-family:"IBM Plex Mono",monospace;
+    font-family:var(--f-num);
     font-size:13px;
     border:1px solid var(--line);
     background:#fff;
@@ -283,7 +283,7 @@
     margin-top:16px;
     display:flex;
     gap:26px;
-    font-family:"IBM Plex Mono",monospace;
+    font-family:var(--f-num);
     font-size:13px;
     color:var(--ink-soft);
     border-top:1px solid var(--line-soft);
@@ -296,13 +296,13 @@
   .focus-entry select.focus-select{ max-width:none; flex:1; min-width:0; }
   .entry-x{ background:none; border:none; color:var(--text-muted); font-size:16px; line-height:1; cursor:pointer; padding:2px 6px; }
   .entry-x:hover{ color:var(--ink); }
-  .add-focus-btn{ align-self:flex-start; background:none; border:1px dashed var(--line); color:var(--ink-soft); border-radius:3px; padding:4px 9px; font-size:12px; cursor:pointer; font-family:"IBM Plex Sans",sans-serif; }
+  .add-focus-btn{ align-self:flex-start; background:none; border:1px dashed var(--line); color:var(--ink-soft); border-radius:3px; padding:4px 9px; font-size:12px; cursor:pointer; font-family:var(--f-body); }
   .add-focus-btn:hover{ border-color:var(--teal); color:var(--ink); }
   table.sessions td{ vertical-align:top; }
   table.sessions td:last-child{ padding-top:16px; }
   .focus-totals{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
   .focus-chip{ font-size:12px; background:var(--parchment); border:1px solid var(--line-soft); border-radius:3px; padding:4px 9px; color:var(--ink-soft); }
-  .focus-chip b{ font-family:"IBM Plex Mono",monospace; color:var(--ink); font-weight:600; margin-left:4px; }
+  .focus-chip b{ font-family:var(--f-num); color:var(--ink); font-weight:600; margin-left:4px; }
 
   /* ===== Mock log ===== */
   .log-form{
@@ -315,7 +315,7 @@
     .log-form{ grid-template-columns:1fr 1fr; }
   }
   .log-form input, .log-form select{
-    font-family:"IBM Plex Sans",sans-serif;
+    font-family:var(--f-body);
     font-size:13px;
     border:1px solid var(--line);
     background:#fff;
@@ -351,7 +351,7 @@
     border-bottom:1px solid var(--line-soft);
   }
   .score-pill{
-    font-family:"IBM Plex Mono",monospace;
+    font-family:var(--f-num);
     background:var(--brick-soft);
     color:var(--ink-soft);
     padding:2px 7px;
@@ -392,7 +392,7 @@
     .formula-add-row button{ grid-column:1 / -1; }
   }
   .formula-add-row select, .formula-add-row input{
-    font-family:"IBM Plex Sans",sans-serif;
+    font-family:var(--f-body);
     font-size:13px;
     border:1px solid var(--line);
     background:#fff;
@@ -405,11 +405,11 @@
     min-height:18px;
     margin:-6px 2px 16px;
     line-height:1.5;
-    font-family:"IBM Plex Sans",sans-serif;
+    font-family:var(--f-body);
   }
   .formula-preview.is-found{ color:var(--ink-soft); }
   .formula-preview .math-render{
-    font-family:"Source Serif 4", serif;
+    font-family:var(--f-display);
     font-style:italic;
     font-size:1.1em;
     color:var(--ink);
@@ -418,7 +418,7 @@
   table.formula-table td{ vertical-align:top; }
   @media (max-width:760px){ table.formula-table{ display:block; overflow-x:auto; } }
   select.formula-subject-select{
-    font-family:"IBM Plex Sans",sans-serif;
+    font-family:var(--f-body);
     font-size:12px;
     border:1px solid var(--line);
     background:#fff;
@@ -428,7 +428,7 @@
   }
   input.formula-cell{
     width:100%;
-    font-family:"IBM Plex Mono",monospace;
+    font-family:var(--f-num);
     font-size:13px;
     border:1px solid var(--line);
     background:#fff;
@@ -445,7 +445,7 @@
   }
   input.formula-name-cell, .formula-example-cell{
     width:100%;
-    font-family:"IBM Plex Sans",sans-serif;
+    font-family:var(--f-body);
     font-size:13px;
     border:1px solid var(--line-soft);
     background:var(--parchment);
@@ -500,7 +500,7 @@
     margin-bottom:12px;
   }
   .formula-item .f-formula{
-    font-family:"Source Serif 4", serif;
+    font-family:var(--f-display);
     font-style:italic;
     font-size:17px;
     font-weight:600;
@@ -544,7 +544,7 @@
     .mistake-add-row .file-btn{ grid-column:1 / -1; text-align:center; }
   }
   .mistake-add-row select, .mistake-add-row input[type="text"]{
-    font-family:"IBM Plex Sans",sans-serif;
+    font-family:var(--f-body);
     font-size:13px;
     border:1px solid var(--line);
     background:#fff;
@@ -581,7 +581,7 @@
   .paste-zone.drag-over{ border-color:var(--teal); background:var(--teal-soft); }
 
   .status-text{
-    font-family:"IBM Plex Mono",monospace;
+    font-family:var(--f-num);
     font-size:12px;
     color:var(--text-muted);
     min-height:16px;
@@ -696,7 +696,7 @@
   }
   .graph-top .gname{ font-weight:600; font-size:14px; }
   .graph-top .gstats{
-    font-family:"IBM Plex Mono",monospace;
+    font-family:var(--f-num);
     font-size:12px;
     color:var(--text-muted);
   }
@@ -708,19 +708,19 @@
     overflow:visible;
   }
   .trend .gridline{ stroke:var(--line-soft); stroke-width:1; }
-  .trend .axis-label{ font-family:"IBM Plex Mono",monospace; font-size:8.5px; fill:var(--text-muted); }
+  .trend .axis-label{ font-family:var(--f-num); font-size:8.5px; fill:var(--text-muted); }
   .trend .trend-line{ fill:none; stroke-width:2.2; }
   .trend .trend-dot{ }
   .trend .avg-line{ stroke-dasharray:3 3; stroke-width:1; opacity:0.6; }
-  .trend .empty-msg{ font-family:"IBM Plex Sans",sans-serif; font-size:12px; fill:var(--text-muted); font-style:italic; }
+  .trend .empty-msg{ font-family:var(--f-body); font-size:12px; fill:var(--text-muted); font-style:italic; }
 
 
   /* ===== Formula rendering (shared by the formula sheet and the daily maths sheet) ===== */
   .m-up{ font-style:normal; }
   .sqrt-inner{ display:inline-block; line-height:1.25; }
   .frac .frac{ font-size:0.92em; }
-  .table-math-preview{ font-family:"Source Serif 4",serif; font-style:italic; font-size:15px; color:var(--ink); }
-  .dm{ font-family:"Source Serif 4",serif; font-style:italic; font-size:1.06em; white-space:nowrap; }
+  .table-math-preview{ font-family:var(--f-display); font-style:italic; font-size:15px; color:var(--ink); }
+  .dm{ font-family:var(--f-display); font-style:italic; font-size:1.06em; white-space:nowrap; }
   .dm.dm-up{ font-style:normal; }
   .dm sup, .math-render sup{ font-size:0.68em; vertical-align:super; line-height:0; }
   .dm sub, .math-render sub{ font-size:0.68em; vertical-align:sub; line-height:0; }
@@ -732,7 +732,7 @@
   }
   .daily-controls label{ font-size:12.5px; color:var(--ink-soft); display:flex; align-items:center; gap:6px; }
   .daily-controls input[type="date"], .daily-controls select{
-    font-family:"IBM Plex Sans",sans-serif; font-size:13px;
+    font-family:var(--f-body); font-size:13px;
     border:1px solid var(--line); background:#fff; padding:7px 8px; border-radius:3px; color:var(--ink);
   }
   .daily-controls input[type="checkbox"]{ width:16px; height:16px; accent-color:var(--teal); }
@@ -747,8 +747,8 @@
     display:flex; justify-content:space-between; align-items:flex-end; gap:16px;
     border-bottom:2px solid var(--ink); padding-bottom:8px; margin-bottom:6px;
   }
-  .daily-title{ font-family:"Source Serif 4",serif; font-size:20px; font-weight:600; }
-  .daily-meta, .daily-score{ font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--text-muted); }
+  .daily-title{ font-family:var(--f-display); font-size:20px; font-weight:600; }
+  .daily-meta, .daily-score{ font-family:var(--f-num); font-size:11.5px; color:var(--text-muted); }
   .daily-score{ white-space:nowrap; }
   .daily-topic{ margin-top:16px; }
   .daily-topic h3{
@@ -756,7 +756,7 @@
     border-bottom:1px solid var(--line-soft);
   }
   .daily-q{ display:flex; gap:10px; font-size:14px; line-height:1.9; padding:5px 0; }
-  .daily-q .daily-n{ font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--text-muted); min-width:24px; text-align:right; }
+  .daily-q .daily-n{ font-family:var(--f-num); font-size:12px; color:var(--text-muted); min-width:24px; text-align:right; }
   .daily-answers{ display:none; margin-top:30px; }
   .daily-answers.is-open{ display:block; }
   .daily-a{ color:var(--ink-soft); }
@@ -784,34 +784,34 @@
   .word-count{ font-size:12px; color:var(--text-muted); }
   .word-tabs{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; border-bottom:1px solid var(--line-soft); padding-bottom:10px; margin-bottom:4px; }
   .word-tabs .spacer{ flex:1; }
-  .word-tab{ background:none; border:none; border-bottom:2px solid transparent; padding:6px 4px; margin-right:10px; font-family:"IBM Plex Sans",sans-serif; font-size:14px; font-weight:600; color:var(--text-muted); cursor:pointer; }
+  .word-tab{ background:none; border:none; border-bottom:2px solid transparent; padding:6px 4px; margin-right:10px; font-family:var(--f-body); font-size:14px; font-weight:600; color:var(--text-muted); cursor:pointer; }
   .word-tab.is-active{ color:var(--ink); border-bottom-color:var(--teal); }
-  .word-badge{ font-family:"IBM Plex Mono",monospace; font-size:11px; background:var(--brick-soft); color:var(--ink-soft); border-radius:3px; padding:1px 6px; }
+  .word-badge{ font-family:var(--f-num); font-size:11px; background:var(--brick-soft); color:var(--ink-soft); border-radius:3px; padding:1px 6px; }
   .word-badge:empty{ display:none; }
   label.ghost-btn{ display:inline-flex; align-items:center; }
   .word-add-row{ display:grid; grid-template-columns:200px 1fr auto; gap:8px; }
   @media (max-width:620px){ .word-add-row{ grid-template-columns:1fr; } }
-  .word-add-row input, .word-search, .practice-controls select{ font-family:"IBM Plex Sans",sans-serif; font-size:13px; border:1px solid var(--line); background:#fff; padding:8px 9px; border-radius:3px; color:var(--ink); }
+  .word-add-row input, .word-search, .practice-controls select{ font-family:var(--f-body); font-size:13px; border:1px solid var(--line); background:#fff; padding:8px 9px; border-radius:3px; color:var(--ink); }
   .word-hint{ font-size:12px; color:var(--text-muted); margin:6px 2px 14px; }
   .word-search{ width:100%; max-width:320px; margin-bottom:10px; }
   .word-list{ display:flex; flex-direction:column; }
   .word-row{ display:grid; grid-template-columns:200px 1fr auto; gap:10px; align-items:start; padding:9px 0; border-bottom:1px solid var(--line-soft); }
   @media (max-width:620px){ .word-row{ grid-template-columns:1fr auto; } .word-row .word-def{ grid-column:1 / -1; grid-row:2; } }
-  .word-row input, .word-row textarea{ width:100%; border:1px solid transparent; background:transparent; border-radius:3px; padding:4px 6px; font-family:"IBM Plex Sans",sans-serif; color:var(--ink); resize:none; }
+  .word-row input, .word-row textarea{ width:100%; border:1px solid transparent; background:transparent; border-radius:3px; padding:4px 6px; font-family:var(--f-body); color:var(--ink); resize:none; }
   .word-row input:hover, .word-row textarea:hover{ border-color:var(--line-soft); }
   .word-row input:focus, .word-row textarea:focus{ outline:none; border-color:var(--teal); background:#fff; }
-  .word-row .word-term{ font-family:"Source Serif 4",serif; font-size:16px; font-weight:600; }
+  .word-row .word-term{ font-family:var(--f-display); font-size:16px; font-weight:600; }
   .word-row .word-def{ font-size:13.5px; line-height:1.45; color:var(--ink-soft); min-height:28px; }
-  .word-miss-tag{ font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--text-muted); white-space:nowrap; padding-top:7px; }
+  .word-miss-tag{ font-family:var(--f-num); font-size:11px; color:var(--text-muted); white-space:nowrap; padding-top:7px; }
   .practice-controls{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; margin:12px 0 14px; font-size:12.5px; color:var(--ink-soft); }
   .practice-controls label{ display:flex; align-items:center; gap:6px; }
   .practice-controls .spacer{ flex:1; }
   .practice-score{ font-size:12px; color:var(--text-muted); }
   .flashcard{ border:1px solid var(--line); border-radius:8px; background:var(--parchment); min-height:150px; padding:28px 22px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:14px; }
-  .flash-prompt{ font-family:"Source Serif 4",serif; font-size:24px; font-weight:600; color:var(--ink); line-height:1.3; max-width:60ch; }
-  .flash-prompt.is-def{ font-family:"IBM Plex Sans",sans-serif; font-size:16px; font-weight:400; }
+  .flash-prompt{ font-family:var(--f-display); font-size:24px; font-weight:600; color:var(--ink); line-height:1.3; max-width:60ch; }
+  .flash-prompt.is-def{ font-family:var(--f-body); font-size:16px; font-weight:400; }
   .flash-answer{ font-size:15px; color:var(--ink-soft); max-width:60ch; line-height:1.5; border-top:1px solid var(--line); padding-top:12px; }
-  .flash-answer.is-word{ font-family:"Source Serif 4",serif; font-size:22px; font-weight:600; color:var(--ink); }
+  .flash-answer.is-word{ font-family:var(--f-display); font-size:22px; font-weight:600; color:var(--ink); }
   .practice-actions{ display:flex; gap:8px; justify-content:center; margin-top:14px; flex-wrap:wrap; }
   .practice-actions .mistake-correct-btn{ flex:0 0 auto; padding:7px 18px; }
   .miss-btn{ background:var(--brick-soft); color:var(--ink); border:1px solid var(--brick); border-radius:3px; padding:7px 18px; font-size:12.5px; font-weight:600; cursor:pointer; }
@@ -839,14 +839,14 @@
   @media (max-width:700px){ .essay-list{ grid-template-columns:1fr; } }
   .essay-item{ border:1px solid var(--line); border-radius:8px; padding:14px 16px; background:#fff; display:flex; flex-direction:column; gap:8px; }
   .essay-item.is-done{ background:linear-gradient(180deg, var(--success-soft), #fff 70%); border-color:#BDEBC7; }
-  .essay-kicker{ font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--text-muted); }
-  .essay-theme{ font-family:"Source Serif 4",serif; font-size:20px; font-weight:600; color:var(--ink); }
+  .essay-kicker{ font-family:var(--f-num); font-size:11px; color:var(--text-muted); }
+  .essay-theme{ font-family:var(--f-display); font-size:20px; font-weight:600; color:var(--ink); }
   .essay-hint{ font-size:12.5px; color:var(--ink-soft); line-height:1.45; }
-  .essay-item textarea{ width:100%; min-height:84px; resize:vertical; font-family:"Source Serif 4",serif; font-style:italic; font-size:14px; border:1px solid var(--line); border-radius:3px; padding:7px 9px; color:var(--ink); background:var(--parchment); }
+  .essay-item textarea{ width:100%; min-height:84px; resize:vertical; font-family:var(--f-display); font-style:italic; font-size:14px; border:1px solid var(--line); border-radius:3px; padding:7px 9px; color:var(--ink); background:var(--parchment); }
   .essay-label{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:12px; font-weight:600; color:var(--ink); margin-top:4px; }
-  .essay-item textarea.essay-ideas{ font-family:"IBM Plex Sans",sans-serif; font-style:normal; font-size:13.5px; min-height:120px; background:#fff; }
+  .essay-item textarea.essay-ideas{ font-family:var(--f-body); font-style:normal; font-size:13.5px; min-height:120px; background:#fff; }
   .essay-item textarea.essay-question{ min-height:185px; white-space:pre-wrap; }
-  .timer-btn{ font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:3px; padding:4px 10px; cursor:pointer; }
+  .timer-btn{ font-family:var(--f-num); font-size:12px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:3px; padding:4px 10px; cursor:pointer; }
   .timer-btn.is-running{ background:var(--teal-soft); border-color:var(--teal); }
   .timer-btn.is-up{ background:var(--brick); border-color:var(--brick); }
   .claude-confirm{ font-size:12.5px; color:var(--ink-soft); }
@@ -858,8 +858,147 @@
     font-size:12px;
     color:var(--text-muted);
     padding:0 20px 34px;
-    font-family:"IBM Plex Mono",monospace;
+    font-family:var(--f-num);
   }
+  /* ===================== Visual refresh: "study ward" =====================
+     Cool clinical paper, scrub-teal for actions, one highlighter-yellow mark for
+     the thing that matters most today (the countdown). Maths stays in serif italic. */
+  :root{
+    --f-display:"Bricolage Grotesque", "Atkinson Hyperlegible", system-ui, sans-serif;
+    --f-body:"Atkinson Hyperlegible", system-ui, sans-serif;
+    --f-num:"Atkinson Hyperlegible", system-ui, sans-serif;
+    --f-math:"Source Serif 4", Georgia, serif;
+    /* original colour scheme */
+    --ink:#262A4D; --ink-soft:#565983; --text:#262A4D; --text-muted:#6B6E96;
+    --page:#F6F8FF; --paper:#FFFFFF; --parchment:#F6F8FF;
+    --teal:#9FA1FF; --teal-deep:#565983; --teal-soft:#E6E7FF;
+    --brick:#AEE2FF; --brick-soft:#E4F5FF;
+    --success:#D9F9DF; --success-soft:#EEFCF1;
+    --line:#E1E4F7; --line-soft:#EEF0FB;
+    --warn:#B5532B;
+    --focus:0 0 0 3px rgba(159,161,255,.45);
+  }
+  body{ background-color:var(--page); font-family:var(--f-body); font-size:15px; }
+  .mono, [class*="mono"]{ font-family:var(--f-num); font-variant-numeric:tabular-nums; }
+  h1,h2,h3{ font-family:var(--f-display); letter-spacing:-0.01em; }
+
+  /* header: dark band, countdown is the hero */
+  header.chart-head{ color:var(--ink); padding:40px clamp(18px,4vw,52px) 34px; align-items:center; }
+  header.chart-head::after{ height:5px; }
+  .eyebrow{ display:none; }
+  .wordmark h1{ font-size:clamp(30px,4.4vw,46px); font-weight:700; color:var(--ink); letter-spacing:-0.02em; }
+  .wordmark .sub{ color:var(--ink-soft); font-size:15px; max-width:44ch; line-height:1.5; }
+  .countdown{ align-items:flex-end; }
+  .countdown .num{ font-family:var(--f-display); font-weight:700; font-size:clamp(64px,10vw,104px); line-height:.9; color:var(--ink); letter-spacing:-0.03em; }
+  .countdown .label{ color:var(--ink-soft); font-size:14px; margin-top:8px; }
+  .countdown input[type="date"]{ border-radius:8px; font-family:var(--f-body); font-size:13px; padding:6px 9px; }
+
+  /* phase timeline */
+  .phase .p-name{ font-family:var(--f-display); font-weight:600; }
+  .phase .p-tag{ background:var(--brick-soft); color:var(--ink); border-radius:999px; padding:2px 10px; }
+  .phase.current::before{ border-color:var(--teal); background:var(--teal); box-shadow:0 0 0 4px var(--teal-soft); }
+
+  /* cards */
+  section.card{ border:1px solid var(--line); border-top:3px solid var(--ink); border-radius:14px; box-shadow:none; padding:28px 28px 30px; background:var(--paper); }
+  section.card.accent-brick{ border-top-color:var(--brick); }
+  section.card.accent-teal{ border-top-color:var(--teal); }
+  section.card h2{ font-size:24px; font-weight:700; margin-bottom:6px; }
+  section.card .card-note{ font-size:14px; color:var(--text-muted); max-width:64ch; }
+  #backupWrap section.card{ background:transparent; border-style:dashed; }
+
+  /* controls */
+  .add-btn, .file-btn{ background:var(--brick); color:var(--ink); border-radius:8px; padding:9px 16px; font-family:var(--f-body); font-weight:700; font-size:13.5px; }
+  .add-btn:hover, .file-btn:hover{ background:#8ED2F5; }
+  .ghost-btn{ border-radius:8px; border-color:var(--line); font-family:var(--f-body); font-weight:700; color:var(--ink); padding:8px 14px; }
+  .ghost-btn:hover{ background:var(--parchment); }
+  input, select, textarea, button{ font-family:inherit; }
+  select.focus-select, input.hours-input, .log-form input, .log-form select, .formula-add-row input, .formula-add-row select,
+  .mistake-add-row input, .mistake-add-row select, .word-add-row input, .word-search, .daily-controls input, .daily-controls select,
+  .practice-controls select, select.formula-subject-select, input.formula-cell, .essay-item textarea{ border-radius:8px; border-color:var(--line); }
+  :focus-visible{ outline:none; box-shadow:var(--focus); }
+  .add-focus-btn{ border-radius:8px; }
+  .entry-x:hover, .del-btn:hover{ color:var(--warn); }
+
+  /* sessions */
+  table.sessions th, table.log th{ font-size:12px; letter-spacing:0; color:var(--text-muted); }
+  table.sessions tr.is-done{ background:linear-gradient(90deg, var(--success-soft), transparent 75%); }
+  .day-cell .dname{ font-family:var(--f-display); font-size:16px; }
+  .week-summary{ font-family:var(--f-body); color:var(--ink-soft); }
+  .week-summary b{ font-family:var(--f-display); font-size:22px; }
+  .focus-chip{ border-radius:999px; background:var(--teal-soft); border-color:transparent; color:var(--ink-soft); }
+  .focus-chip b{ font-family:var(--f-body); color:var(--ink); }
+
+  /* daily maths sheet */
+  .daily-head{ border-bottom-color:var(--ink); }
+  .daily-title{ font-family:var(--f-display); font-weight:700; font-size:22px; }
+  .daily-topic h3{ font-family:var(--f-display); font-weight:600; color:var(--ink-soft); font-size:15px; }
+
+  /* essays */
+  .essay-item{ border-radius:12px; }
+  .essay-theme{ font-family:var(--f-display); font-weight:700; font-size:22px; }
+  .essay-item textarea.essay-question{ font-family:var(--f-math); font-style:normal; font-size:15px; line-height:1.55; }
+  .timer-btn{ font-family:var(--f-body); border-radius:999px; padding:4px 12px; }
+  .timer-btn.is-running{ background:var(--teal-soft); border-color:var(--teal); color:var(--ink); }
+  .timer-btn.is-up{ background:var(--brick); border-color:var(--brick); color:var(--ink); }
+
+  /* words */
+  .word-tab{ font-family:var(--f-body); font-size:15px; }
+  .word-tab.is-active{ border-bottom-color:var(--teal); }
+  .word-badge{ border-radius:999px; background:var(--brick-soft); color:var(--ink-soft); font-family:var(--f-body); font-weight:700; }
+  .word-row .word-term{ font-family:var(--f-display); font-weight:600; font-size:16.5px; }
+  .flashcard{ background:var(--parchment); border-color:var(--line); border-radius:14px; min-height:180px; }
+  .flash-prompt, .flash-answer.is-word{ font-family:var(--f-display); font-weight:700; }
+  .miss-btn{ border-radius:8px; background:var(--brick-soft); border-color:var(--brick); color:var(--ink); }
+  .miss-btn:hover{ background:var(--brick); }
+  .mistake-correct-btn{ border-radius:8px; background:var(--success); }
+
+  /* redo bank */
+  .mistake-card{ border-radius:12px; }
+  .paste-zone{ border-radius:12px; }
+
+  /* formula sheet: maths keeps its serif italic */
+  .formula-item .f-formula, .formula-preview .math-render, .math-render, .table-math-preview, .dm{ font-family:var(--f-math); }
+  .formula-subject-col h3{ font-size:17px; }
+  .formula-item{ border-left-width:3px; }
+
+  /* backup */
+  .backup-last.is-stale{ color:var(--warn); }
+
+  footer{ font-family:var(--f-body); }
+
+  /* formula sheet layout: physics gets two columns, editor folds away */
+  .formula-sheet-output{ grid-template-columns:1fr 1fr 2fr; border-top:none; padding-top:4px; margin-top:6px; }
+  .formula-subject-col.subj-physics{ column-count:2; column-gap:22px; }
+  .formula-subject-col.subj-physics h3{ column-span:all; }
+  .formula-item{ break-inside:avoid; }
+  @media (max-width:900px){ .formula-sheet-output{ grid-template-columns:1fr 1fr; } .formula-subject-col.subj-physics{ grid-column:1 / -1; } }
+  @media (max-width:560px){ .formula-sheet-output{ grid-template-columns:1fr; } .formula-subject-col.subj-physics{ column-count:1; } }
+  details.formula-edit{ margin-top:26px; border-top:1px solid var(--line-soft); padding-top:16px; }
+  details.formula-edit summary{ cursor:pointer; font-family:var(--f-display); font-weight:600; font-size:17px; color:var(--ink); list-style:none; display:flex; align-items:center; gap:8px; }
+  details.formula-edit summary::-webkit-details-marker{ display:none; }
+  details.formula-edit summary::before{ content:"+"; display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--teal-soft); color:var(--ink); font-weight:700; }
+  details.formula-edit[open] summary::before{ content:"−"; }
+  details.formula-edit[open] summary{ margin-bottom:14px; }
+  .formula-edit-count{ font-family:var(--f-body); font-weight:400; color:var(--text-muted); font-size:14px; }
+
+  /* sessions table stacks on phones */
+  @media (max-width:600px){
+    table.sessions thead{ display:none; }
+    table.sessions, table.sessions tbody, table.sessions tr, table.sessions td{ display:block; width:100%; }
+    table.sessions tr{ position:relative; padding:12px 0; border-bottom:1px solid var(--line-soft); }
+    table.sessions td{ border:none; padding:4px 0; }
+    table.sessions td:last-child{ position:absolute; top:14px; right:0; left:auto; width:auto; padding:0; }
+    section.card, section.card.accent-brick, section.card.accent-teal{ padding:20px 18px 22px; }
+    .week-nav{ flex-wrap:wrap; gap:4px; }
+    .countdown{ align-items:flex-start; }
+  }
+
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; animation:none !important; } }
+
+  @media print{
+    body{ background:#fff !important; }
+  }
+
 </style>
 </head>
 <body>
@@ -1035,6 +1174,10 @@
     </div>
     <div class="formula-preview" id="formulaPreview"></div>
 
+    <div class="formula-sheet-output" id="formulaSheetOutput"></div>
+
+    <details class="formula-edit" id="formulaEdit">
+    <summary>Edit formulas <span class="formula-edit-count" id="formulaEditCount"></span></summary>
     <table class="log formula-table">
       <thead>
         <tr>
@@ -1048,8 +1191,7 @@
       </thead>
       <tbody id="formulaRows"></tbody>
     </table>
-
-    <div class="formula-sheet-output" id="formulaSheetOutput"></div>
+    </details>
   </section>
 </div>
 
@@ -1929,7 +2071,8 @@ $('addFormulaBtn').addEventListener('click', ()=>{
   const subject = $('formulaSubjectSelect').value;
   const formula = $('formulaInput').value.trim();
   if(!formula) return;
-  formulaEntries.push({id:newFormulaId(), subject, formula, name:"", example:""});
+  formulaEntries.push({id:newFormulaId(), subject, formula, name:"", def:"", example:""});
+  $('formulaEdit').open = true;
   $('formulaInput').value = "";
   updateFormulaPreview();
   saveFormulaEntries();
@@ -1942,6 +2085,7 @@ $('formulaInput').addEventListener('keydown', e=>{
 
 function renderFormulaSheet(){
   const wrap = $('formulaSheetOutput');
+  const fc = $('formulaEditCount'); if(fc) fc.textContent = `(${formulaEntries.length})`;
   wrap.innerHTML = "";
   const subjects = [
     {key:"Math", cls:"subj-math"},
