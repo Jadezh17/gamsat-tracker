@@ -416,6 +416,7 @@
   }
 
   table.formula-table td{ vertical-align:top; }
+  @media (max-width:760px){ table.formula-table{ display:block; overflow-x:auto; } }
   select.formula-subject-select{
     font-family:"IBM Plex Sans",sans-serif;
     font-size:12px;
@@ -817,6 +818,41 @@
   .miss-btn:hover{ background:var(--brick); }
   .word-empty{ font-size:13px; color:var(--text-muted); font-style:italic; padding:14px 0; }
 
+  /* ===== Backup ===== */
+  .backup-row{ display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:16px; }
+  .backup-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+  .backup-last{ font-size:11.5px; color:var(--text-muted); margin-top:8px; }
+  .backup-last.is-stale{ color:#B5532B; }
+  .restore-confirm{ margin-top:14px; padding:12px 14px; border:1px solid var(--brick); background:var(--brick-soft); border-radius:6px; display:flex; flex-wrap:wrap; align-items:center; gap:10px; font-size:13px; color:var(--ink); }
+  .restore-confirm[hidden]{ display:none; }
+
+  /* ===== Daily essays ===== */
+  .essay-top{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
+  a.essay-link{ text-decoration:none; display:inline-block; }
+  .essay-date{ font-size:12px; color:var(--text-muted); margin-left:auto; }
+  .essay-top{ justify-content:flex-start !important; }
+  .embed-wrap{ margin-bottom:16px; }
+  .embed-wrap[hidden]{ display:none; }
+  .embed-wrap iframe{ width:100%; height:640px; border:1px solid var(--line); border-radius:8px; background:#fff; display:block; }
+  .embed-note{ font-size:12px; color:var(--text-muted); margin-top:6px; line-height:1.45; }
+  .essay-list{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:700px){ .essay-list{ grid-template-columns:1fr; } }
+  .essay-item{ border:1px solid var(--line); border-radius:8px; padding:14px 16px; background:#fff; display:flex; flex-direction:column; gap:8px; }
+  .essay-item.is-done{ background:linear-gradient(180deg, var(--success-soft), #fff 70%); border-color:#BDEBC7; }
+  .essay-kicker{ font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--text-muted); }
+  .essay-theme{ font-family:"Source Serif 4",serif; font-size:20px; font-weight:600; color:var(--ink); }
+  .essay-hint{ font-size:12.5px; color:var(--ink-soft); line-height:1.45; }
+  .essay-item textarea{ width:100%; min-height:84px; resize:vertical; font-family:"Source Serif 4",serif; font-style:italic; font-size:14px; border:1px solid var(--line); border-radius:3px; padding:7px 9px; color:var(--ink); background:var(--parchment); }
+  .essay-label{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:12px; font-weight:600; color:var(--ink); margin-top:4px; }
+  .essay-item textarea.essay-ideas{ font-family:"IBM Plex Sans",sans-serif; font-style:normal; font-size:13.5px; min-height:120px; background:#fff; }
+  .essay-item textarea.essay-question{ min-height:185px; white-space:pre-wrap; }
+  .timer-btn{ font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:3px; padding:4px 10px; cursor:pointer; }
+  .timer-btn.is-running{ background:var(--teal-soft); border-color:var(--teal); }
+  .timer-btn.is-up{ background:var(--brick); border-color:var(--brick); }
+  .claude-confirm{ font-size:12.5px; color:var(--ink-soft); }
+  .essay-done{ display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-soft); }
+  .essay-done input{ width:17px; height:17px; accent-color:var(--teal); }
+
   footer{
     text-align:center;
     font-size:12px;
@@ -885,6 +921,22 @@
       <div class="status-text" id="dailyStatus" style="margin:-8px 2px 10px;"></div>
     </div>
     <div id="dailySheet"></div>
+  </section>
+</div>
+
+<div class="wide-wrap" id="essayWrap">
+  <section class="card accent-teal">
+    <div class="word-head">
+      <h2>Daily Section 2 essays</h2>
+      <span class="word-count mono" id="essayWeek"></span>
+    </div>
+    <div class="card-note">Two essays a day, like the real Section 2. Get a Task A and a Task B question — from Fraser's generator (random mode) or from Claude — then spend 5 minutes on idea generation for each before you write. Aim for about 30 minutes per essay.</div>
+    <div class="essay-top">
+      <button class="add-btn" id="claudePromptBtn" type="button">Claude prompts: Task A + B</button>
+      <a class="ghost-btn essay-link" href="https://www.frasersmedical.com/tools/gamsat-section-2-quote-generator" target="_blank" rel="noopener noreferrer">Fraser's random quote ↗</a>
+      <span class="mono essay-date" id="essayDate"></span>
+    </div>
+    <div class="essay-list" id="essayList"></div>
   </section>
 </div>
 
@@ -998,6 +1050,29 @@
     </table>
 
     <div class="formula-sheet-output" id="formulaSheetOutput"></div>
+  </section>
+</div>
+
+<div class="wide-wrap" id="backupWrap">
+  <section class="card backup-card">
+    <div class="backup-row">
+      <div>
+        <h2>Back up your data</h2>
+        <div class="card-note" style="margin-bottom:0" id="backupNote">Everything on this page is saved in this browser only. Download a backup now and then, and restore it after clearing your browser or on a new device.</div>
+        <div class="backup-last mono" id="backupLast"></div>
+      </div>
+      <div class="backup-actions">
+        <button class="add-btn" id="backupBtn" type="button">Back up everything</button>
+        <label class="ghost-btn" for="restoreFile">Restore from backup</label>
+        <input type="file" id="restoreFile" accept=".json,application/json" style="display:none;">
+      </div>
+    </div>
+    <div class="restore-confirm" id="restoreConfirm" hidden>
+      <span id="restoreSummary"></span>
+      <button class="miss-btn" id="restoreGo" type="button">Replace my data</button>
+      <button class="ghost-btn" id="restoreCancel" type="button">Cancel</button>
+    </div>
+    <div class="status-text" id="backupStatus" style="margin-bottom:0"></div>
   </section>
 </div>
 
@@ -2404,6 +2479,153 @@ async function loadDaily(){
   renderDaily();
 }
 
+// ---- Daily Section 2 essays ----
+const ESSAY_TASKS = [
+  {kicker:"Task A", key:"A", hint:"Socio-political themes. Argue a clear position, weigh the strongest counter-argument, and use concrete real-world examples."},
+  {kicker:"Task B", key:"B", hint:"Personal and social themes. Reflect on the human side through experience, character or a story; show nuance rather than a verdict."}
+];
+// Prompt sets written by Claude in the current GAMSAT Section 2 format: four short, partly
+// conflicting comments, no authors and no theme label (you work out the theme yourself).
+// Themes are drawn from O'Neill's Section 2 book, Fraser's Medical and the r/GAMSAT wiki;
+// the wording of every comment is original.
+const CLAUDE_PROMPTS = { A: [["Laws are only as just as the people who write them.", "A society without rules is not free; it is merely unprotected.", "Obeying an unjust law is a choice, not a duty.", "The more laws a state needs, the less it trusts its citizens."], ["Freedom of speech means little if it only protects the speech we like.", "Words can wound as surely as weapons.", "The answer to bad speech is more speech, not silence.", "Every society limits what may be said; the argument is only about where to draw the line."], ["No one has a right never to be offended.", "A society that fears giving offence soon fears saying anything at all.", "Some words do real harm, and refusing to use them is simple courtesy.", "Outrage has become a way of gaining power rather than a response to injustice."], ["Every new technology solves one problem and quietly creates two more.", "We shape our tools, and then our tools shape us.", "Progress is measured not by what machines can do, but by what people are freed to do.", "The most dangerous technology is the one we stop noticing."], ["A nation is judged by how it treats those with the least.", "Poverty is not a lack of character but a lack of money.", "Wealth earned is a reward; wealth inherited is an accident.", "No amount of charity can substitute for fairness."], ["The purpose of education is to teach people how to think, not what to think.", "Schools exist to prepare workers, not philosophers.", "An educated public is the only real safeguard of democracy.", "Learning ends the moment we believe we already know."], ["The more we learn, the more we realise how little we understand.", "Information is everywhere; understanding is as scarce as ever.", "Knowledge that is never questioned slowly becomes superstition.", "Expertise deserves respect, but not obedience."], ["Science tells us what we can do; it cannot tell us what we should do.", "Every scientific truth began as a heresy.", "Doubt is the engine of science, and certainty its enemy.", "Knowledge is neutral; its uses never are."], ["Majority rule is not the same as justice.", "A vote every few years is a thin kind of freedom.", "Democracy depends less on elections than on citizens who pay attention.", "People get the government they are willing to tolerate."], ["The best government is the one that interferes least in ordinary lives.", "Governments exist to do together what we cannot do alone.", "Every expansion of government power is justified by an emergency and outlives it.", "Distrust of government is healthy; contempt for it is dangerous."], ["Wars are declared by the old and fought by the young.", "Peace is not the absence of conflict but the ability to manage it.", "Some wars are necessary; none are glorious.", "History remembers the victors' reasons and forgets the victims' names."], ["The news tells us less about the world than about what sells.", "A free press is the conscience of a democracy.", "When everyone can publish, no one is responsible for the truth.", "We no longer seek information; we seek agreement."], ["If you have nothing to hide, you have nothing to fear.", "Privacy is the space in which a person becomes themselves.", "Safety bought with surveillance is paid for with freedom.", "We gave away our privacy one convenient click at a time."], ["The planet does not need saving; people do.", "Every generation treats its comforts as rights and its costs as someone else's problem.", "Nature has no voice in parliament.", "Growth that consumes its own foundations is not progress."], ["Wild places are valuable precisely because they are of no use to us.", "Land untouched by people is now the rarest thing on earth.", "We protect the wild so that we can visit it, and in visiting we change it.", "A world without wilderness would be a world without humility."], ["Work gives life structure, and structure gives it meaning.", "A business exists to make a profit; anything else is a hobby.", "We have built a world where people live to work rather than work to live.", "Automation does not destroy jobs; it destroys certainty."], ["Punishment satisfies society more than it reforms the offender.", "Mercy is justice that has learned humility.", "A justice system is judged by how it treats the guilty, not the innocent.", "Prisons are where society hides its failures."], ["A child who is hit learns that force settles arguments.", "Discipline without consequences is only advice.", "Parents, not governments, should decide how their children are disciplined.", "How a society disciplines its children reveals how it intends to govern its adults."], ["Crime is less a failure of individuals than of the communities that raised them.", "Harsher sentences satisfy the public but rarely deter the criminal.", "Most crime is committed out of need rather than malice.", "A society that excuses every crime soon has no victims it is willing to defend."], ["Tradition is the wisdom of the dead offered to the living.", "Every tradition was once a rebellion.", "Progress requires forgetting as much as remembering.", "A society that discards its past loses its sense of direction."], ["Every right we enjoy was once demanded by someone called a troublemaker.", "Protest that inconveniences no one changes nothing.", "Loyalty to a country does not require loyalty to its government.", "Dissent is the highest form of citizenship."], ["Love of country is the first step towards love of humanity.", "Borders are lines drawn by history, not by nature.", "National pride too easily becomes contempt for other nations.", "A country that cannot criticise itself cannot improve itself."], ["A meritocracy rewards talent, but talent is shaped long before anyone is tested.", "Those who succeed come to believe they deserved everything they have.", "Treating everyone the same is not the same as treating everyone fairly.", "Without rewards for merit, there is little reason to strive."], ["Leaders are made by crises, not by elections.", "A good leader takes a little more blame and a little less credit than they deserve.", "People follow confidence long before they follow competence.", "The best leaders make themselves unnecessary."], ["Power reveals character more than it changes it.", "Those who seek power are often the least fit to hold it.", "Power that is never questioned soon becomes abuse.", "Real power is the ability to set the agenda, not to win the argument."], ["Editing our genes is simply medicine reaching its natural conclusion.", "Once we can choose our children's traits, we will no longer accept them as they are.", "Nature has never been a reliable guide to what is good.", "The power to redesign life will belong first to those who can afford it."], ["Disasters do not create inequality; they reveal it.", "Communities are never more united than in the days after a catastrophe.", "Those who build in harm's way should bear the cost of their choice.", "Every natural disaster is partly a human one."], ["A civilisation is measured by how it treats those who cannot repay it.", "Civilisation is a thin coat of paint over our older instincts.", "Every civilisation believes it is the one that will last.", "Comfort is the reward of civilisation and its greatest danger."], ["Sport teaches more about character than any classroom.", "When winning becomes a business, the game stops being a game.", "Elite athletes are entertainers and should be judged as such.", "A nation's passion for sport often stands in for pride in anything else."], ["Travel broadens the mind only of those willing to have it changed.", "Tourists visit places; travellers let places change them.", "Mass tourism destroys the very things it comes to see.", "We travel to escape, then spend the journey looking for home."]], B: [["Happiness is found in pursuit, not in possession.", "Those who chase happiness rarely catch it.", "Contentment is quieter than happiness, and lasts longer.", "A happy life is not one without sorrow but one with meaning."], ["Failure is only final when we stop trying.", "We learn more from one failure than from a dozen successes.", "Fear of failure stops more people than failure itself.", "Some failures are simply failures, and there is no lesson in them."], ["Talent opens doors; persistence keeps them open.", "Knowing when to give up matters as much as knowing how to keep going.", "Most people quit just before their effort begins to pay off.", "Stubbornness and perseverance look the same until the results arrive."], ["To love is to give someone the power to hurt you.", "Love is not a feeling but a decision repeated every day.", "We love people for their flaws as much as for their virtues.", "The love we give matters more than the love we receive."], ["A friend is someone who knows your faults and stays anyway.", "Friendships die from neglect more often than from conflict.", "We choose our friends, and then they make us who we are.", "Hardship shows us which friendships were real."], ["Growing old is a privilege denied to many.", "Wisdom is the reward of age; regret is its tax.", "We become more ourselves as we grow older.", "The fear of ageing is really the fear of becoming invisible."], ["Youth is not an age but a willingness to begin again.", "The young are too quick to judge and too slow to forgive.", "Every generation believes the next has had it too easy.", "We envy the young for the very certainty we once found exhausting."], ["Loneliness is being unseen in a crowd.", "Solitude is where we meet ourselves.", "Those who cannot be alone cannot truly be with others.", "Too much solitude turns reflection into brooding."], ["Childhood shapes us more than any choice we make as adults.", "Children see the world as it is before they learn how it should be.", "Every adult carries the child they once were.", "We idealise childhood because we have forgotten its fears."], ["We do not choose our family, but we choose what it means to us.", "Family is who shows up, not who shares your blood.", "The expectations of family can be both an anchor and a chain.", "Home is where we are known before we explain ourselves."], ["A lasting partnership is built on small acts, not grand declarations.", "Marriage asks two people to promise something neither can foresee.", "We marry the person we love and spend years discovering who they are.", "Commitment is not the loss of freedom but a decision about how to use it."], ["Beauty is noticed in a moment and understood over a lifetime.", "A culture obsessed with beauty has little patience for character.", "The most beautiful things are often the most fleeting.", "Beauty that must be maintained becomes a burden."], ["Laughter is how we survive what we cannot change.", "Humour reveals what a person truly thinks.", "A joke can unite a room or wound a single person in it.", "Taking life too seriously is the surest way to miss it."], ["Honesty without compassion is cruelty.", "A small lie can protect a relationship; a habit of lies destroys it.", "The hardest person to be honest with is yourself.", "Trust is built slowly and lost in a moment."], ["Gossip tells us more about the speaker than about the subject.", "A little gossip binds a group together.", "Words spoken carelessly are repeated carefully.", "We condemn gossip in public and enjoy it in private."], ["Pride in honest work is a virtue; pride in oneself is a trap.", "Pride makes it hard to ask for help and harder to accept it.", "Without some pride, no one would strive to do anything well.", "Wounded pride has started more quarrels than any real injury."], ["Suffering does not ennoble people; it only reveals them.", "Those who have suffered most are often the gentlest.", "No one should be told that their pain will make them stronger.", "Shared suffering creates bonds that comfort never could."], ["Hope is the refusal to accept that the present is permanent.", "False hope is crueller than honest despair.", "Optimists are disappointed more often, but they enjoy the wait.", "To hope is to make yourself vulnerable to disappointment."], ["Nothing is truly original; it is only well disguised.", "Originality begins with the courage to look foolish.", "We praise originality in theory and punish it in practice.", "Copying is how every original mind first learns."], ["Fitting in is the price of belonging, and most people pay it gladly.", "Conformity is comfortable until someone is being wronged.", "A society needs rule-breakers, but it cannot be made only of them.", "Most people would rather be wrong together than right alone."], ["Competition brings out the best in some people and the worst in many.", "Losing teaches what winning conceals.", "The pleasure of winning fades far faster than the sting of losing.", "Playing fairly matters more than finishing first."], ["Compromise is the art of leaving everyone a little unhappy.", "Some principles cannot be cut in half.", "Those who never compromise end up alone.", "Every lasting relationship is a series of quiet compromises."], ["Music says what words cannot and silence will not.", "The songs of our youth outlast the people we heard them with.", "Music is the one language everyone understands and no one can translate.", "We do not choose the music that moves us; it chooses us."], ["Feelings are facts about us, not facts about the world.", "Strong emotions make poor advisers and powerful motivators.", "Hiding our emotions protects us and isolates us at the same time.", "To be ruled by reason alone is to miss half of life."], ["An animal's loyalty asks for nothing but our presence.", "We keep animals so that we can be loved without being judged.", "How a person treats an animal shows who they are when no one is watching.", "A pet teaches a child about love, responsibility and loss."], ["Bullies are made, not born.", "Those who stand by while someone is bullied share in the cruelty.", "Learning to cope with unkindness is part of growing up.", "Online cruelty follows children home in a way playground cruelty never could."], ["Success is defined by others until we decide to define it ourselves.", "Every visible success rests on many invisible failures.", "Success that costs our relationships is not success.", "Ambition without purpose leads to success without satisfaction."], ["Being brave means feeling afraid and acting anyway.", "The bravest thing is often to admit we were wrong.", "Quiet courage is rarely celebrated but often needed.", "Recklessness is too often mistaken for courage."], ["Kindness costs little and is remembered long.", "Being kind is not the same as being nice.", "Small kindnesses shape a life more than grand gestures.", "Kindness without honesty is merely politeness."], ["Fear protects us from danger and from opportunity alike.", "What we fear most is often what we most need to face.", "Fear is contagious; so is calm.", "A life ruled by fear is safe but small."]] };
+const ESSAY_INSTRUCTION = "Consider the following comments and develop a piece of writing in response to one or more of them.";
+const IDEA_SECONDS = 5 * 60;
+let essayState = { date: null, items: [{quote:"", ideas:"", done:false},{quote:"", ideas:"", done:false}] };
+const essayTimers = [null, null];
+
+
+async function loadEssays(){
+  essayState.date = localDateStr(new Date());
+  try{
+    const r = await storage.get('essays:' + essayState.date, false);
+    if(r && r.value){
+      const v = JSON.parse(r.value);
+      // questions saved by an earlier version started with a "Theme: ..." line; drop it
+      const stripTheme = s => String(s||"").replace(/^\s*Theme:[^\n]*\n?/i, "");
+      if(Array.isArray(v.items)) essayState.items = v.items.map(x=>({quote:stripTheme(x.quote), ideas:x.ideas||"", done:!!x.done}));
+    }
+  }catch(e){}
+  renderEssays();
+  renderEssayWeek();
+}
+async function saveEssays(){
+  try{ await storage.set('essays:' + essayState.date, JSON.stringify({items: essayState.items}), false); }catch(e){}
+  renderEssayWeek();
+}
+
+function formatPrompt(taskKey, set){
+  return `${ESSAY_INSTRUCTION}\n\n` + set.map((l,i)=>`${i+1}. ${l}`).join("\n");
+}
+async function pickPrompt(taskKey){
+  const bank = CLAUDE_PROMPTS[taskKey];
+  let used = [];
+  try{ const r = await storage.get('essay-prompts-v2-used-' + taskKey, false); used = r && r.value ? JSON.parse(r.value) : []; }catch(e){}
+  let pool = bank.map((_,i)=>i).filter(i=>!used.includes(i));
+  if(!pool.length){ used = []; pool = bank.map((_,i)=>i); }
+  const idx = pool[Math.floor(Math.random()*pool.length)];
+  used.push(idx);
+  try{ await storage.set('essay-prompts-v2-used-' + taskKey, JSON.stringify(used), false); }catch(e){}
+  return formatPrompt(taskKey, bank[idx]);
+}
+
+let claudeConfirmPending = false;
+$('claudePromptBtn').addEventListener('click', async ()=>{
+  const btn = $('claudePromptBtn');
+  const hasText = essayState.items.some(x=>x.quote.trim());
+  if(hasText && !claudeConfirmPending){
+    claudeConfirmPending = true;
+    btn.textContent = "Replace today's questions? Click again";
+    setTimeout(()=>{ if(claudeConfirmPending){ claudeConfirmPending = false; btn.textContent = "Claude prompts: Task A + B"; } }, 5000);
+    return;
+  }
+  claudeConfirmPending = false;
+  btn.textContent = "Claude prompts: Task A + B";
+  essayState.items[0].quote = await pickPrompt("A");
+  essayState.items[1].quote = await pickPrompt("B");
+  ESSAY_TASKS.forEach((t,i)=>{ const q = document.querySelector(`textarea[data-essay-q="${i}"]`); if(q) q.value = essayState.items[i].quote; });
+  saveEssays();
+});
+
+function timerLabel(i){
+  const t = essayTimers[i];
+  if(!t) return "Start 5:00";
+  const left = Math.max(0, Math.round((t.end - Date.now())/1000));
+  if(left === 0) return "Time's up — write";
+  return `${Math.floor(left/60)}:${String(left%60).padStart(2,"0")} · stop`;
+}
+function paintTimer(i){
+  const btn = document.querySelector(`[data-timer="${i}"]`);
+  if(!btn) return;
+  const t = essayTimers[i];
+  const up = t && t.end <= Date.now();
+  btn.textContent = timerLabel(i);
+  btn.classList.toggle('is-running', !!t && !up);
+  btn.classList.toggle('is-up', !!up);
+}
+function toggleTimer(i){
+  const t = essayTimers[i];
+  if(t){ clearInterval(t.iv); essayTimers[i] = null; paintTimer(i); return; }
+  const timer = { end: Date.now() + IDEA_SECONDS*1000, iv: null };
+  timer.iv = setInterval(()=>{
+    paintTimer(i);
+    if(timer.end <= Date.now()) clearInterval(timer.iv);
+  }, 500);
+  essayTimers[i] = timer;
+  paintTimer(i);
+  const ideas = document.querySelector(`textarea[data-essay-ideas="${i}"]`);
+  if(ideas) ideas.focus();
+}
+
+function renderEssays(){
+  const [y,m,d] = essayState.date.split("-").map(Number);
+  $('essayDate').textContent = new Date(y, m-1, d).toLocaleDateString(undefined,{weekday:"long", day:"numeric", month:"long"});
+  $('essayList').innerHTML = ESSAY_TASKS.map((t,i)=>{
+    const it = essayState.items[i] || {quote:"", ideas:"", done:false};
+    return `<div class="essay-item${it.done?" is-done":""}" data-essay-card="${i}">
+      <div class="essay-theme">${t.kicker}</div>
+      <div class="essay-hint">${t.hint}</div>
+      <div class="essay-label">Question</div>
+      <textarea class="essay-question" data-essay-q="${i}" placeholder="Write or paste the ${t.kicker} question here, or use the Claude prompts button above">${escapeHtml(it.quote)}</textarea>
+      <div class="essay-label">Idea generation <button class="timer-btn" type="button" data-timer="${i}">Start 5:00</button></div>
+      <textarea class="essay-ideas" data-essay-ideas="${i}" placeholder="Your response to which comment? Main argument, counter-argument, 2–3 examples, structure">${escapeHtml(it.ideas)}</textarea>
+      <label class="essay-done"><input type="checkbox" data-essay-done="${i}" ${it.done?"checked":""}> Written</label>
+    </div>`;
+  }).join("");
+  const list = $('essayList');
+  list.querySelectorAll('textarea[data-essay-q]').forEach(el=>{
+    el.addEventListener('change', ()=>{ essayState.items[el.dataset.essayQ].quote = el.value; saveEssays(); });
+  });
+  list.querySelectorAll('textarea[data-essay-ideas]').forEach(el=>{
+    el.addEventListener('change', ()=>{ essayState.items[el.dataset.essayIdeas].ideas = el.value; saveEssays(); });
+  });
+  list.querySelectorAll('[data-timer]').forEach(el=>{
+    el.addEventListener('click', ()=>toggleTimer(parseInt(el.dataset.timer,10)));
+    paintTimer(parseInt(el.dataset.timer,10));
+  });
+  list.querySelectorAll('[data-essay-done]').forEach(el=>{
+    el.addEventListener('change', ()=>{
+      const i = el.dataset.essayDone;
+      essayState.items[i].done = el.checked;
+      list.querySelector(`[data-essay-card="${i}"]`).classList.toggle('is-done', el.checked);
+      saveEssays();
+    });
+  });
+}
+async function renderEssayWeek(){
+  const mon = startOfWeek(new Date());
+  let done = 0;
+  for(let k=0;k<7;k++){
+    const ds = localDateStr(new Date(mon.getTime() + k*DAY_MS));
+    if(ds === essayState.date){ done += essayState.items.filter(x=>x.done).length; continue; }
+    try{
+      const r = await storage.get('essays:' + ds, false);
+      if(r && r.value) done += (JSON.parse(r.value).items || []).filter(x=>x.done).length;
+    }catch(e){}
+  }
+  $('essayWeek').textContent = `${done} essay${done===1?"":"s"} this week`;
+}
+
 // ---- Word notebook ----
 const WORD_SEED = [
  {
@@ -2810,13 +3032,135 @@ $('wordImportFile').addEventListener('change', async e=>{
   }
 });
 
+// ---- Back up / restore everything ----
+const BACKUP_APP = "gamsat-tracker";
+
+async function allStorageKeys(){
+  if(!hasCloudStorage){
+    const keys = [];
+    for(let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      if(k && k.startsWith(LOCAL_PREFIX)) keys.push(k.slice(LOCAL_PREFIX.length));
+    }
+    return keys;
+  }
+  try{
+    if(typeof window.storage.list === "function"){
+      const res = await window.storage.list("", false);
+      const arr = Array.isArray(res) ? res : (res && (res.keys || res.items)) || [];
+      const keys = arr.map(x=> typeof x === "string" ? x : x.key).filter(Boolean);
+      if(keys.length) return keys;
+    }
+  }catch(e){}
+  // fallback: the keys this page knows about
+  const keys = ["exam-date","formula-sheet","formula-seed-v1","formula-seed-v2","word-notebook","word-seed-v1","word-caps-v1","mistakes-index","mock-log","week:"+weekKey];
+  for(let k=0;k<14;k++) keys.push('essays:' + localDateStr(new Date(Date.now() - k*DAY_MS)));
+  keys.push('essay-prompts-v2-used-A', 'essay-prompts-v2-used-B');
+  try{
+    const idx = await storage.get('mistakes-index', false);
+    (idx && idx.value ? JSON.parse(idx.value) : []).forEach(id=>keys.push('mistake:'+id));
+  }catch(e){}
+  return keys;
+}
+
+async function offerFile(filename, text){
+  if(downloadsApi){
+    try{ await downloadsApi.save({filename, data:text}); return "saved"; }
+    catch(err){
+      if(err && err.code === "declined") return "declined";
+      if(err && err.code === "rate_limited") return "busy";
+    }
+  }
+  if(!(window.claude && window.claude.use)){
+    try{
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([text], {type:"application/json"}));
+      a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+      return "saved";
+    }catch(e){}
+  }
+  return "failed";
+}
+
+function showLastBackup(){
+  if(hasCloudStorage) $('backupNote').textContent = "Everything here is saved to your Claude account. Download a backup to keep your own copy, or to move your data to another copy of this tracker (such as your GitHub site).";
+  let last = null;
+  try{ last = localStorage.getItem(LOCAL_PREFIX + 'last-backup'); }catch(e){}
+  const el = $('backupLast');
+  if(!last){ el.textContent = "No backup downloaded from this browser yet."; el.classList.add('is-stale'); return; }
+  const days = Math.floor((Date.now() - new Date(last).getTime()) / DAY_MS);
+  el.textContent = "Last backup: " + fmtShort(last) + (days >= 1 ? ` (${days} day${days===1?"":"s"} ago)` : " (today)");
+  el.classList.toggle('is-stale', days >= 7);
+}
+
+$('backupBtn').addEventListener('click', async ()=>{
+  $('backupStatus').textContent = "Preparing backup…";
+  const data = {};
+  for(const k of await allStorageKeys()){
+    if(k === 'last-backup') continue;
+    try{ const r = await storage.get(k, false); if(r && r.value !== undefined && r.value !== null) data[k] = r.value; }catch(e){}
+  }
+  const payload = JSON.stringify({app:BACKUP_APP, version:1, exported:new Date().toISOString(), data});
+  const name = "gamsat-backup-" + localDateStr(new Date()) + ".json";
+  const res = await offerFile(name, payload);
+  if(res === "saved"){
+    try{ localStorage.setItem(LOCAL_PREFIX + 'last-backup', new Date().toISOString()); }catch(e){}
+    $('backupStatus').textContent = `Saved ${name} (${Object.keys(data).length} items). Keep it somewhere safe, like Google Drive or iCloud.`;
+    showLastBackup();
+  } else if(res === "declined"){
+    $('backupStatus').textContent = "Backup cancelled.";
+  } else if(res === "busy"){
+    $('backupStatus').textContent = "A save prompt is already open — finish that one first.";
+  } else {
+    $('backupStatus').textContent = "Couldn't save a file here. Open the page in your browser and try again.";
+  }
+});
+
+let pendingRestore = null;
+$('restoreFile').addEventListener('change', async e=>{
+  const file = e.target.files && e.target.files[0]; e.target.value = "";
+  if(!file) return;
+  try{
+    const parsed = JSON.parse(await file.text());
+    if(!parsed || parsed.app !== BACKUP_APP || typeof parsed.data !== "object") throw new Error("not a backup");
+    pendingRestore = parsed;
+    const keys = Object.keys(parsed.data);
+    let nWords = 0, nFormulas = 0, nWeeks = keys.filter(k=>k.startsWith('week:')).length, nMistakes = keys.filter(k=>k.startsWith('mistake:')).length;
+    try{ nWords = JSON.parse(parsed.data['word-notebook'] || "[]").length; }catch(err){}
+    try{ nFormulas = JSON.parse(parsed.data['formula-sheet'] || "[]").length; }catch(err){}
+    $('restoreSummary').textContent = `Backup from ${fmtShort(parsed.exported)}: ${nWeeks} week${nWeeks===1?"":"s"} of sessions, ${nWords} words, ${nFormulas} formulas, ${nMistakes} redo screenshots. Restoring replaces those on this page.`;
+    $('restoreConfirm').hidden = false;
+    $('backupStatus').textContent = "";
+  }catch(err){
+    pendingRestore = null;
+    $('restoreConfirm').hidden = true;
+    $('backupStatus').textContent = "That file isn't a backup from this tracker.";
+  }
+});
+$('restoreCancel').addEventListener('click', ()=>{ pendingRestore = null; $('restoreConfirm').hidden = true; });
+$('restoreGo').addEventListener('click', async ()=>{
+  if(!pendingRestore) return;
+  $('restoreGo').disabled = true;
+  $('backupStatus').textContent = "Restoring…";
+  let n = 0;
+  for(const [k, v] of Object.entries(pendingRestore.data)){
+    try{ await storage.set(k, v, false); n++; }catch(e){}
+  }
+  $('backupStatus').textContent = `Restored ${n} items. Reloading…`;
+  setTimeout(()=>location.reload(), 600);
+});
+
 (async function init(){
   await loadExamDate();
   await loadWeek();
   await loadFormulas();
   await loadMistakes();
   await loadDaily();
+  await loadEssays();
   await loadWords();
+  showLastBackup();
 })();
 </script>
 </body>
