@@ -1,0 +1,2823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMSAT Study Chart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#262A4D;
+    --ink-soft:#565983;
+    --parchment:#F6F8FF;
+    --paper:#FFFFFF;
+    --teal:#9FA1FF;
+    --teal-soft:#B5BAFF;
+    --brick:#AEE2FF;
+    --brick-soft:#E4F5FF;
+    --success:#D9F9DF;
+    --success-soft:#EEFCF1;
+    --line:#E1E4F7;
+    --line-soft:#EEF0FB;
+    --text:#262A4D;
+    --text-muted:#6B6E96;
+  }
+  *{box-sizing:border-box;}
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    font-family:"IBM Plex Sans",sans-serif;
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    background-color:var(--parchment);
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size:34px 34px;
+    background-position:-1px -1px;
+  }
+  h1,h2,h3{
+    font-family:"Source Serif 4",serif;
+    margin:0;
+    font-weight:600;
+  }
+  .mono{ font-family:"IBM Plex Mono",monospace; }
+
+  /* ===== Header ===== */
+  header.chart-head{
+    background:
+      radial-gradient(ellipse 900px 220px at 15% -60%, rgba(255,255,255,0.65), transparent 60%),
+      linear-gradient(135deg, var(--teal) 0%, var(--brick) 100%);
+    color:var(--ink);
+    padding:34px clamp(18px,4vw,52px) 26px;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:22px;
+    position:relative;
+  }
+  header.chart-head::after{
+    content:"";
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:4px;
+    background:linear-gradient(90deg, var(--ink) 0%, var(--ink) var(--prog,0%), rgba(255,255,255,0.5) var(--prog,0%));
+  }
+  .wordmark{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    letter-spacing:0.4px;
+  }
+  .wordmark h1{
+    font-size:clamp(30px,4.2vw,42px);
+    letter-spacing:0.2px;
+  }
+  .wordmark .sub{
+    color:var(--ink-soft);
+    font-size:14px;
+    max-width:38ch;
+  }
+  .countdown{
+    text-align:right;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:2px;
+  }
+  .countdown .num{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:clamp(38px,6vw,58px);
+    line-height:1;
+    color:var(--ink);
+    font-weight:600;
+  }
+  .countdown .label{
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+  .countdown input[type="date"]{
+    margin-top:10px;
+    background:rgba(255,255,255,0.55);
+    border:1px solid rgba(38,42,77,0.3);
+    color:var(--ink);
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12px;
+    padding:5px 8px;
+    border-radius:3px;
+    color-scheme:light;
+  }
+
+  /* ===== Phase timeline ===== */
+  .timeline-wrap{
+    padding:26px clamp(18px,4vw,52px) 4px;
+    max-width:1180px;
+    margin:0 auto;
+  }
+  .timeline-wrap{ overflow-x:auto; }
+  .timeline{
+    display:flex;
+    gap:0;
+    position:relative;
+  }
+  .timeline::before{
+    content:"";
+    position:absolute;
+    top:5px;
+    left:0; right:0;
+    height:1px;
+    background:var(--line);
+  }
+  .phase{
+    flex:1;
+    padding:0 14px 0 0;
+    min-width:130px;
+    position:relative;
+  }
+  .phase::before{
+    content:"";
+    position:absolute;
+    top:0; left:0;
+    width:11px; height:11px;
+    border-radius:50%;
+    background:var(--paper);
+    border:2px solid var(--line);
+    transform:translateY(-1px);
+  }
+  .phase.current::before{
+    border-color:var(--teal);
+    background:var(--teal);
+    box-shadow:0 0 0 4px var(--teal-soft);
+  }
+  .phase.done::before{
+    border-color:#8FDB9E;
+    background:var(--success);
+  }
+  .phase-body{ padding-top:16px; padding-left:2px; }
+  .phase .p-name{
+    font-family:"Source Serif 4",serif;
+    font-size:15px;
+    font-weight:600;
+    color:var(--text-muted);
+  }
+  .phase.current .p-name{ color:var(--ink); }
+  .phase .p-range{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:10.5px;
+    color:var(--text-muted);
+    margin-top:2px;
+  }
+  .phase .p-tag{
+    display:inline-block;
+    margin-top:7px;
+    font-size:11px;
+    font-weight:600;
+    color:var(--ink);
+    background:var(--brick-soft);
+    padding:2px 8px;
+    border-radius:3px;
+  }
+
+  /* ===== Layout ===== */
+  main{
+    padding:8px clamp(18px,4vw,52px) 60px;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:26px;
+    max-width:1180px;
+    margin:0 auto;
+  }
+  @media (max-width:860px){
+    main{ grid-template-columns:1fr; }
+  }
+  section.card{
+    background:var(--paper);
+    border-top:3px solid var(--ink);
+    box-shadow:0 1px 0 var(--line-soft);
+    padding:24px 24px 28px;
+    margin-top:26px;
+  }
+  section.card.accent-brick{ border-top-color:var(--brick); }
+  section.card.accent-teal{ border-top-color:var(--teal); }
+  section.card h2{
+    font-size:19px;
+    margin-bottom:4px;
+  }
+  section.card .card-note{
+    font-size:13px;
+    color:var(--text-muted);
+    margin-bottom:18px;
+    max-width:56ch;
+    line-height:1.5;
+  }
+
+  /* ===== Weekly session tracker ===== */
+  .week-nav{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:6px;
+  }
+  .week-nav .wk-label{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12px;
+    color:var(--text-muted);
+  }
+  table.sessions{
+    width:100%;
+    border-collapse:collapse;
+  }
+  table.sessions th{
+    text-align:left;
+    font-size:11px;
+    color:var(--text-muted);
+    font-weight:500;
+    border-bottom:1px solid var(--line-soft);
+    padding:7px 6px;
+  }
+  table.sessions td{
+    border-bottom:1px solid var(--line-soft);
+    padding:11px 6px;
+    font-size:14px;
+    vertical-align:middle;
+  }
+  table.sessions tr:last-child td{ border-bottom:none; }
+  table.sessions tr.is-done{ background:linear-gradient(90deg, var(--success-soft), transparent 70%); }
+  .day-cell{ display:flex; flex-direction:column; }
+  .day-cell .dname{ font-weight:600; }
+  .day-cell .ddate{ font-size:11px; color:var(--text-muted); font-family:"IBM Plex Mono",monospace;}
+  select.focus-select{
+    font-family:"IBM Plex Sans",sans-serif;
+    font-size:13px;
+    border:1px solid var(--line);
+    background:#fff;
+    padding:6px 7px;
+    border-radius:3px;
+    width:100%;
+    max-width:190px;
+  }
+  input.hours-input{
+    width:54px;
+    font-family:"IBM Plex Mono",monospace;
+    font-size:13px;
+    border:1px solid var(--line);
+    background:#fff;
+    padding:6px 7px;
+    border-radius:3px;
+    text-align:center;
+  }
+  input[type="checkbox"].done-check{
+    width:19px;height:19px;
+    accent-color:var(--teal);
+    cursor:pointer;
+  }
+  .week-summary{
+    margin-top:16px;
+    display:flex;
+    gap:26px;
+    font-family:"IBM Plex Mono",monospace;
+    font-size:13px;
+    color:var(--ink-soft);
+    border-top:1px solid var(--line-soft);
+    padding-top:14px;
+  }
+  .week-summary b{ color:var(--ink); font-size:16px; font-weight:600; }
+
+  .focus-entries{ display:flex; flex-direction:column; gap:6px; }
+  .focus-entry{ display:flex; align-items:center; gap:6px; }
+  .focus-entry select.focus-select{ max-width:none; flex:1; min-width:0; }
+  .entry-x{ background:none; border:none; color:var(--text-muted); font-size:16px; line-height:1; cursor:pointer; padding:2px 6px; }
+  .entry-x:hover{ color:var(--ink); }
+  .add-focus-btn{ align-self:flex-start; background:none; border:1px dashed var(--line); color:var(--ink-soft); border-radius:3px; padding:4px 9px; font-size:12px; cursor:pointer; font-family:"IBM Plex Sans",sans-serif; }
+  .add-focus-btn:hover{ border-color:var(--teal); color:var(--ink); }
+  table.sessions td{ vertical-align:top; }
+  table.sessions td:last-child{ padding-top:16px; }
+  .focus-totals{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .focus-chip{ font-size:12px; background:var(--parchment); border:1px solid var(--line-soft); border-radius:3px; padding:4px 9px; color:var(--ink-soft); }
+  .focus-chip b{ font-family:"IBM Plex Mono",monospace; color:var(--ink); font-weight:600; margin-left:4px; }
+
+  /* ===== Mock log ===== */
+  .log-form{
+    display:grid;
+    grid-template-columns:0.8fr 0.9fr 1fr 0.7fr auto;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  @media (max-width:620px){
+    .log-form{ grid-template-columns:1fr 1fr; }
+  }
+  .log-form input, .log-form select{
+    font-family:"IBM Plex Sans",sans-serif;
+    font-size:13px;
+    border:1px solid var(--line);
+    background:#fff;
+    padding:8px 9px;
+    border-radius:3px;
+  }
+  .add-btn{
+    background:var(--brick);
+    color:var(--ink);
+    border:none;
+    border-radius:3px;
+    padding:8px 14px;
+    font-size:13px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .add-btn:hover{ background:#8ED2F5; }
+  table.log{
+    width:100%;
+    border-collapse:collapse;
+  }
+  table.log th{
+    text-align:left;
+    font-size:11px;
+    color:var(--text-muted);
+    font-weight:500;
+    border-bottom:1px solid var(--line-soft);
+    padding:6px 6px;
+  }
+  table.log td{
+    font-size:13px;
+    padding:8px 6px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .score-pill{
+    font-family:"IBM Plex Mono",monospace;
+    background:var(--brick-soft);
+    color:var(--ink-soft);
+    padding:2px 7px;
+    border-radius:3px;
+    font-size:12px;
+  }
+  .del-btn{
+    background:none;
+    border:none;
+    color:var(--text-muted);
+    cursor:pointer;
+    font-size:12px;
+    padding:2px 4px;
+    text-decoration:underline;
+  }
+  .del-btn:hover{ color:var(--brick); }
+  .empty-row td{
+    color:var(--text-muted);
+    font-style:italic;
+    font-size:13px;
+    padding:14px 6px;
+  }
+
+  /* ===== Formula sheet builder ===== */
+  .wide-wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 clamp(18px,4vw,52px) 10px;
+  }
+  .formula-add-row{
+    display:grid;
+    grid-template-columns:130px 1fr auto;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  @media (max-width:560px){
+    .formula-add-row{ grid-template-columns:1fr 1fr; }
+    .formula-add-row button{ grid-column:1 / -1; }
+  }
+  .formula-add-row select, .formula-add-row input{
+    font-family:"IBM Plex Sans",sans-serif;
+    font-size:13px;
+    border:1px solid var(--line);
+    background:#fff;
+    padding:8px 9px;
+    border-radius:3px;
+  }
+  .formula-preview{
+    font-size:13px;
+    color:var(--text-muted);
+    min-height:18px;
+    margin:-6px 2px 16px;
+    line-height:1.5;
+    font-family:"IBM Plex Sans",sans-serif;
+  }
+  .formula-preview.is-found{ color:var(--ink-soft); }
+  .formula-preview .math-render{
+    font-family:"Source Serif 4", serif;
+    font-style:italic;
+    font-size:1.1em;
+    color:var(--ink);
+  }
+
+  table.formula-table td{ vertical-align:top; }
+  select.formula-subject-select{
+    font-family:"IBM Plex Sans",sans-serif;
+    font-size:12px;
+    border:1px solid var(--line);
+    background:#fff;
+    padding:5px 6px;
+    border-radius:3px;
+    width:100%;
+  }
+  input.formula-cell{
+    width:100%;
+    font-family:"IBM Plex Mono",monospace;
+    font-size:13px;
+    border:1px solid var(--line);
+    background:#fff;
+    padding:6px 7px;
+    border-radius:3px;
+  }
+  .table-math-preview{
+    margin-top:5px;
+    padding:2px 2px 0;
+    font-size:14px;
+    color:var(--ink-soft);
+    min-height:18px;
+    line-height:1.4;
+  }
+  input.formula-name-cell, .formula-example-cell{
+    width:100%;
+    font-family:"IBM Plex Sans",sans-serif;
+    font-size:13px;
+    border:1px solid var(--line-soft);
+    background:var(--parchment);
+    padding:6px 7px;
+    border-radius:3px;
+  }
+  input.formula-name-cell::placeholder, .formula-example-cell::placeholder{
+    color:var(--text-muted);
+    font-style:italic;
+  }
+  /* formula formatting: fractions, exponents, subscripts, roots */
+  .frac{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    vertical-align:middle;
+    font-size:0.85em;
+    line-height:1.15;
+    margin:0 2px;
+  }
+  .frac .num{ padding:0 3px; border-bottom:1.4px solid currentColor; }
+  .frac .den{ padding:0 3px; }
+  .formula-item .f-formula sup, .formula-preview sup,
+  table.formula-table sup{ font-size:0.68em; vertical-align:super; }
+  .formula-item .f-formula sub, .formula-preview sub,
+  table.formula-table sub{ font-size:0.68em; vertical-align:sub; }
+  .sqrt{ white-space:nowrap; }
+  .sqrt-inner{ border-top:1.4px solid currentColor; padding:0 2px; margin-left:1px; }
+
+  .formula-sheet-output{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:20px;
+    border-top:1px solid var(--line-soft);
+    padding-top:20px;
+  }
+  @media (max-width:760px){
+    .formula-sheet-output{ grid-template-columns:1fr; }
+  }
+  .formula-subject-col h3{
+    font-size:15px;
+    margin-bottom:10px;
+    padding-bottom:6px;
+    border-bottom:2px solid var(--col-accent, var(--line));
+  }
+  .formula-subject-col.subj-math{ --col-accent: var(--teal); }
+  .formula-subject-col.subj-chemistry{ --col-accent: var(--brick); }
+  .formula-subject-col.subj-physics{ --col-accent: #8FDB9E; }
+  .formula-item{
+    border-left:3px solid var(--col-accent, var(--line));
+    padding:6px 0 6px 10px;
+    margin-bottom:12px;
+  }
+  .formula-item .f-formula{
+    font-family:"Source Serif 4", serif;
+    font-style:italic;
+    font-size:17px;
+    font-weight:600;
+    color:var(--ink);
+    line-height:1.5;
+  }
+  .formula-item .f-name{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+  textarea.formula-example-cell{ resize:vertical; line-height:1.4; min-width:150px; }
+  .formula-item .f-def{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:3px;
+    line-height:1.45;
+  }
+  .formula-item .f-example{
+    font-size:12px;
+    color:var(--text-muted);
+    margin-top:3px;
+    font-style:italic;
+    line-height:1.4;
+  }
+  .formula-empty{
+    font-size:13px;
+    color:var(--text-muted);
+    font-style:italic;
+  }
+
+  /* ===== Redo bank (mistake screenshots) ===== */
+  .mistake-add-row{
+    display:grid;
+    grid-template-columns:130px 1fr auto;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  @media (max-width:560px){
+    .mistake-add-row{ grid-template-columns:1fr 1fr; }
+    .mistake-add-row .file-btn{ grid-column:1 / -1; text-align:center; }
+  }
+  .mistake-add-row select, .mistake-add-row input[type="text"]{
+    font-family:"IBM Plex Sans",sans-serif;
+    font-size:13px;
+    border:1px solid var(--line);
+    background:#fff;
+    padding:8px 9px;
+    border-radius:3px;
+  }
+  .file-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--brick);
+    color:var(--ink);
+    font-size:13px;
+    font-weight:600;
+    border-radius:3px;
+    padding:8px 14px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .file-btn:hover{ background:#8ED2F5; }
+
+  .paste-zone{
+    border:1.5px dashed var(--line);
+    border-radius:6px;
+    padding:22px 16px;
+    text-align:center;
+    font-size:13px;
+    color:var(--text-muted);
+    cursor:pointer;
+    margin-bottom:4px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .paste-zone:focus{ outline:none; border-color:var(--teal); background:var(--teal-soft); }
+  .paste-zone.drag-over{ border-color:var(--teal); background:var(--teal-soft); }
+
+  .status-text{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12px;
+    color:var(--text-muted);
+    min-height:16px;
+    margin:6px 2px 18px;
+  }
+
+  .mistake-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(210px, 1fr));
+    gap:16px;
+  }
+  .mistake-card{
+    border:1px solid var(--line-soft);
+    border-radius:6px;
+    overflow:hidden;
+    background:#fff;
+    display:flex;
+    flex-direction:column;
+  }
+  .mistake-thumb{
+    width:100%;
+    height:150px;
+    object-fit:cover;
+    cursor:zoom-in;
+    display:block;
+    background:var(--parchment);
+  }
+  .mistake-body{ padding:10px 12px 12px; }
+  .mistake-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:6px;
+  }
+  .mistake-subject-tag{
+    font-size:11px;
+    font-weight:600;
+    padding:2px 8px;
+    border-radius:3px;
+    color:var(--ink);
+  }
+  .mistake-subject-tag.subj-math{ background:var(--teal-soft); }
+  .mistake-subject-tag.subj-chemistry{ background:var(--brick-soft); }
+  .mistake-subject-tag.subj-physics{ background:var(--success-soft); }
+  .mistake-subject-tag.subj-other{ background:var(--line-soft); }
+  .mistake-date{
+    font-size:11px;
+    color:var(--text-muted);
+  }
+  .mistake-note{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:10px;
+    line-height:1.4;
+  }
+  .mistake-actions{
+    display:flex;
+    gap:8px;
+  }
+  .mistake-correct-btn{
+    flex:1;
+    background:var(--success);
+    color:var(--ink);
+    border:none;
+    border-radius:3px;
+    padding:7px 8px;
+    font-size:12.5px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .mistake-correct-btn:hover{ background:#C3F0CC; }
+
+  .lightbox-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(20,18,30,0.82);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:999;
+    padding:30px;
+  }
+  .lightbox-overlay.is-open{ display:flex; }
+  .lightbox-overlay img{
+    max-width:92vw;
+    max-height:88vh;
+    border-radius:4px;
+    box-shadow:0 8px 40px rgba(0,0,0,0.4);
+  }
+  .lightbox-close{
+    position:absolute;
+    top:18px; right:24px;
+    background:rgba(255,255,255,0.15);
+    color:#fff;
+    border:none;
+    width:36px; height:36px;
+    border-radius:50%;
+    font-size:20px;
+    line-height:1;
+    cursor:pointer;
+  }
+  .lightbox-close:hover{ background:rgba(255,255,255,0.3); }
+
+  /* ===== Accuracy graphs ===== */
+  .graph-block{ margin-bottom:26px; }
+  .graph-block:last-child{ margin-bottom:0; }
+  .graph-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:8px;
+  }
+  .graph-top .gname{ font-weight:600; font-size:14px; }
+  .graph-top .gstats{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12px;
+    color:var(--text-muted);
+  }
+  .graph-top .gstats b{ color:var(--teal); font-weight:600; }
+  svg.trend{
+    width:100%;
+    height:auto;
+    display:block;
+    overflow:visible;
+  }
+  .trend .gridline{ stroke:var(--line-soft); stroke-width:1; }
+  .trend .axis-label{ font-family:"IBM Plex Mono",monospace; font-size:8.5px; fill:var(--text-muted); }
+  .trend .trend-line{ fill:none; stroke-width:2.2; }
+  .trend .trend-dot{ }
+  .trend .avg-line{ stroke-dasharray:3 3; stroke-width:1; opacity:0.6; }
+  .trend .empty-msg{ font-family:"IBM Plex Sans",sans-serif; font-size:12px; fill:var(--text-muted); font-style:italic; }
+
+
+  /* ===== Formula rendering (shared by the formula sheet and the daily maths sheet) ===== */
+  .m-up{ font-style:normal; }
+  .sqrt-inner{ display:inline-block; line-height:1.25; }
+  .frac .frac{ font-size:0.92em; }
+  .table-math-preview{ font-family:"Source Serif 4",serif; font-style:italic; font-size:15px; color:var(--ink); }
+  .dm{ font-family:"Source Serif 4",serif; font-style:italic; font-size:1.06em; white-space:nowrap; }
+  .dm.dm-up{ font-style:normal; }
+  .dm sup, .math-render sup{ font-size:0.68em; vertical-align:super; line-height:0; }
+  .dm sub, .math-render sub{ font-size:0.68em; vertical-align:sub; line-height:0; }
+
+  /* ===== Daily maths sheet ===== */
+  .daily-controls{
+    display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px;
+    margin-bottom:18px;
+  }
+  .daily-controls label{ font-size:12.5px; color:var(--ink-soft); display:flex; align-items:center; gap:6px; }
+  .daily-controls input[type="date"], .daily-controls select{
+    font-family:"IBM Plex Sans",sans-serif; font-size:13px;
+    border:1px solid var(--line); background:#fff; padding:7px 8px; border-radius:3px; color:var(--ink);
+  }
+  .daily-controls input[type="checkbox"]{ width:16px; height:16px; accent-color:var(--teal); }
+  .ghost-btn{
+    background:#fff; color:var(--ink); border:1px solid var(--line); border-radius:3px;
+    padding:7px 12px; font-size:13px; font-weight:600; cursor:pointer;
+  }
+  .ghost-btn:hover{ background:var(--parchment); }
+  .daily-controls .spacer{ flex:1; }
+  #dailySheet{ border-top:1px solid var(--line-soft); padding-top:18px; }
+  .daily-head{
+    display:flex; justify-content:space-between; align-items:flex-end; gap:16px;
+    border-bottom:2px solid var(--ink); padding-bottom:8px; margin-bottom:6px;
+  }
+  .daily-title{ font-family:"Source Serif 4",serif; font-size:20px; font-weight:600; }
+  .daily-meta, .daily-score{ font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--text-muted); }
+  .daily-score{ white-space:nowrap; }
+  .daily-topic{ margin-top:16px; }
+  .daily-topic h3{
+    font-size:14px; color:var(--ink-soft); padding-bottom:4px; margin-bottom:6px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .daily-q{ display:flex; gap:10px; font-size:14px; line-height:1.9; padding:5px 0; }
+  .daily-q .daily-n{ font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--text-muted); min-width:24px; text-align:right; }
+  .daily-answers{ display:none; margin-top:30px; }
+  .daily-answers.is-open{ display:block; }
+  .daily-a{ color:var(--ink-soft); }
+  .daily-a b{ color:var(--ink); }
+  @media (max-width:560px){ .dm{ white-space:normal; } }
+
+  @media print{
+    body.print-daily{ background:#fff !important; }
+    body.print-daily > *:not(#dailyWrap){ display:none !important; }
+    body.print-daily #dailyWrap{ padding:0; max-width:none; }
+    body.print-daily #dailyWrap section.card{ border:none; box-shadow:none; padding:0; margin:0; }
+    body.print-daily .no-print{ display:none !important; }
+    body.print-daily #dailySheet{ border-top:none; padding-top:0; }
+    body.print-daily .daily-q{ break-inside:avoid; font-size:11.5pt; }
+    body.print-daily .daily-topic > .daily-q:not(.daily-a){ padding-bottom:34px; }
+    body.print-daily .daily-topic h3{ break-after:avoid; }
+    body.print-daily .daily-answers{ display:block !important; break-before:page; margin-top:0; }
+    body.print-daily.no-answers .daily-answers{ display:none !important; }
+    body.print-daily .daily-a{ font-size:10.5pt; }
+    @page{ margin:16mm 15mm; }
+  }
+
+  /* ===== Word notebook ===== */
+  .word-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+  .word-count{ font-size:12px; color:var(--text-muted); }
+  .word-tabs{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; border-bottom:1px solid var(--line-soft); padding-bottom:10px; margin-bottom:4px; }
+  .word-tabs .spacer{ flex:1; }
+  .word-tab{ background:none; border:none; border-bottom:2px solid transparent; padding:6px 4px; margin-right:10px; font-family:"IBM Plex Sans",sans-serif; font-size:14px; font-weight:600; color:var(--text-muted); cursor:pointer; }
+  .word-tab.is-active{ color:var(--ink); border-bottom-color:var(--teal); }
+  .word-badge{ font-family:"IBM Plex Mono",monospace; font-size:11px; background:var(--brick-soft); color:var(--ink-soft); border-radius:3px; padding:1px 6px; }
+  .word-badge:empty{ display:none; }
+  label.ghost-btn{ display:inline-flex; align-items:center; }
+  .word-add-row{ display:grid; grid-template-columns:200px 1fr auto; gap:8px; }
+  @media (max-width:620px){ .word-add-row{ grid-template-columns:1fr; } }
+  .word-add-row input, .word-search, .practice-controls select{ font-family:"IBM Plex Sans",sans-serif; font-size:13px; border:1px solid var(--line); background:#fff; padding:8px 9px; border-radius:3px; color:var(--ink); }
+  .word-hint{ font-size:12px; color:var(--text-muted); margin:6px 2px 14px; }
+  .word-search{ width:100%; max-width:320px; margin-bottom:10px; }
+  .word-list{ display:flex; flex-direction:column; }
+  .word-row{ display:grid; grid-template-columns:200px 1fr auto; gap:10px; align-items:start; padding:9px 0; border-bottom:1px solid var(--line-soft); }
+  @media (max-width:620px){ .word-row{ grid-template-columns:1fr auto; } .word-row .word-def{ grid-column:1 / -1; grid-row:2; } }
+  .word-row input, .word-row textarea{ width:100%; border:1px solid transparent; background:transparent; border-radius:3px; padding:4px 6px; font-family:"IBM Plex Sans",sans-serif; color:var(--ink); resize:none; }
+  .word-row input:hover, .word-row textarea:hover{ border-color:var(--line-soft); }
+  .word-row input:focus, .word-row textarea:focus{ outline:none; border-color:var(--teal); background:#fff; }
+  .word-row .word-term{ font-family:"Source Serif 4",serif; font-size:16px; font-weight:600; }
+  .word-row .word-def{ font-size:13.5px; line-height:1.45; color:var(--ink-soft); min-height:28px; }
+  .word-miss-tag{ font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--text-muted); white-space:nowrap; padding-top:7px; }
+  .practice-controls{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; margin:12px 0 14px; font-size:12.5px; color:var(--ink-soft); }
+  .practice-controls label{ display:flex; align-items:center; gap:6px; }
+  .practice-controls .spacer{ flex:1; }
+  .practice-score{ font-size:12px; color:var(--text-muted); }
+  .flashcard{ border:1px solid var(--line); border-radius:8px; background:var(--parchment); min-height:150px; padding:28px 22px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:14px; }
+  .flash-prompt{ font-family:"Source Serif 4",serif; font-size:24px; font-weight:600; color:var(--ink); line-height:1.3; max-width:60ch; }
+  .flash-prompt.is-def{ font-family:"IBM Plex Sans",sans-serif; font-size:16px; font-weight:400; }
+  .flash-answer{ font-size:15px; color:var(--ink-soft); max-width:60ch; line-height:1.5; border-top:1px solid var(--line); padding-top:12px; }
+  .flash-answer.is-word{ font-family:"Source Serif 4",serif; font-size:22px; font-weight:600; color:var(--ink); }
+  .practice-actions{ display:flex; gap:8px; justify-content:center; margin-top:14px; flex-wrap:wrap; }
+  .practice-actions .mistake-correct-btn{ flex:0 0 auto; padding:7px 18px; }
+  .miss-btn{ background:var(--brick-soft); color:var(--ink); border:1px solid var(--brick); border-radius:3px; padding:7px 18px; font-size:12.5px; font-weight:600; cursor:pointer; }
+  .miss-btn:hover{ background:var(--brick); }
+  .word-empty{ font-size:13px; color:var(--text-muted); font-style:italic; padding:14px 0; }
+
+  footer{
+    text-align:center;
+    font-size:12px;
+    color:var(--text-muted);
+    padding:0 20px 34px;
+    font-family:"IBM Plex Mono",monospace;
+  }
+</style>
+</head>
+<body>
+
+<header class="chart-head" id="headerEl">
+  <div class="wordmark">
+    <div class="eyebrow">Section 1 &middot; Section 2 &middot; Section 3</div>
+    <h1>GAMSAT Study Chart</h1>
+    <div class="sub">Six-month plan built around full-time work &mdash; Mon / Wed / Thu evenings plus one weekend day.</div>
+  </div>
+  <div class="countdown">
+    <div class="num mono" id="daysLeft">--</div>
+    <div class="label">days to sitting</div>
+    <input type="date" id="examDate">
+  </div>
+</header>
+
+<div class="timeline-wrap">
+  <div class="timeline" id="timeline"></div>
+</div>
+
+<main>
+  <div>
+    <section class="card accent-teal">
+      <div class="week-nav">
+        <h2>This week's sessions</h2>
+        <div class="wk-label" id="weekLabel">Week of --</div>
+      </div>
+      <div class="card-note">Tuesdays, Friday evenings, and one weekend day stay off. Log each thing you studied with its hours (add as many as you did in a day); the totals by focus add up below.</div>
+      <table class="sessions">
+        <thead>
+          <tr><th style="width:18%">Day</th><th>Focus and hours</th><th style="width:34px">Done</th></tr>
+        </thead>
+        <tbody id="sessionRows"></tbody>
+      </table>
+      <div class="week-summary">
+        <div>Sessions done <b id="sessDone">0/4</b></div>
+        <div>Hours logged <b id="hrsDone">0</b></div>
+      </div>
+      <div class="focus-totals" id="focusTotals"></div>
+    </section>
+
+  </div>
+</main>
+
+<div class="wide-wrap" id="dailyWrap">
+  <section class="card accent-teal">
+    <div class="no-print">
+      <h2>Daily maths sheet</h2>
+      <div class="card-note">A fresh no-calculator set every day, three questions from each of the eight maths topics: arithmetic, proportion, algebra, logs, graphs, units, trigonometry and probability. The questions change with the date, so today's sheet is the same whenever you open it and tomorrow's is new. Save it as a PDF to print or annotate; answers go on their own page.</div>
+      <div class="daily-controls">
+        <label>Date <input type="date" id="dailyDate"></label>
+        <button class="ghost-btn" id="dailyToday" type="button">Today</button>
+        <span class="spacer"></span>
+        <button class="ghost-btn" id="dailyToggleAnswers" type="button">Show answers</button>
+        <label><input type="checkbox" id="dailyIncludeAnswers" checked> Answers in PDF</label>
+        <button class="add-btn" id="dailyPdfBtn" type="button">Save as PDF</button>
+      </div>
+      <div class="status-text" id="dailyStatus" style="margin:-8px 2px 10px;"></div>
+    </div>
+    <div id="dailySheet"></div>
+  </section>
+</div>
+
+<div class="wide-wrap" id="wordWrap">
+  <section class="card accent-brick">
+    <div class="word-head">
+      <h2>BIG SCARY WORDS</h2>
+      <span class="word-count mono" id="wordCount">0 words</span>
+    </div>
+    <div class="card-note">Vocabulary for Sections 1 and 2. Add a word and its meaning, quiz yourself in Practice, and anything you miss lands in Mistakes until you get it right twice in a row.</div>
+
+    <div class="word-tabs" role="tablist">
+      <button class="word-tab is-active" data-tab="library" role="tab" type="button">Library</button>
+      <button class="word-tab" data-tab="practice" role="tab" type="button">Practice</button>
+      <button class="word-tab" data-tab="mistakes" role="tab" type="button">Mistakes <span id="mistakeBadge" class="word-badge"></span></button>
+      <span class="spacer"></span>
+      <button class="ghost-btn" id="wordExportBtn" type="button">Export words</button>
+      <label class="ghost-btn" for="wordImportFile">Import words</label>
+      <input type="file" id="wordImportFile" accept=".csv,.txt,.json,.tsv" style="display:none;">
+    </div>
+    <div class="status-text" id="wordStatus"></div>
+
+    <div class="word-panel" id="panel-library">
+      <div class="word-add-row">
+        <input type="text" id="wordInput" placeholder="Word or phrase" autocomplete="off">
+        <input type="text" id="defInput" placeholder="Definition" autocomplete="off">
+        <button class="add-btn" id="addWordBtn" type="button">Add word</button>
+      </div>
+      <div class="word-hint">Press Enter in the word field to jump to the definition.</div>
+      <input type="text" id="wordSearch" class="word-search" placeholder="Search your words" autocomplete="off">
+      <div id="wordList" class="word-list"></div>
+    </div>
+
+    <div class="word-panel" id="panel-practice" hidden>
+      <div class="practice-controls">
+        <label>Show <select id="practiceMode"><option value="word">word → guess meaning</option><option value="def">meaning → guess word</option></select></label>
+        <label><input type="checkbox" id="practiceMistakesOnly"> Mistakes only</label>
+        <span class="spacer"></span>
+        <span class="mono practice-score" id="practiceScore"></span>
+      </div>
+      <div class="flashcard" id="flashcard">
+        <div class="flash-prompt" id="flashPrompt"></div>
+        <div class="flash-answer" id="flashAnswer" hidden></div>
+      </div>
+      <div class="practice-actions">
+        <button class="ghost-btn" id="revealBtn" type="button">Reveal</button>
+        <button class="mistake-correct-btn" id="gotItBtn" type="button" hidden>Got it</button>
+        <button class="miss-btn" id="missedBtn" type="button" hidden>Missed it</button>
+        <button class="ghost-btn" id="skipBtn" type="button">Skip</button>
+      </div>
+    </div>
+
+    <div class="word-panel" id="panel-mistakes" hidden>
+      <div id="mistakeWordList" class="word-list"></div>
+    </div>
+  </section>
+</div>
+
+<div class="wide-wrap">
+  <section class="card">
+    <h2>Redo bank</h2>
+    <div class="card-note">Screenshot a question you got wrong and drop it in below — paste it (click the box first, then Ctrl/Cmd+V), drag an image in, or upload a file. Come back and redo it whenever you like. Once you get it right, mark it done and it disappears.</div>
+
+    <div class="mistake-add-row">
+      <select id="mistakeSubjectSelect">
+        <option>Physics</option>
+        <option>Chemistry</option>
+        <option>Math</option>
+        <option>Other</option>
+      </select>
+      <input type="text" id="mistakeNoteInput" placeholder="optional note — topic, why you got it wrong">
+      <label class="file-btn" for="mistakeFileInput">Upload image</label>
+      <input type="file" id="mistakeFileInput" accept="image/*" multiple style="display:none;">
+    </div>
+
+    <div class="paste-zone" id="pasteZone" tabindex="0">Click here, then paste a screenshot — or drag an image in</div>
+    <div class="status-text" id="mistakeStatus"></div>
+
+    <div class="mistake-grid" id="mistakeGrid"></div>
+  </section>
+</div>
+
+<div class="wide-wrap">
+  <section class="card">
+    <h2>Formula sheet builder</h2>
+    <div class="card-note">Every built-in formula has been checked and has a name, what its symbols mean, and a worked example; edit any cell and it saves. Type a new formula using plain text — <span class="mono">/</span> for a fraction, <span class="mono">^</span> for an exponent, <span class="mono">_</span> for a subscript (e.g. "1/2 mv^2", "H_2O"). For a fraction with more than one term on top or bottom, wrap it in brackets, e.g. "(Gm1m2)/(r^2)". You can also write <span class="mono">sqrt(...)</span> for a root, Greek letters by name (pi, theta, Delta, lambda), charges like "SO4^2-", and <span class="mono">-&gt;</span> for an arrow. It's formatted the moment you add it, right here in the browser — no lookups, nothing sent anywhere.</div>
+
+    <div class="formula-add-row">
+      <select id="formulaSubjectSelect">
+        <option>Physics</option>
+        <option>Chemistry</option>
+        <option>Math</option>
+      </select>
+      <input type="text" id="formulaInput" placeholder="e.g. 1/2 mv^2" autocomplete="off">
+      <button class="add-btn" id="addFormulaBtn">Add</button>
+    </div>
+    <div class="formula-preview" id="formulaPreview"></div>
+
+    <table class="log formula-table">
+      <thead>
+        <tr>
+          <th style="width:80px">Subject</th>
+          <th style="width:150px">Formula</th>
+          <th>Name</th>
+          <th>What it means</th>
+          <th>Example</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="formulaRows"></tbody>
+    </table>
+
+    <div class="formula-sheet-output" id="formulaSheetOutput"></div>
+  </section>
+</div>
+
+<div class="lightbox-overlay" id="lightboxOverlay">
+  <button class="lightbox-close" id="lightboxClose">&times;</button>
+  <img id="lightboxImg" src="" alt="enlarged screenshot">
+</div>
+
+<footer id="storageFooter">logged to your account &middot; nothing shared</footer>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+// ---- Storage layer: uses Claude's window.storage when available (hosted),
+// falls back to the browser's localStorage when this file is opened locally. ----
+const LOCAL_PREFIX = 'gamsat-tracker:';
+const hasCloudStorage = (typeof window !== 'undefined') && !!window.storage;
+
+const storage = {
+  async get(key, shared=false){
+    if(hasCloudStorage){
+      return await window.storage.get(key, shared);
+    }
+    const raw = localStorage.getItem(LOCAL_PREFIX + key);
+    return raw === null ? null : { key, value: raw, shared };
+  },
+  async set(key, value, shared=false){
+    if(hasCloudStorage){
+      return await window.storage.set(key, value, shared);
+    }
+    localStorage.setItem(LOCAL_PREFIX + key, value);
+    return { key, value, shared };
+  },
+  async delete(key, shared=false){
+    if(hasCloudStorage){
+      return await window.storage.delete(key, shared);
+    }
+    localStorage.removeItem(LOCAL_PREFIX + key);
+    return { key, deleted:true, shared };
+  }
+};
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  const f = document.getElementById('storageFooter');
+  if(f) f.textContent = hasCloudStorage
+    ? "logged to your account · nothing shared"
+    : "saved locally in this browser · nothing leaves your computer";
+});
+
+const DAY_MS = 86400000;
+const PHASES = [
+  {name:"Foundations", tag:"Content + O'Neill", weeks:8},
+  {name:"Skill Building", tag:"Timing + volume", weeks:8},
+  {name:"Integration", tag:"Timed mocks + ACER", weeks:4},
+  {name:"Mocks & Taper", tag:"Full ACER sims + rest", weeks:5}
+];
+const TOTAL_WEEKS = PHASES.reduce((a,p)=>a+p.weeks,0);
+
+const SESSION_TEMPLATE = [
+  {day:"Mon", defaultFocus:"Section 3 content learning"},
+  {day:"Wed", defaultFocus:"Section 1 reading comp"},
+  {day:"Thu", defaultFocus:"Section 2 essay"},
+  {day:"Weekend", defaultFocus:"Section 3 practice questions"}
+];
+const FOCUS_OPTIONS = [
+  "Section 1 reading comp","Section 2 essay","Section 3 content learning",
+  "Section 3 practice questions","Section 3 maths","Error review"
+];
+// older focus names saved by earlier versions of this page
+const FOCUS_RENAMES = {
+  "Section 1 reasoning":"Section 1 reading comp", "Reading comprehension":"Section 1 reading comp",
+  "Section 3 content":"Section 3 content learning", "Section 3 Medify":"Section 3 practice questions",
+  "Review / error log":"Error review"
+};
+
+function fmtDate(d){ return d.toISOString().slice(0,10); }
+function fmtShort(d){
+  const dt = new Date(d);
+  return dt.toLocaleDateString(undefined,{month:"short",day:"numeric"});
+}
+function isoWeekKey(d){
+  const t = new Date(d);
+  t.setHours(0,0,0,0);
+  t.setDate(t.getDate() + 3 - ((t.getDay()+6)%7));
+  const week1 = new Date(t.getFullYear(),0,4);
+  const wk = 1 + Math.round(((t - week1)/DAY_MS - 3 + ((week1.getDay()+6)%7))/7);
+  return t.getFullYear()+"-W"+String(wk).padStart(2,"0");
+}
+function startOfWeek(d){
+  const t = new Date(d);
+  const day = (t.getDay()+6)%7; // Mon=0
+  t.setDate(t.getDate()-day);
+  t.setHours(0,0,0,0);
+  return t;
+}
+
+let examDate = new Date('2027-03-07');
+
+async function loadExamDate(){
+  try{
+    const r = await storage.get('exam-date', false);
+    if(r && r.value) examDate = new Date(r.value);
+  }catch(e){}
+  $('examDate').value = fmtDate(examDate);
+  renderCountdown();
+  renderTimeline();
+}
+
+function renderCountdown(){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.round((examDate - today)/DAY_MS);
+  $('daysLeft').textContent = diff >= 0 ? diff : 0;
+  const totalDays = TOTAL_WEEKS*7;
+  const elapsed = Math.min(Math.max(totalDays - Math.max(diff,0), 0), totalDays);
+  const pct = Math.round((elapsed/totalDays)*100);
+  $('headerEl').style.setProperty('--prog', pct+'%');
+}
+
+function renderTimeline(){
+  const start = new Date(examDate.getTime() - TOTAL_WEEKS*7*DAY_MS);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const wrap = $('timeline');
+  wrap.innerHTML = "";
+  let cursor = new Date(start);
+  PHASES.forEach(p=>{
+    const pStart = new Date(cursor);
+    const pEnd = new Date(cursor.getTime() + p.weeks*7*DAY_MS);
+    const isCurrent = today >= pStart && today < pEnd;
+    const isDone = today >= pEnd;
+    const div = document.createElement('div');
+    div.className = "phase" + (isCurrent ? " current" : "") + (isDone ? " done" : "");
+    div.innerHTML = `
+      <div class="phase-body">
+        <div class="p-name">${p.name}</div>
+        <div class="p-range">${fmtShort(pStart)} – ${fmtShort(pEnd)}</div>
+        <div class="p-tag">${p.tag}</div>
+      </div>`;
+    wrap.appendChild(div);
+    cursor = pEnd;
+  });
+}
+
+$('examDate').addEventListener('change', async (e)=>{
+  examDate = new Date(e.target.value);
+  renderCountdown();
+  renderTimeline();
+  try{ await storage.set('exam-date', e.target.value, false); }catch(err){}
+});
+
+// ---- Weekly sessions ----
+let weekKey, weekData;
+
+function normaliseDay(d, i){
+  // earlier versions stored one {focus, hours, done} per day
+  if(d && Array.isArray(d.entries)) return d;
+  const focus = d && d.focus ? (FOCUS_RENAMES[d.focus] || d.focus) : SESSION_TEMPLATE[i].defaultFocus;
+  return { entries:[{focus, hours: d && d.hours ? d.hours : ""}], done: !!(d && d.done) };
+}
+
+async function loadWeek(){
+  const now = new Date();
+  weekKey = isoWeekKey(now);
+  $('weekLabel').textContent = "Week of " + fmtDate(startOfWeek(now));
+  let stored = null;
+  try{
+    const r = await storage.get('week:'+weekKey, false);
+    stored = r && r.value ? JSON.parse(r.value) : null;
+  }catch(e){ stored = null; }
+  weekData = SESSION_TEMPLATE.map((s,i)=> normaliseDay(stored && stored[i], i));
+  renderWeek();
+}
+
+async function saveWeek(){
+  try{ await storage.set('week:'+weekKey, JSON.stringify(weekData), false); }catch(e){}
+  renderWeekSummary();
+}
+
+function renderWeek(){
+  const wsMon = startOfWeek(new Date());
+  const tbody = $('sessionRows');
+  tbody.innerHTML = "";
+  SESSION_TEMPLATE.forEach((s,i)=>{
+    let dateLabel = "";
+    if(s.day==="Mon"){ dateLabel = fmtShort(new Date(wsMon.getTime())); }
+    if(s.day==="Wed"){ dateLabel = fmtShort(new Date(wsMon.getTime()+2*DAY_MS)); }
+    if(s.day==="Thu"){ dateLabel = fmtShort(new Date(wsMon.getTime()+3*DAY_MS)); }
+    if(s.day==="Weekend"){ dateLabel = "Sat / Sun"; }
+    const day = weekData[i];
+    const entriesHtml = day.entries.map((en,j)=>{
+      const opts = FOCUS_OPTIONS.includes(en.focus) ? FOCUS_OPTIONS : [en.focus].concat(FOCUS_OPTIONS);
+      return `<div class="focus-entry">
+        <select class="focus-select" data-day="${i}" data-entry="${j}" aria-label="Focus">${opts.map(f=>`<option ${en.focus===f?"selected":""}>${escapeHtml(f)}</option>`).join("")}</select>
+        <input class="hours-input" type="number" min="0" step="0.5" placeholder="hrs" data-day="${i}" data-entry="${j}" value="${escapeAttr(en.hours)}" aria-label="Hours">
+        <button class="entry-x" type="button" data-day="${i}" data-entry="${j}" aria-label="Remove this focus">&times;</button>
+      </div>`;
+    }).join("");
+    const row = document.createElement('tr');
+    if(day.done) row.classList.add('is-done');
+    row.innerHTML = `
+      <td><div class="day-cell"><span class="dname">${s.day}</span><span class="ddate">${dateLabel}</span></div></td>
+      <td><div class="focus-entries">${entriesHtml}<button class="add-focus-btn" type="button" data-day="${i}">+ add focus</button></div></td>
+      <td><input type="checkbox" class="done-check" data-day="${i}" ${day.done?"checked":""} aria-label="Done"></td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  tbody.querySelectorAll('.focus-select').forEach(el=>{
+    el.addEventListener('change', e=>{
+      weekData[e.target.dataset.day].entries[e.target.dataset.entry].focus = e.target.value;
+      saveWeek();
+    });
+  });
+  tbody.querySelectorAll('.hours-input').forEach(el=>{
+    el.addEventListener('input', e=>{
+      weekData[e.target.dataset.day].entries[e.target.dataset.entry].hours = e.target.value;
+      saveWeek();
+    });
+  });
+  tbody.querySelectorAll('.entry-x').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      weekData[el.dataset.day].entries.splice(parseInt(el.dataset.entry,10), 1);
+      renderWeek(); saveWeek();
+    });
+  });
+  tbody.querySelectorAll('.add-focus-btn').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const d = weekData[el.dataset.day];
+      const used = new Set(d.entries.map(x=>x.focus));
+      d.entries.push({focus: FOCUS_OPTIONS.find(f=>!used.has(f)) || FOCUS_OPTIONS[0], hours:""});
+      renderWeek(); saveWeek();
+      const sels = tbody.querySelectorAll(`.focus-select[data-day="${el.dataset.day}"]`);
+      if(sels.length) sels[sels.length-1].focus();
+    });
+  });
+  tbody.querySelectorAll('.done-check').forEach(el=>{
+    el.addEventListener('change', e=>{
+      weekData[e.target.dataset.day].done = e.target.checked;
+      renderWeek();
+      saveWeek();
+    });
+  });
+  renderWeekSummary();
+}
+
+function renderWeekSummary(){
+  const doneCount = weekData.filter(s=>s.done).length;
+  const totals = {};
+  let hrsTotal = 0;
+  weekData.forEach(d=>d.entries.forEach(en=>{
+    const h = parseFloat(en.hours) || 0;
+    if(h > 0){ totals[en.focus] = (totals[en.focus]||0) + h; hrsTotal += h; }
+  }));
+  $('sessDone').textContent = `${doneCount}/${weekData.length}`;
+  $('hrsDone').textContent = Math.round(hrsTotal*100)/100;
+  const order = FOCUS_OPTIONS.concat(Object.keys(totals).filter(k=>!FOCUS_OPTIONS.includes(k)));
+  $('focusTotals').innerHTML = order.filter(f=>totals[f]).map(f=>
+    `<span class="focus-chip">${escapeHtml(f)}<b>${Math.round(totals[f]*100)/100} h</b></span>`).join("");
+}
+
+// ---- Formula sheet builder ----
+let formulaEntries = [];
+
+function newFormulaId(){
+  return 'f-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,7);
+}
+
+// Your formula sheet, built into the file so it is there wherever the file is opened.
+const FORMULA_SEED = [
+ {
+  "id": "seed2-1",
+  "subject": "Math",
+  "formula": "nano (n) = 10^-9",
+  "name": "Nano prefix",
+  "def": "One billionth. Used for wavelengths (nm) and small concentrations (nM).",
+  "example": "450 nm = 450 × 10⁻⁹ m = 4.5 × 10⁻⁷ m"
+ },
+ {
+  "id": "seed2-2",
+  "subject": "Math",
+  "formula": "micro (mu) = 10^-6",
+  "name": "Micro prefix",
+  "def": "One millionth. Written µ, as in µg, µL and µm.",
+  "example": "5 µg = 5 × 10⁻⁶ g; 1 µL = 10⁻³ mL"
+ },
+ {
+  "id": "seed2-3",
+  "subject": "Chemistry",
+  "formula": "n = m/M",
+  "name": "Number of moles",
+  "def": "n = amount of substance (mol), m = mass of the sample (g), M = molar mass, the mass of one mole (g/mol).",
+  "example": "36 g of water, M = 18 g/mol → n = 36 ÷ 18 = 2 mol"
+ },
+ {
+  "id": "seed2-4",
+  "subject": "Chemistry",
+  "formula": "c = n/V",
+  "name": "Concentration (molarity)",
+  "def": "c = concentration in moles per litre (mol/L, also written M), n = moles of solute, V = volume of solution in litres.",
+  "example": "0.5 mol dissolved to make 250 mL (0.25 L) → c = 0.5 ÷ 0.25 = 2 mol/L"
+ },
+ {
+  "id": "seed2-5",
+  "subject": "Physics",
+  "formula": "F = ma",
+  "name": "Newton's second law",
+  "def": "F = net force (N), m = mass (kg), a = acceleration (m/s²). The net force sets the acceleration.",
+  "example": "2 kg accelerating at 3 m/s² → F = 2 × 3 = 6 N"
+ },
+ {
+  "id": "seed2-6",
+  "subject": "Physics",
+  "formula": "T = (2V0 sin theta)/g",
+  "name": "Projectile time of flight",
+  "def": "T = time in the air (s), V₀ = launch speed (m/s), θ = launch angle above the horizontal, g = 9.8 m/s². Assumes it lands at the same height it was launched from.",
+  "example": "V₀ = 20 m/s at 30°, g = 10 → T = 2 × 20 × 0.5 ÷ 10 = 2 s"
+ },
+ {
+  "id": "seed2-7",
+  "subject": "Physics",
+  "formula": "R = (V0^2 sin 2theta)/g",
+  "name": "Projectile range",
+  "def": "R = horizontal distance travelled (m), V₀ = launch speed, θ = launch angle. Same launch and landing height. Range is greatest at 45°, because sin 90° = 1.",
+  "example": "V₀ = 20 m/s at 45°, g = 10 → R = 400 × 1 ÷ 10 = 40 m"
+ },
+ {
+  "id": "seed2-8",
+  "subject": "Physics",
+  "formula": "rho = m/V",
+  "name": "Density",
+  "def": "ρ = density (kg/m³ or g/cm³), m = mass, V = volume.",
+  "example": "270 g of aluminium filling 100 cm³ → ρ = 2.7 g/cm³"
+ },
+ {
+  "id": "seed2-9",
+  "subject": "Physics",
+  "formula": "W = mg",
+  "name": "Weight",
+  "def": "W = weight, the gravitational force on an object (N), m = mass (kg), g = gravitational field strength (9.8 N/kg on Earth). Mass is the same everywhere; weight changes with g.",
+  "example": "60 kg person → W = 60 × 9.8 ≈ 590 N"
+ },
+ {
+  "id": "seed2-10",
+  "subject": "Physics",
+  "formula": "tau = Fd",
+  "name": "Torque (moment)",
+  "def": "τ = torque, the turning effect (N m), F = force (N), d = perpendicular distance from the pivot to the line of the force. If the force acts at angle θ to the lever, τ = Fd sin θ.",
+  "example": "20 N pushed at right angles 0.5 m from a door hinge → τ = 10 N m"
+ },
+ {
+  "id": "seed2-11",
+  "subject": "Physics",
+  "formula": "v^2 = u^2 - 2gH",
+  "name": "Height reached when thrown upwards",
+  "def": "u = launch speed upwards, v = speed at height H, g = 9.8 m/s². It is v² = u² + 2as with a = −g, because gravity slows the object on the way up. At the top v = 0, so H = u² ÷ 2g.",
+  "example": "Thrown up at 20 m/s, g = 10 → maximum height H = 400 ÷ 20 = 20 m"
+ },
+ {
+  "id": "seed2-12",
+  "subject": "Physics",
+  "formula": "H = 1/2 gt^2",
+  "name": "Distance fallen from rest",
+  "def": "H = height fallen (m), t = time (s), g = 9.8 m/s². It is s = ut + ½at² with u = 0 and a = g.",
+  "example": "Dropped for 2 s, g = 10 → H = ½ × 10 × 4 = 20 m"
+ },
+ {
+  "id": "seed2-13",
+  "subject": "Physics",
+  "formula": "speed = distance/time",
+  "name": "Average speed",
+  "def": "A scalar: total distance travelled divided by total time, ignoring direction (m/s).",
+  "example": "100 m in 20 s → 5 m/s"
+ },
+ {
+  "id": "seed2-14",
+  "subject": "Physics",
+  "formula": "velocity = displacement/time",
+  "name": "Average velocity",
+  "def": "A vector: displacement (the straight-line change in position, with direction) divided by time. A full lap of a track has zero displacement, so zero average velocity.",
+  "example": "Walk 30 m east then 10 m west in 20 s → 20 m ÷ 20 s = 1 m/s east"
+ },
+ {
+  "id": "seed2-15",
+  "subject": "Physics",
+  "formula": "a = (v - u)/t",
+  "name": "Acceleration",
+  "def": "a = acceleration (m/s²), u = initial velocity, v = final velocity, t = time taken. The rate of change of velocity; a negative value means slowing down.",
+  "example": "0 to 20 m/s in 4 s → a = 20 ÷ 4 = 5 m/s²"
+ },
+ {
+  "id": "seed2-16",
+  "subject": "Physics",
+  "formula": "displacement = velocity × time",
+  "name": "Constant-velocity motion",
+  "def": "Only valid when velocity does not change. If the object is accelerating, use the equations of motion instead.",
+  "example": "25 m/s for 8 s → 200 m"
+ },
+ {
+  "id": "seed2-17",
+  "subject": "Physics",
+  "formula": "v = u + at",
+  "name": "Equation of motion: final velocity",
+  "def": "u = initial velocity, v = final velocity, a = acceleration, t = time. All the equations of motion assume constant acceleration.",
+  "example": "u = 5 m/s, a = 2 m/s², t = 3 s → v = 5 + 6 = 11 m/s"
+ },
+ {
+  "id": "seed2-18",
+  "subject": "Physics",
+  "formula": "v^2 = u^2 + 2as",
+  "name": "Equation of motion without time",
+  "def": "s = displacement (m). Use it when time is neither given nor asked for.",
+  "example": "From rest, a = 2 m/s² over 25 m → v² = 100, so v = 10 m/s"
+ },
+ {
+  "id": "seed2-19",
+  "subject": "Physics",
+  "formula": "x = x0 + v0t + 1/2 at^2",
+  "name": "Position with constant acceleration",
+  "def": "x = position at time t, x₀ = starting position, v₀ = initial velocity (same as u), a = acceleration. Same as s = ut + ½at², where s = x − x₀.",
+  "example": "x₀ = 10 m, v₀ = 4 m/s, a = 2 m/s², t = 3 s → x = 10 + 12 + 9 = 31 m"
+ },
+ {
+  "id": "seed2-20",
+  "subject": "Physics",
+  "formula": "v = v0 + at",
+  "name": "Final velocity (v₀ notation)",
+  "def": "The same equation as v = u + at, written with v₀ for the initial velocity.",
+  "example": "v₀ = 0, a = 9.8 m/s², t = 2 s → v = 19.6 m/s"
+ },
+ {
+  "id": "seed2-21",
+  "subject": "Physics",
+  "formula": "v^2 = v0^2 + 2ax",
+  "name": "Velocity and displacement (v₀ notation)",
+  "def": "The same equation as v² = u² + 2as, with x for the displacement.",
+  "example": "v₀ = 3 m/s, a = 2 m/s², x = 4 m → v² = 9 + 16 = 25, so v = 5 m/s"
+ },
+ {
+  "id": "seed2-22",
+  "subject": "Physics",
+  "formula": "x = 1/2 (v + v0)t",
+  "name": "Displacement from average velocity",
+  "def": "With constant acceleration the average velocity is halfway between the start and end velocities, so displacement = average velocity × time. Useful when acceleration is not given.",
+  "example": "Speeds up from 4 to 10 m/s over 6 s → x = ½ × 14 × 6 = 42 m"
+ },
+ {
+  "id": "seed2-23",
+  "subject": "Physics",
+  "formula": "x = v0t + 1/2 at^2",
+  "name": "Displacement with relation to time",
+  "def": "Displacement after time t, starting with velocity v₀ (same as s = ut + ½at²).",
+  "example": "v₀ = 2 m/s, a = 4 m/s², t = 3 s → x = 6 + 18 = 24 m"
+ },
+ {
+  "id": "seed2-24",
+  "subject": "Physics",
+  "formula": "Newton's first law",
+  "name": "Inertia",
+  "def": "An object stays at rest, or keeps moving at a constant velocity, unless a net external force acts on it.",
+  "example": "A puck sliding on frictionless ice keeps the same speed and direction"
+ },
+ {
+  "id": "seed2-25",
+  "subject": "Physics",
+  "formula": "Newton's third law",
+  "name": "Action and reaction",
+  "def": "Every force has an equal and opposite partner force acting on the other object. The pair act on different objects, so they never cancel each other out.",
+  "example": "You push a wall with 50 N; the wall pushes you back with 50 N"
+ },
+ {
+  "id": "seed2-26",
+  "subject": "Physics",
+  "formula": "F = Gm1m2/r^2",
+  "name": "Newton's law of gravitation",
+  "def": "F = attractive force between two masses (N), m₁ and m₂ = the masses (kg), r = distance between their centres (m), G = 6.67 × 10⁻¹¹ N m² kg⁻². An inverse-square law.",
+  "example": "Double the distance between them → F becomes ¼ as strong"
+ },
+ {
+  "id": "seed2-27",
+  "subject": "Physics",
+  "formula": "a = g ≈ 9.8 m/s^2",
+  "name": "Free fall",
+  "def": "With no air resistance, every falling object accelerates downward at g, whatever its mass.",
+  "example": "After 3 s falling from rest, v = 9.8 × 3 ≈ 29 m/s"
+ },
+ {
+  "id": "seed2-28",
+  "subject": "Physics",
+  "formula": "F_max = mu_s N",
+  "name": "Maximum static friction",
+  "def": "F(max) = the largest friction force before the object starts to slide (N), μs = coefficient of static friction (no units), N = normal force (N), equal to mg on a flat surface.",
+  "example": "30 kg box on a floor with μs = 0.4, g = 10 → F(max) = 0.4 × 300 = 120 N"
+ },
+ {
+  "id": "seed2-29",
+  "subject": "Physics",
+  "formula": "x_cm = (m1x1 + m2x2)/(m1 + m2)",
+  "name": "Centre of mass",
+  "def": "x(cm) = position of the centre of mass (the centre of gravity in uniform gravity), m₁ and m₂ = the masses, x₁ and x₂ = their positions. A weighted average, so it sits closer to the heavier mass.",
+  "example": "2 kg at x = 0 and 3 kg at x = 5 m → x(cm) = 15 ÷ 5 = 3 m"
+ },
+ {
+  "id": "seed2-30",
+  "subject": "Physics",
+  "formula": "V = 4/3 pi R^3",
+  "name": "Volume of a sphere",
+  "def": "V = volume, R = radius. The surface area is 4πR².",
+  "example": "R = 3 cm → V = 4/3 × π × 27 = 36π ≈ 113 cm³"
+ },
+ {
+  "id": "seed2-31",
+  "subject": "Physics",
+  "formula": "W^2 = (mg cos theta)^2 + (mg sin theta)^2 = (mg)^2",
+  "name": "Weight components recombine",
+  "def": "The two components of weight on a slope are at right angles, so by Pythagoras they add back up to the full weight mg. Works because cos²θ + sin²θ = 1.",
+  "example": "θ = 30°: (0.87mg)² + (0.5mg)² = 0.75(mg)² + 0.25(mg)² = (mg)²"
+ },
+ {
+  "id": "seed2-32",
+  "subject": "Physics",
+  "formula": "W_perp = mg cos theta, W_par = mg sin theta",
+  "name": "Weight components on an incline",
+  "def": "θ = angle of the slope. W(perp) presses into the slope and is balanced by the normal force; W(par) pulls the object down the slope.",
+  "example": "θ = 0° (flat): W(perp) = mg, W(par) = 0. θ = 30°: W(perp) = 0.87mg, W(par) = 0.50mg. θ = 90° (vertical): W(perp) = 0, W(par) = mg"
+ },
+ {
+  "id": "seed2-33",
+  "subject": "Physics",
+  "formula": "a_c = v^2/r",
+  "name": "Centripetal acceleration (linear speed)",
+  "def": "a(c) = acceleration toward the centre of the circle (m/s²), v = speed (m/s), r = radius (m). The force needed is F = mv²/r.",
+  "example": "Car at 10 m/s round a bend of radius 50 m → a(c) = 100 ÷ 50 = 2 m/s²"
+ },
+ {
+  "id": "seed2-34",
+  "subject": "Physics",
+  "formula": "a_c = omega^2 r",
+  "name": "Centripetal acceleration (angular speed)",
+  "def": "ω = angular speed (rad/s), r = radius (m). Linked to the other form by v = ωr.",
+  "example": "ω = 2 rad/s at r = 3 m → a(c) = 4 × 3 = 12 m/s²"
+ },
+ {
+  "id": "seed2-35",
+  "subject": "Physics",
+  "formula": "F = kx",
+  "name": "Hooke's law",
+  "def": "F = force on the spring (N), k = spring constant, its stiffness (N/m), x = extension or compression from natural length (m). Holds up to the elastic limit; the spring's own restoring force is −kx.",
+  "example": "k = 200 N/m stretched by 0.05 m → F = 200 × 0.05 = 10 N"
+ }
+];
+
+async function loadFormulas(){
+  try{
+    const r = await storage.get('formula-sheet', false);
+    formulaEntries = r && r.value ? JSON.parse(r.value) : [];
+  }catch(e){ formulaEntries = []; }
+  // One-time update to the checked sheet (names, meanings, examples). Formulas you added
+  // yourself are kept; the old version is saved as a backup.
+  try{
+    const flag = await storage.get('formula-seed-v2', false);
+    if(!(flag && flag.value)){
+      if(formulaEntries.length) await storage.set('formula-sheet-backup-v2', JSON.stringify(formulaEntries), false);
+      const own = formulaEntries.filter(e=>!/^seed/.test(e.id));
+      formulaEntries = FORMULA_SEED.map(e=>Object.assign({}, e)).concat(own);
+      await storage.set('formula-sheet', JSON.stringify(formulaEntries), false);
+      await storage.set('formula-seed-v2', '1', false);
+    }
+  }catch(e){ if(!formulaEntries.length) formulaEntries = FORMULA_SEED.map(e=>Object.assign({}, e)); }
+  renderFormulaTable();
+  renderFormulaSheet();
+}
+
+async function saveFormulaEntries(){
+  try{ await storage.set('formula-sheet', JSON.stringify(formulaEntries), false); }catch(e){}
+}
+
+function renderFormulaTable(){
+  const tbody = $('formulaRows');
+  tbody.innerHTML = "";
+  if(formulaEntries.length === 0){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">No formulas yet — add one above to start your sheet.</td></tr>`;
+    return;
+  }
+  formulaEntries.forEach(entry=>{
+    const row = document.createElement('tr');
+    const subjectOptsHtml = ["Physics","Chemistry","Math"].map(s=>`<option ${entry.subject===s?"selected":""}>${s}</option>`).join("");
+    row.innerHTML = `
+      <td><select class="formula-subject-select" data-id="${entry.id}">${subjectOptsHtml}</select></td>
+      <td>
+        <input class="formula-cell" type="text" data-id="${entry.id}" data-field="formula" value="${escapeAttr(entry.formula)}">
+        <div class="table-math-preview math-render" data-preview-for="${entry.id}">${formatFormula(entry.formula)}</div>
+      </td>
+      <td><input class="formula-name-cell" type="text" data-id="${entry.id}" data-field="name" placeholder="optional" value="${escapeAttr(entry.name || "")}"></td>
+      <td><textarea class="formula-example-cell formula-def-cell" rows="2" data-id="${entry.id}" data-field="def" placeholder="what each symbol means">${escapeHtml(entry.def || "")}</textarea></td>
+      <td><textarea class="formula-example-cell" rows="2" data-id="${entry.id}" data-field="example" placeholder="worked example">${escapeHtml(entry.example || "")}</textarea></td>
+      <td><button class="del-btn" data-id="${entry.id}">remove</button></td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  tbody.querySelectorAll('.formula-cell').forEach(el=>{
+    el.addEventListener('input', e=>{
+      const preview = tbody.querySelector(`[data-preview-for="${e.target.dataset.id}"]`);
+      if(preview) preview.innerHTML = formatFormula(e.target.value);
+    });
+  });
+
+  tbody.querySelectorAll('.formula-subject-select').forEach(el=>{
+    el.addEventListener('change', e=>{
+      const entry = formulaEntries.find(x=>x.id===e.target.dataset.id);
+      if(entry){ entry.subject = e.target.value; saveFormulaEntries(); renderFormulaSheet(); }
+    });
+  });
+  tbody.querySelectorAll('.formula-cell, .formula-name-cell, .formula-example-cell').forEach(el=>{
+    el.addEventListener('change', e=>{
+      const entry = formulaEntries.find(x=>x.id===e.target.dataset.id);
+      if(entry){
+        entry[e.target.dataset.field] = e.target.value;
+        saveFormulaEntries();
+        renderFormulaSheet();
+      }
+    });
+  });
+  tbody.querySelectorAll('.del-btn').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      formulaEntries = formulaEntries.filter(x=>x.id!==e.target.dataset.id);
+      saveFormulaEntries();
+      renderFormulaTable();
+      renderFormulaSheet();
+    });
+  });
+}
+
+// ---- Local formula formatting (no network — fractions, exponents, subscripts, roots, symbols) ----
+function escapeAttr(str){
+  return String(str).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+}
+function escapeHtml(str){
+  return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+// A small parser rather than chained find-and-replace, so nested brackets,
+// powers inside fractions, roots of fractions, charges and Greek names all work.
+const SYMBOL_WORDS = {
+  alpha:"α", beta:"β", gamma:"γ", delta:"Δ", Delta:"Δ", epsilon:"ε", eta:"η",
+  theta:"θ", lambda:"λ", mu:"μ", pi:"π", rho:"ρ", sigma:"σ", Sigma:"Σ",
+  tau:"τ", phi:"φ", omega:"ω", Omega:"Ω", infinity:"∞", inf:"∞"
+};
+const FUNC_WORDS = ["sqrt","sin","cos","tan","log","ln","exp"];
+const FORMULA_WORDS = Object.keys(SYMBOL_WORDS).concat(FUNC_WORDS).sort((a,b)=>b.length-a.length);
+const GREEK = "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω";
+const LETTER_RE = new RegExp(`[A-Za-z${GREEK}]`);
+
+function mUp(s){ return `<span class="m-up">${escapeHtml(s)}</span>`; }
+
+// Split a run of letters into known words (sin, theta, pi…) and loose variables.
+// If it looks like an ordinary word (many leftover letters), leave it alone.
+function splitLetterRun(run){
+  const parts = []; let i = 0, found = 0, loose = 0;
+  while(i < run.length){
+    let hit = null;
+    for(const w of FORMULA_WORDS){ if(run.startsWith(w, i)){ hit = w; break; } }
+    if(hit){
+      found++; i += hit.length;
+      if(hit === "sqrt") parts.push({t:"sqrt"});
+      else if(SYMBOL_WORDS[hit]) parts.push({t:"var", v:SYMBOL_WORDS[hit]});
+      else parts.push({t:"fn", v:hit});
+    } else {
+      const last = parts[parts.length-1];
+      if(last && last.t === "var" && last.loose) last.v += run[i];
+      else parts.push({t:"var", v:run[i], loose:true});
+      i++; loose++;
+    }
+  }
+  if(!found || loose > 3) return [{t:"var", v:run}];
+  return parts;
+}
+
+function tokenizeFormula(raw){
+  let s = String(raw)
+    .replace(/<=>/g,"⇌").replace(/<->/g,"⇌").replace(/->/g,"→")
+    .replace(/<=/g,"≤").replace(/>=/g,"≥").replace(/!=/g,"≠")
+    .replace(/~=/g,"≈").replace(/\+-|-\+/g,"±").replace(/√/g,"sqrt");
+  const toks = []; let i = 0;
+  while(i < s.length){
+    const ch = s[i];
+    if(/\s/.test(ch)){ while(i < s.length && /\s/.test(s[i])) i++; toks.push({t:"sp"}); continue; }
+    if(/\d/.test(ch) || (ch === "." && /\d/.test(s[i+1] || ""))){
+      let j = i; while(j < s.length && /[\d.]/.test(s[j])) j++;
+      toks.push({t:"num", v:s.slice(i,j)}); i = j; continue;
+    }
+    if(LETTER_RE.test(ch)){
+      let j = i; while(j < s.length && LETTER_RE.test(s[j])) j++;
+      splitLetterRun(s.slice(i,j)).forEach(p=>toks.push(p)); i = j; continue;
+    }
+    if(ch === "(" || ch === "["){ toks.push({t:"open", v:ch}); i++; continue; }
+    if(ch === ")" || ch === "]"){ toks.push({t:"close", v:ch}); i++; continue; }
+    if(ch === "^" || ch === "_" || ch === "/"){ toks.push({t:"op", v:ch}); i++; continue; }
+    toks.push({t:"txt", v: ch === "-" ? "−" : ch === "*" ? "×" : ch}); i++;
+  }
+  // "3 x 10^8" or "2x10^8": an x sitting between two numbers is a times sign
+  const sig = (k, dir)=>{ k += dir; while(toks[k] && toks[k].t === "sp") k += dir; return toks[k]; };
+  toks.forEach((t,k)=>{
+    if(t.t === "var" && (t.v === "x" || t.v === "X")){
+      const a = sig(k,-1), b = sig(k,1);
+      const spaced = toks[k-1] && toks[k-1].t === "sp" && toks[k+1] && toks[k+1].t === "sp";
+      const ai = toks.indexOf(a), subscripted = ai > 0 && toks[ai-1].t === "var"; // m1x1 is m₁x₁, not m₁ × 1
+      if(a && b && a.t === "num" && b.t === "num" && !subscripted && (spaced || /^10/.test(b.v))){ t.t = "txt"; t.v = "×"; }
+    }
+  });
+  return toks;
+}
+
+function formatFormula(raw){
+  if(!raw) return "";
+  const toks = tokenizeFormula(raw);
+  let pos = 0;
+  const peek = (o=0)=> toks[pos+o];
+  const startsFactor = (t)=> !!t && ["num","var","fn","sqrt","open"].includes(t.t);
+  const isSign = (t)=> !!t && t.t === "txt" && "+−±".includes(t.v);
+
+  function parseArg(kind){
+    const tag = kind === "^" ? "sup" : "sub";
+    let content = "", sign = "";
+    while(isSign(peek())){ sign += peek().v; pos++; }
+    const t = peek();
+    if(t && t.t === "open"){
+      pos++;
+      const inner = parseSeq(true);
+      let close = "";
+      if(peek() && peek().t === "close"){ close = peek().v; pos++; }
+      content = sign + (t.v === "(" ? inner : escapeHtml(t.v) + inner + escapeHtml(close));
+    } else if(t && t.t === "num"){
+      pos++; content = sign + escapeHtml(t.v);
+      // ion charge, e.g. SO4^2-
+      if(kind === "^" && !sign && isSign(peek()) && !startsFactor(peek(1))){ content += peek().v; pos++; }
+    } else if(t && (t.t === "var" || t.t === "fn")){
+      pos++; content = sign + escapeHtml(t.v);
+    } else {
+      content = sign;
+    }
+    if(!content) return escapeHtml(kind);
+    return `<${tag}>${content}</${tag}>`;
+  }
+
+  function parseFactor(){
+    const t = peek();
+    let html = "", bare = null;
+    if(t.t === "num"){ pos++; html = mUp(t.v); }
+    else if(t.t === "var"){
+      pos++; html = escapeHtml(t.v);
+      if(peek() && peek().t === "num"){ html += `<sub>${escapeHtml(peek().v)}</sub>`; pos++; } // V0, m1, H2O
+    }
+    else if(t.t === "fn"){
+      pos++; html = mUp(t.v);
+      if(t.v === "log" && peek() && peek().t === "num"){ html += `<sub>${escapeHtml(peek().v)}</sub>`; pos++; }
+      while(peek() && peek().t === "op" && peek().v !== "/"){ const k = peek().v; pos++; html += parseArg(k); }
+      // the function's argument belongs to it: "sin theta1 / sin theta2", "log(x)"
+      const o = (peek() && peek().t === "sp") ? 1 : 0;
+      const arg = peek(o);
+      if(arg && (["num","var","sqrt"].includes(arg.t) || (arg.t === "open" && arg.v === "("))){
+        pos += o;
+        html += (arg.t === "open" ? "" : "&thinsp;") + parseFactor().html;
+      } else if(arg && arg.t === "fn" && !o){
+        html += "&thinsp;";
+      }
+      return {html, bare:null};
+    }
+    else if(t.t === "sqrt"){
+      pos++;
+      let inner = "";
+      if(peek() && peek().t === "open" && peek().v === "("){
+        pos++; inner = parseSeq(true);
+        if(peek() && peek().t === "close") pos++;
+      } else if(startsFactor(peek())){
+        inner = parseFactor().html;
+      }
+      html = inner ? `<span class="sqrt">&radic;<span class="sqrt-inner">${inner}</span></span>` : mUp("√");
+    }
+    else if(t.t === "open"){
+      pos++;
+      const inner = parseSeq(true);
+      let close = "";
+      if(peek() && peek().t === "close"){ close = peek().v; pos++; }
+      html = mUp(t.v) + inner + (close ? mUp(close) : "");
+      if(t.v === "(" && close === ")") bare = inner;
+    }
+    let hadPostfix = false;
+    while(peek() && peek().t === "op" && peek().v !== "/"){ const k = peek().v; pos++; html += parseArg(k); hadPostfix = true; }
+    return {html, bare: hadPostfix ? null : bare};
+  }
+
+  function parseTerm(){
+    let html = "", count = 0, bare = null;
+    while(startsFactor(peek())){
+      const f = parseFactor(); html += f.html; bare = f.bare; count++;
+    }
+    return {html, bare: count === 1 ? bare : null};
+  }
+
+  function slashAhead(){
+    let o = 0;
+    if(peek(o) && peek(o).t === "sp") o++;
+    return (peek(o) && peek(o).t === "op" && peek(o).v === "/") ? o : -1;
+  }
+
+  function parseSeq(inGroup){
+    let out = "";
+    while(pos < toks.length){
+      const t = peek();
+      if(t.t === "close"){ if(inGroup) break; out += mUp(t.v); pos++; continue; }
+      if(t.t === "sp"){ out += " "; pos++; continue; }
+      if(t.t === "txt"){ out += mUp(t.v); pos++; continue; }
+      if(t.t === "op"){
+        pos++;
+        out += t.v === "/" ? mUp("/") : parseArg(t.v);
+        continue;
+      }
+      let left = parseTerm();
+      let o;
+      while((o = slashAhead()) >= 0){
+        const save = pos;
+        pos += o + 1;
+        if(peek() && peek().t === "sp") pos++;
+        if(!startsFactor(peek())){ pos = save; break; }
+        const right = parseTerm();
+        const num = left.bare !== null ? left.bare : left.html;
+        const den = right.bare !== null ? right.bare : right.html;
+        left = {html:`<span class="frac"><span class="num">${num}</span><span class="den">${den}</span></span>`, bare:null};
+      }
+      out += left.html;
+      if(slashAhead() >= 0){ // dangling slash with nothing after it
+        if(peek().t === "sp"){ out += " "; pos++; }
+        out += mUp("/"); pos++;
+      }
+    }
+    return out;
+  }
+  return parseSeq(false);
+}
+
+
+function updateFormulaPreview(){
+  const val = $('formulaInput').value.trim();
+  const el = $('formulaPreview');
+  if(!el) return;
+  if(!val){ el.innerHTML = ""; el.classList.remove('is-found'); return; }
+  el.innerHTML = `→ <span class="math-render">${formatFormula(val)}</span>`;
+  el.classList.add('is-found');
+}
+
+$('formulaInput').addEventListener('input', updateFormulaPreview);
+
+$('addFormulaBtn').addEventListener('click', ()=>{
+  const subject = $('formulaSubjectSelect').value;
+  const formula = $('formulaInput').value.trim();
+  if(!formula) return;
+  formulaEntries.push({id:newFormulaId(), subject, formula, name:"", example:""});
+  $('formulaInput').value = "";
+  updateFormulaPreview();
+  saveFormulaEntries();
+  renderFormulaTable();
+  renderFormulaSheet();
+});
+$('formulaInput').addEventListener('keydown', e=>{
+  if(e.key === 'Enter'){ e.preventDefault(); $('addFormulaBtn').click(); }
+});
+
+function renderFormulaSheet(){
+  const wrap = $('formulaSheetOutput');
+  wrap.innerHTML = "";
+  const subjects = [
+    {key:"Math", cls:"subj-math"},
+    {key:"Chemistry", cls:"subj-chemistry"},
+    {key:"Physics", cls:"subj-physics"}
+  ];
+  if(formulaEntries.length === 0){
+    wrap.innerHTML = `<div class="formula-empty">Your formula sheet will appear here once you've added a few formulas.</div>`;
+    return;
+  }
+  subjects.forEach(s=>{
+    const items = formulaEntries.filter(e=>e.subject===s.key);
+    const col = document.createElement('div');
+    col.className = "formula-subject-col " + s.cls;
+    if(items.length === 0){
+      col.innerHTML = `<h3>${s.key}</h3><div class="formula-empty">Nothing added yet.</div>`;
+    } else {
+      const itemsHtml = items.map(e => `
+        <div class="formula-item">
+          <div class="f-formula">${formatFormula(e.formula)}</div>
+          ${e.name ? `<div class="f-name">${escapeHtml(e.name)}</div>` : ""}
+          ${e.def ? `<div class="f-def">${escapeHtml(e.def)}</div>` : ""}
+          ${e.example ? `<div class="f-example">e.g. ${escapeHtml(e.example)}</div>` : ""}
+        </div>
+      `).join("");
+      col.innerHTML = `<h3>${s.key}</h3>${itemsHtml}`;
+    }
+    wrap.appendChild(col);
+  });
+}
+
+// ---- Redo bank (mistake screenshots) ----
+let mistakes = [];
+
+function newMistakeId(){
+  return 'x-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,7);
+}
+
+function setMistakeStatus(msg){
+  const el = $('mistakeStatus');
+  if(el) el.textContent = msg;
+}
+
+async function loadMistakes(){
+  try{
+    const idxRes = await storage.get('mistakes-index', false);
+    const ids = idxRes && idxRes.value ? JSON.parse(idxRes.value) : [];
+    const entries = await Promise.all(ids.map(async id=>{
+      try{
+        const r = await storage.get('mistake:'+id, false);
+        return r && r.value ? JSON.parse(r.value) : null;
+      }catch(e){ return null; }
+    }));
+    mistakes = entries.filter(Boolean).sort((a,b)=> new Date(b.dateAdded) - new Date(a.dateAdded));
+  }catch(e){ mistakes = []; }
+  renderMistakes();
+}
+
+async function saveMistakeIndex(){
+  try{ await storage.set('mistakes-index', JSON.stringify(mistakes.map(m=>m.id)), false); }catch(e){}
+}
+async function saveMistakeEntry(entry){
+  try{ await storage.set('mistake:'+entry.id, JSON.stringify(entry), false); }catch(e){}
+}
+
+function readFileAsDataUrl(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=> resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// Downscale/compress before storing, so screenshots stay well under storage limits.
+function resizeDataUrl(dataUrl, maxWidth, quality){
+  return new Promise((resolve)=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const scale = Math.min(1, maxWidth / img.width);
+      const w = Math.max(1, Math.round(img.width * scale));
+      const h = Math.max(1, Math.round(img.height * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = ()=> resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+async function addMistakeFromFile(file){
+  if(!file.type || !file.type.startsWith('image/')){
+    setMistakeStatus("That doesn't look like an image — try a screenshot instead.");
+    return;
+  }
+  const subject = $('mistakeSubjectSelect').value;
+  const note = $('mistakeNoteInput').value.trim();
+  setMistakeStatus("Adding…");
+  try{
+    const raw = await readFileAsDataUrl(file);
+    let image = await resizeDataUrl(raw, 900, 0.82);
+    if(image.length > 4.5 * 1024 * 1024){
+      image = await resizeDataUrl(raw, 700, 0.6); // still too big — compress harder
+    }
+    const entry = { id:newMistakeId(), dateAdded: fmtDate(new Date()), subject, note, image };
+    mistakes.unshift(entry);
+    await saveMistakeEntry(entry);
+    await saveMistakeIndex();
+    renderMistakes();
+    setMistakeStatus("Added ✓");
+  }catch(err){
+    setMistakeStatus("Couldn't add that image — try again.");
+  }
+}
+
+async function addMistakeFromFiles(fileList){
+  const files = Array.from(fileList || []).filter(f=>f.type && f.type.startsWith('image/'));
+  if(files.length === 0){
+    setMistakeStatus("No image found there.");
+    return;
+  }
+  for(const f of files){ await addMistakeFromFile(f); }
+  $('mistakeNoteInput').value = "";
+}
+
+async function removeMistake(id){
+  mistakes = mistakes.filter(m=>m.id!==id);
+  renderMistakes();
+  try{ await storage.delete('mistake:'+id, false); }catch(e){}
+  await saveMistakeIndex();
+}
+
+function openMistakeLightbox(src){
+  $('lightboxImg').src = src;
+  $('lightboxOverlay').classList.add('is-open');
+}
+function closeMistakeLightbox(){
+  $('lightboxOverlay').classList.remove('is-open');
+  $('lightboxImg').src = "";
+}
+
+function renderMistakes(){
+  const grid = $('mistakeGrid');
+  if(mistakes.length === 0){
+    grid.innerHTML = `<div class="formula-empty">No mistakes logged yet — screenshot a question you got wrong and add it above. Once you get it right, mark it done and it's gone.</div>`;
+    return;
+  }
+  grid.innerHTML = mistakes.map(m => `
+    <div class="mistake-card">
+      <img class="mistake-thumb" src="${m.image}" data-id="${m.id}" alt="mistake screenshot">
+      <div class="mistake-body">
+        <div class="mistake-meta">
+          <span class="mistake-subject-tag subj-${m.subject.toLowerCase()}">${escapeHtml(m.subject)}</span>
+          <span class="mistake-date mono">${fmtShort(m.dateAdded)}</span>
+        </div>
+        ${m.note ? `<div class="mistake-note">${escapeHtml(m.note)}</div>` : ""}
+        <div class="mistake-actions">
+          <button class="mistake-correct-btn" data-id="${m.id}">✓ Got it right</button>
+          <button class="del-btn" data-id="${m.id}">remove</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+
+  grid.querySelectorAll('.mistake-thumb').forEach(img=>{
+    img.addEventListener('click', e=> openMistakeLightbox(e.target.src));
+  });
+  grid.querySelectorAll('.mistake-correct-btn').forEach(btn=>{
+    btn.addEventListener('click', e=> removeMistake(e.target.dataset.id));
+  });
+  grid.querySelectorAll('.mistake-actions .del-btn').forEach(btn=>{
+    btn.addEventListener('click', e=> removeMistake(e.target.dataset.id));
+  });
+}
+
+$('mistakeFileInput').addEventListener('change', async (e)=>{
+  await addMistakeFromFiles(e.target.files);
+  e.target.value = "";
+});
+
+const pasteZone = $('pasteZone');
+pasteZone.addEventListener('paste', async (e)=>{
+  const items = e.clipboardData && e.clipboardData.items;
+  if(!items){ setMistakeStatus("Couldn't read the clipboard."); return; }
+  const files = [];
+  for(const item of items){
+    if(item.type && item.type.startsWith('image/')){
+      const file = item.getAsFile();
+      if(file) files.push(file);
+    }
+  }
+  if(files.length === 0){
+    setMistakeStatus("No image found in clipboard — copy a screenshot first.");
+    return;
+  }
+  await addMistakeFromFiles(files);
+});
+pasteZone.addEventListener('dragover', e=>{
+  e.preventDefault();
+  pasteZone.classList.add('drag-over');
+});
+pasteZone.addEventListener('dragleave', ()=> pasteZone.classList.remove('drag-over'));
+pasteZone.addEventListener('drop', async e=>{
+  e.preventDefault();
+  pasteZone.classList.remove('drag-over');
+  await addMistakeFromFiles(e.dataTransfer.files);
+});
+
+$('lightboxClose').addEventListener('click', closeMistakeLightbox);
+$('lightboxOverlay').addEventListener('click', e=>{
+  if(e.target.id === 'lightboxOverlay') closeMistakeLightbox();
+});
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape') closeMistakeLightbox();
+});
+
+// ---- Daily maths sheet: a fresh, date-seeded set across all eight topics ----
+function dmRng(seedStr){
+  let h = 1779033703 ^ seedStr.length;
+  for(let i=0;i<seedStr.length;i++){ h = Math.imul(h ^ seedStr.charCodeAt(i), 3432918353); h = (h<<13) | (h>>>19); }
+  let a = h >>> 0;
+  const next = ()=>{ a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a>>>15), 1 | a); t = (t + Math.imul(t ^ (t>>>7), 61 | t)) ^ t; return ((t ^ (t>>>14)) >>> 0) / 4294967296; };
+  for(let i=0;i<8;i++) next();
+  return {
+    next,
+    int:(lo,hi)=> lo + Math.floor(next()*(hi-lo+1)),
+    pick:(arr)=> arr[Math.floor(next()*arr.length)],
+    shuffle:(arr)=>{ const c = arr.slice(); for(let i=c.length-1;i>0;i--){ const j = Math.floor(next()*(i+1)); [c[i],c[j]] = [c[j],c[i]]; } return c; }
+  };
+}
+const M  = (s)=> `<span class="dm">${formatFormula(String(s))}</span>`;
+// units: upright, inline slash, powers as superscripts (no stacked fractions)
+const U  = (s)=> `<span class="dm dm-up">${escapeHtml(String(s)).replace(/-/g,"−").replace(/\^(−?\d+)/g,"<sup>$1</sup>")}</span>`;
+const B  = (s)=> `<b>${s}</b>`;
+function nf(x){ const r = Math.round(x*1e6)/1e6; return String(Object.is(r,-0)?0:r).replace("-","−"); }
+function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ [a,b] = [b,a%b]; } return a||1; }
+function fr(n,d){ if(d<0){ n=-n; d=-d; } const g = gcd(n,d); n/=g; d/=g; return d===1 ? nf(n) : `${nf(n)}/${d}`; }
+function sciStr(m,e){
+  if(m===0) return "0";
+  while(Math.abs(m)>=10){ m/=10; e++; }
+  while(Math.abs(m)<1){ m*=10; e--; }
+  m = Number(m.toPrecision(4));
+  if(Math.abs(m)>=10){ m/=10; e++; }
+  return e===0 ? nf(m) : `${nf(m)} × 10^${e<0 ? "−"+(-e) : e}`;
+}
+function sciOf(x){ return sciStr(x,0); }
+function ratPow(n,d,p){ // (n/d)^p as a reduced fraction string; p may be ±integer, 0.5 or 1.5
+  if(p===0.5){ n=Math.round(Math.sqrt(n)); d=Math.round(Math.sqrt(d)); p=1; }
+  if(p===1.5){ n=Math.round(Math.sqrt(n)); d=Math.round(Math.sqrt(d)); p=3; }
+  let a = Math.pow(n,Math.abs(p)), b = Math.pow(d,Math.abs(p));
+  return p<0 ? fr(b,a) : fr(a,b);
+}
+const scaleWord = (n,d)=> d===1 ? ({2:"doubled",3:"tripled"}[n] || `multiplied by ${n}`) : (n===1&&d===2 ? "halved" : `multiplied by ${M(n+"/"+d)}`);
+const factorWord = (f)=> f==="1" ? "unchanged" : `multiplied by ${M(f)}`;
+const DM_LOG = {1:0,2:0.30,3:0.48,4:0.60,5:0.70,6:0.78,7:0.85,8:0.90,9:0.95};
+const pctWord = (p)=> p===0 ? "no net change" : `${nf(Math.abs(p))}% ${p>0?"increase":"decrease"}`;
+
+const DAILY_TOPICS = [
+{ name:"Mental arithmetic and estimation", gens:[
+  R=>{ const a=R.pick([0.012,0.036,0.048,0.16,0.24,0.072,0.44]), b=R.pick([25,50,250,125,500]);
+       return [`Calculate ${M(nf(a)+" × "+b)}.`, `${B(nf(a*b))}`]; },
+  R=>{ const k=R.pick([20,30,40,50,60,70,80,90,120,150]), d=R.pick([0.03,0.04,0.06,0.07,0.08,0.09,0.12]);
+       return [`Calculate ${M(nf(k*d)+" ÷ "+nf(d))}.`, `${B(k)}. Scale both numbers by 100: ${M(nf(k*d*100)+" ÷ "+nf(d*100))}.`]; },
+  R=>{ const [b,d]=R.pick([[8,12],[6,9],[4,10],[6,8],[9,12],[5,15],[4,6],[10,15]]);
+       const co=(m)=>R.pick([...Array(m-1).keys()].map(i=>i+1).filter(i=>gcd(i,m)===1));
+       const p=co(b), q=co(d), l=b*d/gcd(b,d);
+       return [`Calculate ${M(`${p}/${b} + ${q}/${d}`)} as a single fraction.`, `${B(M(fr(p*d+q*b,b*d)))}. Common denominator ${l}: ${M(`${p*l/b}/${l} + ${q*l/d}/${l}`)}.`]; },
+  R=>{ const p=R.pick([15,35,45,65,85,30,70,5,2.5,12.5]), n=R.pick([240,360,480,120,640,80,160]);
+       return [`Find ${nf(p)}% of ${n}.`, `${B(nf(p*n/100))}. Build it from 10% = ${nf(n/10)} and 1% = ${nf(n/100)}.`]; },
+  R=>{ const a=R.pick([1.5,2.5,3,4,4.5,6,8,1.2]), b=R.pick([2,3,4,5,6,8]), m=R.pick([-8,-6,-5,-3,-2,3,4,5,7]), n=R.pick([-7,-4,-3,-2,2,3,5,6,8]);
+       return [`Calculate ${M(`(${sciStr(a,m)}) × (${sciStr(b,n)})`)} in scientific notation.`, `${B(M(sciStr(a*b,m+n)))}. ${M(`${nf(a)} × ${b} = ${nf(a*b)}`)}, and the exponents add to ${nf(m+n)}.`]; },
+  R=>{ const [q,b]=R.pick([[2,1.2],[3,1.5],[4,2],[2,2.5],[3,2.5],[1.5,3],[4,2.1],[5,1.6],[2.5,3.2],[3,3]]), m=R.pick([-6,-4,-3,-2,2,3,5,6,8,9]), n=R.pick([-6,-5,-3,-2,2,3,4,6]);
+       return [`Calculate ${M(`(${sciStr(q*b,m)}) ÷ (${sciStr(b,n)})`)} in scientific notation.`, `${B(M(sciStr(q,m-n)))}. ${M(`${nf(q*b)} ÷ ${nf(b)} = ${nf(q)}`)}, and the exponents subtract to ${nf(m-n)}.`]; },
+  R=>{ const r=R.pick([2,3,5]), k=R.int(2,7), rt={2:"1.41",3:"1.73",5:"2.24"}[r];
+       return [`Estimate ${M(`sqrt(${k*k*r})`)} to one decimal place.`, `${B(Math.sqrt(k*k*r).toFixed(1))}. ${M(`sqrt(${k*k*r}) = ${k} sqrt(${r}) ≈ ${k} × ${rt}`)}.`]; },
+  R=>{ const a=R.pick([40,50,80,120,160,200,250]), p=R.pick([5,10,15,20,25,30,35,-10,-20,-25,-15]), b=a*(1+p/100);
+       return [`A value changes from ${a} to ${nf(b)}. What is the percentage change?`, `${B(pctWord(p))}. The change is ${nf(Math.abs(b-a))} out of ${a}.`]; },
+  R=>{ const b=R.int(11,29), a=b+R.int(1,2);
+       return [`Calculate ${M(`${a}^2 − ${b}^2`)} without squaring either number.`, `${B(a*a-b*b)}. ${M(`(${a} − ${b})(${a} + ${b}) = ${a-b} × ${a+b}`)}.`]; },
+  R=>{ const [n,d]=R.pick([[3,8],[5,8],[7,8],[2,7],[3,7],[5,6],[4,9],[7,9],[5,12],[1,6],[5,9],[4,7]]);
+       return [`Write ${M(`${n}/${d}`)} as a decimal to three places.`, `${B((n/d).toFixed(3))}. ${M(`1/${d} ≈ ${(1/d).toFixed(3)}`)}, times ${n}.`]; },
+  R=>{ const a=R.pick([398,402,597,803,298]), b=R.pick([0.52,0.48,0.26,0.74]), c=R.pick([19.6,20.4,9.8,4.9,40.2]);
+       const ra=Math.round(a/100)*100, rb=Math.round(b*4)/4, rc=Number(c.toPrecision(1)), est=ra*rb/rc;
+       return [`Estimate ${M(`${a} × ${b} ÷ ${c}`)} to one significant figure.`, `${B("about "+nf(Number((a*b/c).toPrecision(1))))}. Round to ${M(`${ra} × ${nf(rb)} ÷ ${rc} = ${nf(Number(est.toPrecision(3)))}`)}.`]; }
+]},
+{ name:"Proportional reasoning", gens:[
+  R=>{ const [nm,y,x,p]=R.pick([["Gravitational force","F","r",-2],["Kinetic energy","E","v",2],["The volume of a sphere","V","r",3],["Flow through a tube","Q","r",4],["The period of a pendulum","T","L",0.5],["Light intensity","I","d",-2],["Gas pressure at constant temperature","P","V",-1],["Orbital period","T","a",1.5]]);
+       const [n,d]= p===0.5||p===1.5 ? R.pick([[4,1],[9,1],[16,1],[1,4]]) : p===4 ? R.pick([[2,1],[3,1],[1,2]]) : R.pick([[2,1],[3,1],[4,1],[5,1],[1,2],[1,3]]);
+       const law = p===0.5 ? `${y} ∝ sqrt(${x})` : p===-1 ? `${y} ∝ 1/${x}` : p<0 ? `${y} ∝ 1/${x}^${-p}` : `${y} ∝ ${x}^${p}`;
+       return [`${nm} follows ${M(law)}. If ${M(x)} is ${scaleWord(n,d)}, by what factor does ${M(y)} change?`, `${B(factorWord(ratPow(n,d,p)))}. Raise the scale factor ${M(fr(n,d))} to the power ${nf(p)}.`]; },
+  R=>{ const a=R.pick([10,20,25,50]), b=R.pick([10,20,25,50]), s1=R.pick([1,-1]), s2=R.pick([1,-1]);
+       const f=(1+s1*a/100)*(1+s2*b/100), w=(s)=>s>0?"rises":"falls";
+       return [`A quantity ${w(s1)} by ${a}% and then ${w(s2)} by ${b}%. What is the net percentage change?`, `${B(pctWord(Math.round((f-1)*1e4)/100))}. ${M(`${nf(1+s1*a/100)} × ${nf(1+s2*b/100)} = ${nf(f)}`)}.`]; },
+  R=>{ const c=R.pick([0.2,0.4,0.5,0.6,0.8,1.2,1.5,2]), v=R.pick([10,20,25,50]), f=R.pick([2,4,5,10]);
+       return [`${v} mL of a ${nf(c)} M solution is diluted to a final volume of ${v*f} mL. What is the new concentration?`, `${B(nf(c/f)+" M")}. The volume is multiplied by ${f}, so the concentration is divided by ${f}.`]; },
+  R=>{ const [a,b]=R.pick([[2,3],[3,5],[1,4],[3,7],[5,7],[2,7],[4,5]]), u=R.pick([3,4,5,6,8,12]);
+       return [`Two liquids are mixed in the ratio ${a} : ${b} to make ${(a+b)*u} mL. What volume of each is used?`, `${B(`${a*u} mL and ${b*u} mL`)}. ${a+b} parts make ${(a+b)*u} mL, so one part is ${u} mL.`]; },
+  R=>{ let d,m,c,v; do{ d=R.pick([2,4,5,6,8,15]); m=R.pick([50,60,65,70,75,80]); c=R.pick([10,20,25,40,50]); v=d*m/c; }while(!Number.isInteger(v*2));
+       return [`A drug is dosed at ${d} mg per kg of body mass, from a stock solution of ${c} mg/mL. What volume does a patient weighing ${m} kg need?`, `${B(nf(v)+" mL")}. Dose = ${M(`${d} × ${m} = ${d*m}`)} mg, then divide by ${c}.`]; },
+  R=>{ const k=R.pick([2,3,4,5,10]), sh=R.pick(["cube","sphere","cell (keeping its shape)"]);
+       return [`Every length of a ${sh} is multiplied by ${k}. By what factors do its surface area, its volume and its surface area to volume ratio change?`, `${B(`Area × ${k*k}, volume × ${k*k*k}, ratio × ${M("1/"+k)}`)}. Area scales as ${M("k^2")} and volume as ${M("k^3")}.`]; },
+  R=>{ const a=R.pick([2,3,4]), [n,d]=R.pick([[2,1],[1,2],[3,1],[1,3],[4,1]]);
+       return [`For a fixed amount of gas, ${M("P ∝ T/V")}. The absolute temperature is ${scaleWord(a,1)} and the volume is ${scaleWord(n,d)}. By what factor does ${M("P")} change?`, `${B(factorWord(fr(a*d,n)))}. Multiply the separate effects: ${M(`${a} × ${fr(d,n)}`)}.`]; },
+  R=>{ const p=R.pick([10,20,30,50,-10,-20,-50]), f=(1+p/100)**2;
+       return [`Kinetic energy is ${M("E = 1/2 mv^2")}. Speed ${p>0?"increases":"decreases"} by ${Math.abs(p)}%. What is the percentage change in ${M("E")}?`, `${B(pctWord(Math.round((f-1)*1e4)/100))}. ${M(`${nf(1+p/100)}^2 = ${nf(f)}`)}.`]; },
+  R=>{ const [n,d]=R.pick([[2,1],[3,1],[1,2]]), [a,b]=R.pick([[2,1],[1,2],[4,1]]);
+       return [`Resistance is ${M("R = rhoL/A")}. A wire's length is ${scaleWord(n,d)} and its cross-sectional area is ${scaleWord(a,b)}. By what factor does ${M("R")} change?`, `${B(factorWord(fr(n*b,d*a)))}. ${M("R")} is proportional to ${M("L")} and inversely proportional to ${M("A")}.`]; }
+]},
+{ name:"Algebra", gens:[
+  R=>{ let x,a,b,c,d,e; do{ x=R.int(-5,9); a=R.int(2,5); b=R.int(2,4); c=R.int(1,9); d=R.int(1,a*b-1); e=a*(b*x-c)-d*x; }while(e===0||x===0);
+       return [`Solve ${M(`${a}(${b}x − ${c}) = ${d===1?"":d}x ${e<0?"−":"+"} ${Math.abs(e)}`)}.`, `${B(M("x = "+nf(x)))}. Expand: ${M(`${a*b}x − ${a*c} = ${d===1?"":d}x ${e<0?"−":"+"} ${Math.abs(e)}`)}, so ${M(`${a*b-d===1?"":a*b-d}x = ${nf(e+a*c)}`)}.`]; },
+  R=>{ const x=R.int(1,7), y=R.int(1,6), a=R.int(2,5), b=R.int(2,5), d=R.int(1,3), c2=d*x-y;
+       return [`Solve the simultaneous equations ${M(`${a}x + ${b}y = ${a*x+b*y}`)} and ${M(`${d===1?"":d}x − y = ${nf(c2)}`)}.`, `${B(M(`x = ${x}, y = ${y}`))}. Substitute ${M(`y = ${d===1?"":d}x ${c2<0?"+":"−"} ${Math.abs(c2)}`)} into the first equation.`]; },
+  R=>{ let p,q; do{ p=R.int(-9,9); q=R.int(-9,9); }while(p===0||q===0||p===q||p+q===0);
+       const s=-(p+q), t=p*q, sg=(v)=>v<0?"−":"+", ab=(v)=>Math.abs(v), par=(r)=>`(x ${r>0?"−":"+"} ${ab(r)})`;
+       return [`Solve ${M(`x^2 ${sg(s)} ${ab(s)===1?"":ab(s)}x ${sg(t)} ${ab(t)} = 0`)}.`, `${B(M(`x = ${nf(Math.min(p,q))}`)+" or "+M(`x = ${nf(Math.max(p,q))}`))}. Factorise: ${M(`${par(p)}${par(q)} = 0`)}.`]; },
+  R=>{ const k=R.int(-6,6), b=R.int(2,5), a=R.int(1,9), c=a-b*k, strict=R.pick([true,false]);
+       return [`Solve ${M(`${a} − ${b}x ${strict?">":"≤"} ${nf(c)}`)}.`, `${B(M(`x ${strict?"<":"≥"} ${nf(k)}`))}. ${M(`−${b}x ${strict?">":"≤"} ${nf(c-a)}`)}, and dividing by a negative number reverses the sign.`]; },
+  R=>{ const [f,v,ans]=R.pick([["v = u + at","t","t = (v − u)/a"],["v^2 = u^2 + 2as","a","a = (v^2 − u^2)/2s"],["s = ut + 1/2 at^2","u","u = (s − 1/2 at^2)/t"],["PV = nRT","T","T = PV/nR"],["E = 1/2 mv^2","v","v = sqrt(2E/m)"],["T = 2pi sqrt(L/g)","L","L = gT^2/4pi^2"],["F = kq1q2/r^2","r","r = sqrt(kq1q2/F)"],["1/R = 1/R1 + 1/R2","R2","R2 = RR1/(R1 − R)"],["y = ax/(b + x)","x","x = by/(a − y)"],["P = I^2R","I","I = sqrt(P/R)"],["C = 5/9 (F − 32)","F","F = 9/5 C + 32"],["1/f = 1/u + 1/v","u","u = fv/(v − f)"],["A = P(1 + rt)","r","r = (A − P)/Pt"],["v = Vmax[S]/(Km + [S])","[S]","[S] = vKm/(Vmax − v)"]]);
+       return [`Make ${M(v)} the subject of ${M(f)}.`, `${B(M(ans))}`]; },
+  R=>{ const cm=R.pick([2,3,4,5,6]), em=R.pick([1.5,2,3]), ce=R.pick([-5,-4,-6]), ee=R.pick([3,4]);
+       return [`Absorbance is ${M("A = epsiloncl")}. Find ${M("c")} when ${M("A = "+nf(cm*em*Math.pow(10,ce+ee)))}, ${M("epsilon = "+sciStr(em,ee))} ${U("L mol^-1 cm^-1")} and ${M("l = 1")} cm.`, `${B(M(sciStr(cm,ce))+" mol/L")}. ${M("c = A/epsilonl")}.`]; },
+  R=>{ const [a,b,t]=R.pick([[6,3,2],[12,4,3],[10,15,6],[20,30,12],[6,12,4],[8,8,4],[30,6,5],[20,5,4],[9,18,6],[24,8,6]]);
+       return [`Two resistors in parallel combine as ${M("R = R1R2/(R1 + R2)")}. Find ${M("R")} when ${M("R1 = "+a)} Ω and ${M("R2 = "+b)} Ω.`, `${B(t+" Ω")}. ${M(`${a*b}/${a+b}`)}.`]; },
+  R=>{ const [n,d]=R.pick([[1,1],[2,1],[3,1],[4,1],[9,1],[1,2],[1,3],[1,4]]);
+       return [`The Michaelis–Menten equation is ${M("v = Vmax[S]/(Km + [S])")}. What fraction of ${M("Vmax")} is ${M("v")} when ${M(`[S] = ${fr(n,d)==="1"?"":fr(n,d)+" "}Km`)}?`, `${B(M(fr(n,n+d)))}. Substitute and cancel ${M("Km")}: ${M(`(${fr(n,d)})/(1 + ${fr(n,d)})`)}.`]; },
+  R=>{ const u=R.pick([0,2,4,5,10]), a=R.pick([2,3,4,5]), t=R.pick([2,3,4,5,6]);
+       return [`Using ${M("s = ut + 1/2 at^2")}, find ${M("s")} when ${M("u = "+u)} m/s, ${M("a = "+a)} ${U("m/s^2")} and ${M("t = "+t)} s.`, `${B(nf(u*t+0.5*a*t*t)+" m")}. ${M(`${u} × ${t} + 1/2 × ${a} × ${t*t}`)}.`]; }
+]},
+{ name:"Exponents and logarithms", gens:[
+  R=>{ let a,b,c,e; const base=R.pick([2,3]); do{ a=R.int(-4,6); b=R.int(-4,6); c=R.int(-4,6); e=a+b-c; }while(e<1||e>5||a===0||b===0||c===0);
+       const ex=(v)=>`${base}^${v<0?"−"+(-v):v}`;
+       return [`Evaluate ${M(`${ex(a)} × ${ex(b)} ÷ ${ex(c)}`)}.`, `${B(Math.pow(base,e))}. The exponent is ${M(`${nf(a)} + ${nf(b)} − (${nf(c)}) = ${e}`)}.`]; },
+  R=>{ const [n,p,q,v]=R.pick([[8,2,3,4],[27,2,3,9],[16,3,4,8],[32,2,5,4],[125,2,3,25],[81,3,4,27],[64,2,3,16],[4,3,2,8],[9,3,2,27],[1000,2,3,100],[25,3,2,125],[16,3,2,64]]);
+       return [`Evaluate ${M(`${n}^(${p}/${q})`)}.`, `${B(v)}. Take the ${q===2?"square":q===3?"cube":q+"th"} root first (${Math.round(Math.pow(n,1/q))}), then raise it to the power ${p}.`]; },
+  R=>{ const m=R.pick([2,3,4,5,6,8,9]), k=R.int(1,5);
+       return [`Estimate ${M("log "+m*Math.pow(10,k))} using ${M("log 2 ≈ 0.30")} and ${M("log 3 ≈ 0.48")}.`, `${B((k+DM_LOG[m]).toFixed(2))}. ${M(`log ${m} + log 10^${k} = ${DM_LOG[m].toFixed(2)} + ${k}`)}.`]; },
+  R=>{ const m=R.pick([2,3,4,5,6,8]), k=R.int(2,11);
+       return [`Find the pH of a solution with ${M(`[H^+] = ${m} × 10^−${k}`)} M.`, `${B((k-DM_LOG[m]).toFixed(1))}. ${M(`log(${m} × 10^−${k}) = −${k} + ${DM_LOG[m].toFixed(2)}`)}, and pH is its negative.`]; },
+  R=>{ const [f,m]=R.pick([[0.3,5],[0.5,3.2],[0.7,2],[0.4,4],[0.52,3]]), k=R.int(1,11);
+       return [`Find ${M("[H^+]")} for a solution of pH ${nf(k+f)}.`, `${B("about "+M(`${m} × 10^−${k+1}`)+" M")}. ${M(`10^−${nf(k+f)} = 10^${nf(Math.round((1-f)*100)/100)} × 10^−${k+1}`)}.`]; },
+  R=>{ const h=R.pick([2,3,4,5,6,8,12]), n=R.int(2,5), s=R.pick([80,160,240,320,400,64,96]);
+       return [`A sample has a half-life of ${h} hours. If ${s} mg is present initially, how much remains after ${h*n} hours?`, `${B(nf(s/Math.pow(2,n))+" mg")}. That is ${n} half-lives, so divide by ${M("2^"+n+" = "+Math.pow(2,n))}.`]; },
+  R=>{ const h=R.pick([3,4,5,6,8,14,30]), n=R.int(2,5), u=R.pick(["hours","days","minutes"]);
+       return [`A drug has a half-life of ${h} ${u}. How long until ${nf(100/Math.pow(2,n))}% of the dose remains?`, `${B(h*n+" "+u)}. ${nf(100/Math.pow(2,n))}% is ${M(`(1/2)^${n}`)}, so ${n} half-lives.`]; },
+  R=>{ const [d,f]=R.pick([[10,"10"],[20,"100"],[30,"1000"],[40,"10^4"],[3,"2"],[6,"4"],[13,"20"],[23,"200"]]), a=R.pick([30,40,50,60]);
+       return [`Sound level in decibels is ${M("10 log(I/I0)")}. By what factor does intensity ${M("I")} increase when the level rises from ${a} dB to ${a+d} dB?`, `${B("× "+M(f))}. A rise of ${d} dB means ${M(`log(I2/I1) = ${nf(d/10)}`)}.`]; },
+  R=>{ const pk=R.pick([3.8,4.8,6.4,7.2,9.2]), [a,b,l]=R.pick([[1,10,-1],[10,1,1],[2,1,0.3],[1,2,-0.3],[1,1,0],[100,1,2],[5,1,0.7],[1,5,-0.7],[3,1,0.48]]);
+       return [`Using ${M("pH = pKa + log([A^-]/[HA])")}, find the pH of a buffer with ${M("pKa = "+pk)} when ${M("[A^-] : [HA]")} is ${a} : ${b}.`, `${B(nf(Math.round((pk+l)*100)/100))}. ${M(`log(${fr(a,b)}) = ${nf(l)}`)}.`]; },
+  R=>{ const m=R.pick([2,3,4,5,8]), k=R.int(1,3), a=R.pick([2,4,5]);
+       return [`Solve ${M(`10^(${a}x) = ${m*Math.pow(10,k)}`)}.`, `${B(M("x ≈ "+nf(Math.round((k+DM_LOG[m])/a*100)/100)))}. ${M(`${a}x = log ${m*Math.pow(10,k)} = ${(k+DM_LOG[m]).toFixed(2)}`)}.`]; },
+  R=>{ const [l,r]=R.pick([["ln 10","2.3"],["ln 100","4.6"],["ln 4","1.38"],["ln 8","2.07"],["ln 0.5","−0.69"],["ln 20","3.0"]]);
+       return [`Estimate ${M(l)} using ${M("ln x ≈ 2.3 log x")} and ${M("ln 2 ≈ 0.69")}.`, `${B("about "+r)}`]; }
+]},
+{ name:"Graphs and data interpretation", gens:[
+  R=>{ let m; do{ m=R.int(-4,5); }while(m===0); const c=R.int(-6,9), x1=R.int(1,3), x2=x1+R.int(2,4);
+       return [`A straight line passes through (${x1}, ${nf(m*x1+c)}) and (${x2}, ${nf(m*x2+c)}). Find its gradient and y-intercept.`, `${B(`Gradient ${nf(m)}, y-intercept ${nf(c)}`)}. ${M(`(${nf(m*x2+c)} − ${nf(m*x1+c).replace(/^−(.*)$/,"(−$1)")})/(${x2} − ${x1}) = ${nf(m)}`)}.`]; },
+  R=>{ const v=R.pick([8,10,12,15,20]), t1=R.pick([2,4,5]), t2=R.pick([3,5,6,10]), t3=R.pick([2,4]);
+       return [`On a velocity–time graph, an object speeds up uniformly from rest to ${v} m/s over ${t1} s, holds that speed for ${t2} s, then slows uniformly to rest over ${t3} s. Find the total distance and the initial acceleration.`, `${B(`${nf(0.5*v*t1+v*t2+0.5*v*t3)} m and ${nf(v/t1)} ${U("m/s^2")}`)}. Areas: ${nf(0.5*v*t1)} + ${v*t2} + ${nf(0.5*v*t3)}. Gradient: ${M(`${v}/${t1}`)}.`]; },
+  R=>{ const p=R.pick([2,3,0.5,1.5,-1,-2]), [n,d]= (p===0.5||p===1.5) ? R.pick([[4,1],[9,1]]) : R.pick([[2,1],[3,1],[10,1]]);
+       return [`A plot of ${M("log y")} against ${M("log x")} is a straight line with gradient ${nf(p)}. If ${M("x")} is multiplied by ${n}, by what factor does ${M("y")} change?`, `${B(factorWord(ratPow(n,d,p)))}. The gradient is the power: ${M(`y ∝ x^${p<0?"−"+(-p):p}`)}.`]; },
+  R=>{ const x1=R.pick([10,20,30,40]), y1=R.pick([18,24,34,42,55]), dy=R.pick([10,12,15,20,25,30]), k=R.pick([2,3,4,6,7,8]);
+       return [`The solubility of a salt is ${y1} g per 100 mL at ${x1} °C and ${y1+dy} g per 100 mL at ${x1+10} °C. Estimate the solubility at ${x1+k} °C.`, `${B(nf(y1+dy*k/10)+" g per 100 mL")}. ${x1+k} °C is ${nf(k/10)} of the way, and ${M(`${nf(k/10)} × ${dy} = ${nf(dy*k/10)}`)}.`]; },
+  R=>{ const vm=R.pick([20,25,40,50,100,200]), km=R.pick([0.5,2,4,5,10]);
+       return [`A plot of ${M("1/v")} against ${M("1/[S]")} has a y-intercept of ${nf(1/vm)} and crosses the x-axis at ${nf(-1/km)} ${U("mM^-1")}, with ${M("v")} in µM/s. Find ${M("Vmax")} and ${M("Km")}.`, `${B(`${M("Vmax")} = ${vm} µM/s, ${M("Km")} = ${nf(km)} mM`)}. The y-intercept is ${M("1/Vmax")} and the x-intercept is ${M("−1/Km")}.`]; },
+  R=>{ const d=R.pick([1,2,3]), D=R.pick([10,20,30,5]), s=R.pick([1000,5000,2000]);
+       return [`On a semi-log plot, a drug concentration falls in a straight line from ${s} to ${nf(s/Math.pow(10,d))} units over ${d*D} minutes. Estimate the half-life.`, `${B("about "+nf(0.3*D)+" minutes")}. Each tenfold drop takes ${D} minutes and is about 3.3 half-lives.`]; },
+  R=>{ const n0=R.pick([50,100,200,500]), f=R.pick([2,10,3]), g={2:"0.30",10:"1",3:"0.48"}[f];
+       return [`A bacterial count ${M("N")} is ${[0,1,2,3].map(i=>n0*Math.pow(f,i)).join(", ")} at ${M("t")} = 0, 1, 2 and 3 hours. What should be plotted against ${M("t")} to give a straight line, and what is its gradient?`, `${B(`${M("log N")} against ${M("t")}, gradient about ${g} per hour`)}. ${M("N")} is multiplied by ${f} each hour, so ${M("log N")} rises by ${M("log "+f)}.`]; },
+  R=>{ const r=R.int(-8,-1), m=R.pick([2,3,4,5]);
+       return [`A straight-line graph passes through (1, ${m*(1-r)}) and (4, ${m*(4-r)}). Where does the line cross the x-axis?`, `${B(M("x = "+nf(r)))}. The gradient is ${m}, so ${M("y")} falls from ${m*(1-r)} to 0 over ${1-r} units of ${M("x")}.`]; },
+  R=>{ const F=R.pick([10,20,30,40,50]), d=R.pick([0.05,0.1,0.2,0.4,0.5]);
+       return [`On a force–extension graph, the force on a spring rises in a straight line from 0 to ${F} N as it stretches by ${nf(d)} m. How much work is done, and what is the spring constant?`, `${B(`${nf(0.5*F*d)} J and ${nf(F/d)} N/m`)}. Work is the area of the triangle, ${M(`1/2 × ${F} × ${nf(d)}`)}; the spring constant is the gradient.`]; },
+  R=>{ const base=R.pick([20,30,40]), vals=R.shuffle([15,25,35,-20,-40]).slice(0,4), ys=[base]; vals.sort((a,b)=>b-a).forEach(v=>ys.push(Math.max(5,ys[ys.length-1]+v)));
+       const mx=Math.max(...ys), diffs=ys.slice(1).map((y,i)=>Math.abs(y-ys[i])), bi=diffs.indexOf(Math.max(...diffs));
+       return [`Enzyme activity at pH 5, 6, 7, 8 and 9 is ${ys.join(", ")} units. Between which two adjacent pH values does activity change most steeply, and what is the activity at pH 5 as a percentage of the maximum?`, `${B(`Between pH ${5+bi} and ${6+bi}, and about ${Math.round(base/mx*100)}%`)}. The changes are ${ys.slice(1).map((y,i)=>nf(y-ys[i])).join(", ")}; the maximum is ${mx}.`]; }
+]},
+{ name:"Units and dimensional analysis", gens:[
+  R=>{ const [u,b,e]=R.pick([["nm","m",-9],["µm","m",-6],["mg","g",-3],["kJ","J",3],["MHz","Hz",6],["pF","F",-12],["µL","L",-6],["GW","W",9],["mA","A",-3]]), v=R.pick([450,650,25,3.2,0.75,120]);
+       return [`Convert ${nf(v)} ${u} to ${b}, in scientific notation.`, `${B(M(sciStr(v,e))+" "+b)}. ${M(`${nf(v)} × 10^${e<0?"−"+(-e):e}`)}.`]; },
+  R=>{ const k=R.pick([18,36,54,72,90,108,126,144]), rev=R.pick([true,false]);
+       return rev ? [`Convert ${nf(k/3.6)} m/s to km/h.`, `${B(k+" km/h")}. Multiply by 3.6.`] : [`Convert ${k} km/h to m/s.`, `${B(nf(k/3.6)+" m/s")}. Divide by 3.6.`]; },
+  R=>{ const d=R.pick([0.8,1.2,2.5,2.7,7.9,13.6,0.92]);
+       return [`Convert a density of ${nf(d)} ${U("g/cm^3")} to ${U("kg/m^3")}.`, `${B(nf(d*1000)+" "+U("kg/m^3"))}. ${M("× 1/1000")} for g to kg and ${M("× 10^6")} for ${U("cm^3")} to ${U("m^3")}.`]; },
+  R=>{ const v=R.pick([0.3,0.25,1.5,2,0.05,4.2]);
+       return [`Convert ${nf(v)} L to ${U("cm^3")} and to ${U("m^3")}.`, `${B(`${nf(v*1000)} ${U("cm^3")} and ${M(sciStr(v,-3))} ${U("m^3")}`)}. 1 L = 1000 ${U("cm^3")} = ${M("10^−3")} ${U("m^3")}.`]; },
+  R=>{ const [a,b,f]=R.pick([["µg/mL","mg/L",1],["mg/dL","g/L",0.01],["g/L","mg/mL",1],["mg/L","µg/mL",1],["g/dL","g/L",10],["mg/dL","mg/L",10],["ng/mL","µg/L",1]]), v=R.pick([5,12,80,150,0.4]);
+       return [`Convert ${nf(v)} ${a} to ${b}.`, `${B(nf(v*f)+" "+b)}. ${f===1?"Top and bottom are scaled by the same factor, so the number is unchanged.":`Multiply by ${nf(f)}.`}`]; },
+  R=>{ let V,h,r; do{ V=R.pick([0.6,1,1.2,1.5,2,3]); h=R.pick([4,5,6,8,10,12]); r=V*1000/(h*60); }while(!Number.isInteger(Math.round(r*4*1e6)/1e6));
+       return [`An infusion of ${nf(V)} L runs over ${h} hours. Find the rate in mL/min.`, `${B(nf(r)+" mL/min")}. ${M(`${nf(V*1000)}/${h*60}`)}.`]; },
+  R=>{ const [c,f,ans,how]=R.pick([
+         ["k","F = kx","kg s^-2",`${M("k = F/x")} is N/m, and N is ${U("kg m s^-2")}`],
+         ["G","F = Gm1m2/r^2","N m^2 kg^-2",`rearrange to ${M("G = Fr^2/m1m2")}`],
+         ["R","PV = nRT","J mol^-1 K^-1",`${M("PV")} is an energy, since ${U("Pa m^3 = J")}`],
+         ["k","rate = k[A]^2","L mol^-1 s^-1",`divide ${U("mol L^-1 s^-1")} by ${U("(mol L^-1)^2")}`],
+         ["k","rate = k[A]","s^-1",`divide ${U("mol L^-1 s^-1")} by ${U("mol L^-1")}`],
+         ["rho","R = rhoL/A","Ω m",`${M("rho = RA/L")}, giving ${U("Ω m^2/m")}`],
+         ["eta","F = 6pietarv","kg m^-1 s^-1",`${M("eta = F/6pirv")}, giving ${U("N s m^-2")}`],
+         ["h","E = hf","J s",`divide J by ${U("s^-1")}`],
+         ["k","F = kq1q2/r^2","N m^2 C^-2",`rearrange to ${M("k = Fr^2/q1q2")}`],
+         ["c","Q = mcDeltaT","J kg^-1 K^-1",`rearrange to ${M("c = Q/mDeltaT")}`]]);
+       return [`Find the SI units of ${M(c)} in ${M(f)}${f.startsWith("rate")?`, where rate is in ${U("mol L^-1 s^-1")}`:""}.`, `${B(U(ans))}. ${how.charAt(0)==="<"?how:how.charAt(0).toUpperCase()+how.slice(1)}.`]; },
+  R=>{ const [q,opts,ans,why]=R.pick([["speed",["gh","g/h","sqrt(gh)","sqrt(g/h)"],"sqrt(gh)","gh is m^2 s^-2"],["time",["L/g","sqrt(L/g)","g/L","sqrt(gL)"],"sqrt(L/g)","L/g is s^2"],["energy",["mv","mv^2","m/v","mv^2/r"],"mv^2","kg (m/s)^2 = kg m^2 s^-2 = J"],["force",["mv^2/r","mvr","mv/r","m/vr"],"mv^2/r","kg m^2 s^-2 / m = kg m s^-2 = N"],["pressure",["rhogh","rhog/h","rhoh/g","gh/rho"],"rhogh","kg m^-3 × m s^-2 × m = kg m^-1 s^-2 = Pa"],["acceleration",["v^2/r","vr","v/r^2","v^2r"],"v^2/r","m^2 s^-2 / m = m s^-2"]]);
+       return [`Which of ${R.shuffle(opts).map(o=>M(o)).join(", ")} has the units of ${q}?`, `${B(M(ans))}. ${U(why)}.`]; },
+  R=>{ const [a,b,e]=R.pick([["cm^2","m^2",-4],["mm^2","m^2",-6],["m^2","cm^2",4],["cm^3","m^3",-6],["mm^3","cm^3",-3],["m^3","L",3]]), v=R.pick([250,40,5000,7.5,0.6]);
+       return [`Convert ${nf(v)} ${U(a)} to ${U(b)}, in scientific notation.`, `${B(M(sciStr(v,e))+" "+U(b))}. The length factor is raised to the same power as the unit.`]; }
+]},
+{ name:"Geometry and trigonometry", gens:[
+  R=>{ const [a,b,c]=R.pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25]]), k=R.int(1,4), leg=R.pick([true,false]);
+       return leg ? [`A right-angled triangle has hypotenuse ${c*k} and one shorter side ${a*k}. Find the third side.`, `${B(b*k)}. A ${a}–${b}–${c} triangle${k>1?` scaled by ${k}`:""}.`] : [`A right-angled triangle has shorter sides ${a*k} and ${b*k}. Find the hypotenuse.`, `${B(c*k)}. A ${a}–${b}–${c} triangle${k>1?` scaled by ${k}`:""}.`]; },
+  R=>{ const F=R.pick([10,20,30,40,50,60,80,100]), th=R.pick([30,45,60]), r=th*Math.PI/180;
+       return [`A force of ${F} N acts at ${th}° above the horizontal. Find its horizontal and vertical components.`, `${B(`About ${nf(Number((F*Math.cos(r)).toPrecision(3)))} N horizontal and ${nf(Number((F*Math.sin(r)).toPrecision(3)))} N vertical`)}. ${M(`${F} cos ${th}°`)} and ${M(`${F} sin ${th}°`)}.`]; },
+  R=>{ const L=R.pick([4,6,8,10,12]), th=R.pick([30,60]), r=th*Math.PI/180;
+       return [`A ladder ${L} m long makes an angle of ${th}° with the ground. How high up the wall does it reach, and how far is its base from the wall?`, `${B(`About ${nf(Number((L*Math.sin(r)).toPrecision(3)))} m high, base ${nf(Number((L*Math.cos(r)).toPrecision(3)))} m out`)}. ${M(`${L} sin ${th}°`)} and ${M(`${L} cos ${th}°`)}.`]; },
+  R=>{ const r=R.pick([2,3,5,6,10]), v=fr(4*r*r*r,3), vs=v.includes("/") ? v.replace("/","pi/") : v+"pi";
+       return [`Find the volume and surface area of a sphere of radius ${r} cm, in terms of ${M("pi")} and as an estimate.`, `${B(`${M(vs)} ≈ ${nf(Number((4/3*Math.PI*r**3).toPrecision(3)))} ${U("cm^3")} and ${M(4*r*r+"pi")} ≈ ${nf(Number((4*Math.PI*r*r).toPrecision(3)))} ${U("cm^2")}`)}. ${M("V = 4/3 pi r^3")} and ${M("A = 4pi r^2")}.`]; },
+  R=>{ const r=R.pick([2,3,4,5]), h=R.pick([5,8,10,12]);
+       return [`Find the volume and curved surface area of a cylinder of radius ${r} cm and height ${h} cm.`, `${B(`${M(r*r*h+"pi")} ≈ ${nf(Number((Math.PI*r*r*h).toPrecision(3)))} ${U("cm^3")} and ${M(2*r*h+"pi")} ≈ ${nf(Number((2*Math.PI*r*h).toPrecision(3)))} ${U("cm^2")}`)}. ${M("V = pi r^2h")} and ${M("A = 2pi rh")}.`]; },
+  R=>{ const [a,b,c]=R.pick([[3,4,5],[5,12,13],[8,15,17],[6,8,10],[9,12,15]]), u=R.pick(["N","km","m/s"]);
+       return [`Two perpendicular vectors have sizes ${a} ${u} and ${b} ${u}. Find the size of the resultant and its angle to the ${a} ${u} vector.`, `${B(`${c} ${u} at about ${Math.round(Math.atan2(b,a)*180/Math.PI)}°`)}. Pythagoras for the size, then ${M(`tan theta = ${b}/${a}`)}.`]; },
+  R=>{ const d=R.pick([30,45,60,90,120,135,150,210,270,300]), r=R.pick([2,4,5,10]), th=R.pick([0.5,1.5,2,2.5]), f=fr(d,180);
+       const rs = f.includes("/") ? (f.split("/")[0]==="1"?"":f.split("/")[0])+"pi/"+f.split("/")[1] : (f==="1"?"":f)+"pi";
+       return [`Convert ${d}° to radians, and find the arc length for a radius of ${r} cm and an angle of ${nf(th)} rad.`, `${B(`${M(rs)} ≈ ${nf(Number((d*Math.PI/180).toPrecision(3)))} rad, and ${nf(r*th)} cm`)}. Multiply degrees by ${M("pi/180")}; arc length is ${M("r theta")}.`]; },
+  R=>{ const [n,i,rr,into]=R.pick([[1.41,45,30,true],[1.73,60,30,true],[1.41,30,45,false],[1.73,30,60,false]]);
+       return into ? [`Light passes from air into a medium of refractive index ${n} at an angle of incidence of ${i}°. Using ${M("n1 sin theta1 = n2 sin theta2")}, find the angle of refraction.`, `${B(rr+"°")}. ${M(`sin theta2 = sin ${i}°/${n} = 0.5`)}.`]
+                   : [`Light passes from a medium of refractive index ${n} into air at an angle of incidence of ${i}°. Using ${M("n1 sin theta1 = n2 sin theta2")}, find the angle of refraction.`, `${B(rr+"°")}. ${M(`sin theta2 = ${n} × 0.5 = ${nf(n/2)}`)}.`]; },
+  R=>{ const w=R.pick([1,2,3,5]), D=R.pick([100,200,250,500]);
+       return [`An object ${w} m wide is viewed from ${D} m away. What angle does it subtend, in radians and in degrees?`, `${B(`${nf(w/D)} rad, about ${nf(Number((w/D*57.3).toPrecision(2)))}°`)}. Small-angle approximation: ${M(`theta ≈ ${w}/${D}`)}, then × 57.3.`]; },
+  R=>{ const m=R.pick([2,4,5,6,8,10]), th=R.pick([30,45,60]), r=th*Math.PI/180, W=m*10;
+       return [`A block of mass ${m} kg rests on a ${th}° incline. Taking ${M("g = 10")} ${U("m/s^2")}, find the weight component down the slope and the component into the slope.`, `${B(`About ${nf(Number((W*Math.sin(r)).toPrecision(3)))} N down the slope and ${nf(Number((W*Math.cos(r)).toPrecision(3)))} N into it`)}. ${M(`${W} sin ${th}°`)} and ${M(`${W} cos ${th}°`)}.`]; }
+]},
+{ name:"Probability and statistics", gens:[
+  R=>{ const n=R.int(2,4), least=R.pick([true,false]), d=Math.pow(4,n), none=Math.pow(3,n);
+       return [`Two carriers of a recessive condition have ${n} children. What is the probability that ${least?"at least one is":"none is"} affected?`, `${B(M(least?fr(d-none,d):fr(none,d))+" ≈ "+((least?d-none:none)/d).toFixed(2))}. Each child is unaffected with probability ${M("3/4")}${least?`, so subtract ${M(`(3/4)^${n}`)} from 1`:`, so ${M(`(3/4)^${n}`)}`}.`]; },
+  R=>{ const [x,q,a,w]=R.pick([["AaBb × AaBb","dominant for both genes","9/16","3/4 × 3/4"],["AaBb × AaBb","dominant for A and recessive for B","3/16","3/4 × 1/4"],["AaBb × AaBb","recessive for both genes","1/16","1/4 × 1/4"],["AaBb × aabb","dominant for both genes","1/4","1/2 × 1/2"],["AaBbCc × AaBbCc","dominant for all three genes","27/64","(3/4)^3"],["AaBb × Aabb","dominant for A and recessive for B","3/8","3/4 × 1/2"],["AaBb × AaBb","heterozygous for both genes","1/4","1/2 × 1/2"]]);
+       return [`In the cross ${x}, with the genes assorting independently, what fraction of offspring are ${q}?`, `${B(M(a))}. Treat each gene separately and multiply: ${M(w)}.`]; },
+  R=>{ const n=R.int(5,8), r=R.int(2,3), v= r===2 ? n*(n-1)/2 : n*(n-1)*(n-2)/6;
+       return [`How many ways are there to choose ${r} items from ${n} when order does not matter?`, `${B(v)}. ${M(r===2?`(${n} × ${n-1})/2`:`(${n} × ${n-1} × ${n-2})/6`)}.`]; },
+  R=>{ let v; do{ const a=R.int(3,14); v=[a,a,R.int(2,18),R.int(2,18),R.int(2,18)]; }while(v.reduce((s,x)=>s+x,0)%5!==0 || new Set(v).size!==4);
+       v.sort((p,q)=>p-q); const sum=v.reduce((s,x)=>s+x,0), mode=v.find((x,i)=>v.indexOf(x)!==i);
+       return [`Find the mean, median, mode and range of ${v.join(", ")}.`, `${B(`Mean ${sum/5}, median ${v[2]}, mode ${mode}, range ${v[4]-v[0]}`)}. The sum is ${sum}.`]; },
+  R=>{ const q=R.pick([0.1,0.2,0.3,0.4,0.5]);
+       return [`A recessive phenotype appears in ${nf(q*q*100)}% of a population in Hardy–Weinberg equilibrium. Find ${M("q")}, ${M("p")} and the carrier frequency.`, `${B(`${M("q = "+nf(q))}, ${M("p = "+nf(1-q))}, carriers ${nf(2*q*(1-q)*100)}%`)}. ${M("q^2 = "+nf(q*q))}, and carriers are ${M("2pq")}.`]; },
+  R=>{ const mu=R.pick([50,100,70,120]), sd=R.pick([5,10,15,8]), [d,a,w]=R.pick([[(m,s)=>`between ${m-s} and ${m+s}`,"68%","within 1 SD of the mean"],[(m,s)=>`between ${m-2*s} and ${m+2*s}`,"95%","within 2 SD of the mean"],[(m,s)=>`above ${m+2*s}`,"2.5%","half of the 5% outside 2 SD"],[(m,s)=>`below ${m-s}`,"16%","half of the 32% outside 1 SD"],[(m,s)=>`above ${m+s}`,"16%","half of the 32% outside 1 SD"],[(m,s)=>`between ${m} and ${m+2*s}`,"47.5%","half of the 95% within 2 SD"],[(m,s)=>`between ${m-s} and ${m+2*s}`,"81.5%","34% below the mean plus 47.5% above it"]]);
+       return [`Scores are normally distributed with mean ${mu} and standard deviation ${sd}. Roughly what percentage of scores lie ${d(mu,sd)}?`, `${B("About "+a)}. That is ${w}.`]; },
+  R=>{ const [q,a,w]=R.pick([["a son is affected","1/2","he receives the mother's affected X half the time"],["a daughter is affected","0","she always receives a normal X from her father"],["a daughter is a carrier","1/2","she receives the mother's affected X half the time"],["any given child is an affected son","1/4",`${M("1/2")} for a son × ${M("1/2")} for the affected X`],["two sons are both affected","1/4",`${M("1/2 × 1/2")}`]]);
+       return [`A woman who carries an X-linked recessive allele has children with an unaffected man. What is the probability that ${q}?`, `${B(M(a))}. ${w.charAt(0).toUpperCase()+w.slice(1)}.`]; },
+  R=>{ const [se,sp,pr]=R.pick([[90,90,10],[80,90,20],[90,80,10],[80,80,20],[90,90,50],[80,95,20],[70,90,30]]);
+       const dis=pr*10, tp=dis*se/100, fp=(1000-dis)*(100-sp)/100;
+       return [`A test has ${se}% sensitivity and ${sp}% specificity for a disease with ${pr}% prevalence. What is the probability that a person who tests positive has the disease?`, `${B("About "+Math.round(tp/(tp+fp)*100)+"%")}. In 1000 people, ${dis} have the disease and ${nf(tp)} test positive; of the ${1000-dis} without it, ${nf(fp)} test positive.`]; },
+  R=>{ const [q,a,w]=R.pick([["is a carrier","2/3","of the three unaffected outcomes (AA, Aa, aA), two are carriers"],["is a carrier and passes the recessive allele to a given child","1/3",`${M("2/3 × 1/2")}`],["has an affected child with a known carrier","1/6",`${M("2/3 × 1/4")}`],["has an affected child with an affected partner","1/3",`${M("2/3 × 1/2")}`]]);
+       return [`Two carriers of a recessive condition have an unaffected child. What is the probability that this child ${q}?`, `${B(M(a))}. ${w.charAt(0).toUpperCase()+w.slice(1)}.`]; },
+  R=>{ const r=R.int(3,6), b=R.int(2,5), t=r+b, same=R.pick([true,false]);
+       return same ? [`A bag holds ${r} red and ${b} blue beads. Two are drawn without replacement. What is the probability both are red?`, `${B(M(fr(r*(r-1),t*(t-1))))}. ${M(`${r}/${t} × ${r-1}/${t-1}`)}.`]
+                   : [`A bag holds ${r} red and ${b} blue beads. Two are drawn without replacement. What is the probability of one of each colour?`, `${B(M(fr(2*r*b,t*(t-1))))}. ${M(`2 × ${r}/${t} × ${b}/${t-1}`)}, since either colour can come first.`]; }
+]}
+];
+
+function buildDailySet(dateStr, perTopic){
+  const out = [];
+  DAILY_TOPICS.forEach((topic, ti)=>{
+    const R = dmRng(`gamsat-daily|${dateStr}|${ti}`);
+    const order = R.shuffle(topic.gens.map((_,i)=>i)).slice(0, perTopic);
+    out.push({ name: topic.name, items: order.map(gi=>{ const [q,a] = topic.gens[gi](R); return {q,a}; }) });
+  });
+  return out;
+}
+
+function localDateStr(d){
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+let dailyState = { date: localDateStr(new Date()), perTopic: 3, showAnswers: false };
+
+function renderDaily(){
+  const sheet = $('dailySheet');
+  const set = buildDailySet(dailyState.date, dailyState.perTopic);
+  const total = set.reduce((a,t)=>a+t.items.length, 0);
+  const [y,m,d] = dailyState.date.split("-").map(Number);
+  const pretty = new Date(y, m-1, d).toLocaleDateString(undefined,{weekday:"long", day:"numeric", month:"long", year:"numeric"});
+  let n = 0, qHtml = "", aHtml = "";
+  set.forEach((topic, ti)=>{
+    const start = n + 1;
+    qHtml += `<div class="daily-topic"><h3>${ti+1}. ${topic.name}</h3>` +
+      topic.items.map(it=>`<div class="daily-q"><span class="daily-n">${++n}.</span><div>${it.q}</div></div>`).join("") + `</div>`;
+    let k = start;
+    aHtml += `<div class="daily-topic"><h3>${ti+1}. ${topic.name}</h3>` +
+      topic.items.map(it=>`<div class="daily-q daily-a"><span class="daily-n">${k++}.</span><div>${it.a}</div></div>`).join("") + `</div>`;
+  });
+  sheet.innerHTML = `
+    <div class="daily-head">
+      <div>
+        <div class="daily-title">GAMSAT daily maths</div>
+        <div class="daily-meta">${pretty} &middot; ${total} questions &middot; target ${Math.round(total*1.5)} min &middot; no calculator</div>
+      </div>
+      <div class="daily-score">Score ____ / ${total}</div>
+    </div>
+    ${qHtml}
+    <div class="daily-answers${dailyState.showAnswers ? " is-open" : ""}">
+      <div class="daily-head"><div><div class="daily-title">Answers</div><div class="daily-meta">${pretty}</div></div></div>
+      ${aHtml}
+    </div>`;
+  $('dailyToggleAnswers').textContent = dailyState.showAnswers ? "Hide answers" : "Show answers";
+}
+
+async function loadDaily(){
+  $('dailyDate').value = dailyState.date;
+  $('dailyDate').addEventListener('change', e=>{
+    dailyState.date = e.target.value || localDateStr(new Date());
+    dailyState.showAnswers = false;
+    renderDaily();
+  });
+  $('dailyToday').addEventListener('click', ()=>{
+    dailyState.date = localDateStr(new Date());
+    $('dailyDate').value = dailyState.date;
+    dailyState.showAnswers = false;
+    renderDaily();
+  });
+  $('dailyToggleAnswers').addEventListener('click', ()=>{
+    dailyState.showAnswers = !dailyState.showAnswers;
+    renderDaily();
+  });
+  $('dailyPdfBtn').addEventListener('click', ()=>{
+    document.body.classList.add('print-daily');
+    document.body.classList.toggle('no-answers', !$('dailyIncludeAnswers').checked);
+    const oldTitle = document.title;
+    document.title = "GAMSAT daily maths " + dailyState.date;
+    const done = ()=>{ document.body.classList.remove('print-daily','no-answers'); document.title = oldTitle; window.removeEventListener('afterprint', done); };
+    window.addEventListener('afterprint', done);
+    try{ window.print(); }catch(err){ done(); $('dailyStatus').textContent = "Printing is blocked here — open this file in your browser and try again."; }
+  });
+  renderDaily();
+}
+
+// ---- Word notebook ----
+const WORD_SEED = [
+ {
+  "id": "w-seed-1",
+  "word": "Allegory",
+  "def": "explain something by drawing parallel situations",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-2",
+  "word": "Ideology",
+  "def": "being occupied by abstract speculation or visionary ideas",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-3",
+  "word": "Impertinent",
+  "def": "irrelevant and possibly offensive",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-4",
+  "word": "Pedantry",
+  "def": "overrating / conforming to social rules",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-5",
+  "word": "Affectedly",
+  "def": "putting on a display/flexing",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-6",
+  "word": "Parsimony",
+  "def": "careful in the use or disposal of money",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-7",
+  "word": "Magnanimity",
+  "def": "rising above petty resentment or jealousy, something with great courage often with lofty purpose",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-8",
+  "word": "Pragmatic",
+  "def": "dealing in a practical matter rather than theoretical",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-9",
+  "word": "Altruistic",
+  "def": "regard for others as principle guiding one's actions",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-10",
+  "word": "Belligerent",
+  "def": "hostile, aggressive, and eager to fight or argue",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-11",
+  "word": "Ambivalent",
+  "def": "Ambivalent means having mixed, contradictory, or opposing feelings about someone or something at the same time",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-12",
+  "word": "Exasperation",
+  "def": "a strong feeling of annoyance or frustration, especially when you feel helpless to fix a persistent problem",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-13",
+  "word": "Epistemic",
+  "def": "relating to knowledge, how we acquire it, or the conditions that make knowing something possible",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-14",
+  "word": "Credulity",
+  "def": "a willingness to believe or trust things too quickly, especially without proper or adequate evidence",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-15",
+  "word": "Philistine",
+  "def": "A philistine is a person who lacks respect for, or appreciation of, art, culture, and intellectual pursuits.",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-16",
+  "word": "Elated",
+  "def": "Extremely happy",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-17",
+  "word": "Adulation",
+  "def": "excessive over the top praise",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-18",
+  "word": "Deviating",
+  "def": "Moving away from a set path, plan, or rule.",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-19",
+  "word": "Exhort",
+  "def": "to strongly encourage, advise, or try to persuade someone to do something",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-20",
+  "word": "Consecrating",
+  "def": "Consecrating is the act of making or declaring something sacred, holy, or set apart for a divine or special purpose",
+  "misses": 0,
+  "streak": 0
+ },
+ {
+  "id": "w-seed-21",
+  "word": "Utilitarian",
+  "def": "Relates to Utilitarianism, an ethical theory stating that the best action is the one that brings the greatest good and happiness to the greatest number of people.",
+  "misses": 0,
+  "streak": 0
+ }
+];
+let words = [];
+let wordTab = "library";
+let practice = { current:null, revealed:false, right:0, total:0 };
+
+function capWord(s){ s = String(s).trim(); return s.charAt(0).toUpperCase() + s.slice(1); }
+function newWordId(){ return 'w-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,7); }
+function setWordStatus(msg){ $('wordStatus').textContent = msg || ""; }
+
+async function loadWords(){
+  try{
+    const r = await storage.get('word-notebook', false);
+    words = r && r.value ? JSON.parse(r.value) : [];
+  }catch(e){ words = []; }
+  try{
+    const flag = await storage.get('word-seed-v1', false);
+    if(!(flag && flag.value)){
+      const have = new Set(words.map(w=>w.word.toLowerCase()));
+      WORD_SEED.forEach(s=>{ if(!have.has(s.word.toLowerCase())) words.push(Object.assign({}, s)); });
+      await saveWords();
+      await storage.set('word-seed-v1', '1', false);
+    }
+  }catch(e){ if(!words.length) words = WORD_SEED.map(s=>Object.assign({}, s)); }
+  // one-time: capitalise every word added before this version
+  try{
+    const capFlag = await storage.get('word-caps-v1', false);
+    if(!(capFlag && capFlag.value)){
+      words.forEach(w=>{ w.word = capWord(w.word); });
+      await saveWords();
+      await storage.set('word-caps-v1', '1', false);
+    }
+  }catch(e){ words.forEach(w=>{ w.word = capWord(w.word); }); }
+  renderWords();
+  nextCard();
+}
+async function saveWords(){
+  try{ await storage.set('word-notebook', JSON.stringify(words), false); }catch(e){}
+}
+
+function wordRowHtml(w, showMisses){
+  return `<div class="word-row" data-id="${w.id}">
+      <input class="word-term" type="text" data-field="word" value="${escapeAttr(w.word)}" aria-label="Word">
+      <textarea class="word-def" data-field="def" rows="1" aria-label="Definition">${escapeHtml(w.def)}</textarea>
+      <div style="display:flex;gap:8px;align-items:center;">
+        ${showMisses ? `<span class="word-miss-tag">missed ${w.misses}×</span>` : ""}
+        <button class="del-btn" data-remove="${w.id}" type="button">${showMisses ? "clear" : "Remove"}</button>
+      </div>
+    </div>`;
+}
+function autosize(el){ if(!el.offsetParent) return; el.style.height = "auto"; el.style.height = (el.scrollHeight + 2) + "px"; }
+function autosizeAll(){ document.querySelectorAll('.word-row textarea').forEach(autosize); }
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(autosizeAll);
+window.addEventListener('resize', autosizeAll);
+
+function bindWordRows(container, mode){
+  container.querySelectorAll('.word-row input, .word-row textarea').forEach(el=>{
+    if(el.tagName === "TEXTAREA"){ autosize(el); el.addEventListener('input', ()=>autosize(el)); }
+    el.addEventListener('change', ()=>{
+      const w = words.find(x=>x.id === el.closest('.word-row').dataset.id);
+      if(!w) return;
+      const v = el.value.trim();
+      if(!v){ el.value = w[el.dataset.field]; return; }
+      w[el.dataset.field] = v;
+      saveWords();
+    });
+  });
+  container.querySelectorAll('[data-remove]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.dataset.remove;
+      if(mode === "mistakes"){
+        const w = words.find(x=>x.id===id); if(w){ w.misses = 0; w.streak = 0; }
+      } else {
+        words = words.filter(x=>x.id !== id);
+      }
+      saveWords(); renderWords();
+    });
+  });
+}
+
+function renderWords(){
+  $('wordCount').textContent = words.length + (words.length === 1 ? " word" : " words");
+  const missed = words.filter(w=>w.misses > 0);
+  $('mistakeBadge').textContent = missed.length ? missed.length : "";
+  const q = ($('wordSearch').value || "").trim().toLowerCase();
+  const shown = words.filter(w=> !q || w.word.toLowerCase().includes(q) || w.def.toLowerCase().includes(q))
+                     .sort((a,b)=> a.word.localeCompare(b.word, undefined, {sensitivity:"base"}));
+  const list = $('wordList');
+  list.innerHTML = shown.length ? shown.map(w=>wordRowHtml(w,false)).join("")
+    : `<div class="word-empty">${words.length ? "No words match that search." : "No words yet — add your first one above."}</div>`;
+  bindWordRows(list, "library");
+  const ml = $('mistakeWordList');
+  ml.innerHTML = missed.length ? missed.sort((a,b)=>b.misses-a.misses).map(w=>wordRowHtml(w,true)).join("")
+    : `<div class="word-empty">No mistakes right now. Words you miss in Practice show up here, and leave once you get them right twice in a row.</div>`;
+  bindWordRows(ml, "mistakes");
+}
+
+function addWord(){
+  const word = $('wordInput').value.trim(), def = $('defInput').value.trim();
+  if(!word){ setWordStatus("Type a word first."); $('wordInput').focus(); return; }
+  if(!def){ setWordStatus("Add a definition for “" + word + "”."); $('defInput').focus(); return; }
+  const existing = words.find(w=>w.word.toLowerCase() === word.toLowerCase());
+  if(existing){ existing.def = def; setWordStatus("Updated “" + word + "”."); }
+  else { words.push({id:newWordId(), word: capWord(word), def, misses:0, streak:0}); setWordStatus("Added “" + capWord(word) + "”."); }
+  $('wordInput').value = ""; $('defInput').value = "";
+  saveWords(); renderWords(); $('wordInput').focus();
+}
+$('addWordBtn').addEventListener('click', addWord);
+$('wordInput').addEventListener('keydown', e=>{ if(e.key === "Enter"){ e.preventDefault(); $('defInput').focus(); } });
+$('defInput').addEventListener('keydown', e=>{ if(e.key === "Enter"){ e.preventDefault(); addWord(); } });
+$('wordSearch').addEventListener('input', renderWords);
+
+function showWordTab(tab){
+  wordTab = tab;
+  document.querySelectorAll('.word-tab').forEach(b=>b.classList.toggle('is-active', b.dataset.tab === tab));
+  ["library","practice","mistakes"].forEach(t=>{ $('panel-'+t).hidden = t !== tab; });
+  setWordStatus("");
+  autosizeAll();
+  if(tab === "practice" && !practice.current) nextCard();
+}
+document.querySelectorAll('.word-tab').forEach(b=>b.addEventListener('click', ()=>showWordTab(b.dataset.tab)));
+
+function practicePool(){
+  return $('practiceMistakesOnly').checked ? words.filter(w=>w.misses > 0) : words;
+}
+function nextCard(){
+  const pool = practicePool();
+  practice.revealed = false;
+  $('flashAnswer').hidden = true;
+  $('revealBtn').hidden = false; $('gotItBtn').hidden = true; $('missedBtn').hidden = true;
+  if(!pool.length){
+    practice.current = null;
+    $('flashPrompt').className = "flash-prompt is-def";
+    $('flashPrompt').textContent = $('practiceMistakesOnly').checked ? "No mistakes to practise — nice." : "Add some words to start practising.";
+    $('revealBtn').hidden = true;
+  } else {
+    let pick;
+    // weight words you miss more often so they come up more
+    const weights = pool.map(w=> 1 + 2*w.misses);
+    let r = Math.random() * weights.reduce((a,b)=>a+b,0);
+    for(let i=0;i<pool.length;i++){ r -= weights[i]; if(r <= 0){ pick = pool[i]; break; } }
+    if(!pick) pick = pool[pool.length-1];
+    if(practice.current && pool.length > 1 && pick.id === practice.current.id) pick = pool[(pool.indexOf(pick)+1) % pool.length];
+    practice.current = pick;
+    const byDef = $('practiceMode').value === "def";
+    $('flashPrompt').className = "flash-prompt" + (byDef ? " is-def" : "");
+    $('flashPrompt').textContent = byDef ? pick.def : pick.word;
+    $('flashAnswer').className = "flash-answer" + (byDef ? " is-word" : "");
+    $('flashAnswer').textContent = byDef ? pick.word : pick.def;
+  }
+  $('practiceScore').textContent = practice.total ? `${practice.right}/${practice.total} this session` : "";
+}
+function reveal(){
+  if(!practice.current) return;
+  practice.revealed = true;
+  $('flashAnswer').hidden = false;
+  $('revealBtn').hidden = true; $('gotItBtn').hidden = false; $('missedBtn').hidden = false;
+}
+function mark(gotIt){
+  const w = practice.current; if(!w) return;
+  practice.total++;
+  if(gotIt){
+    practice.right++;
+    if(w.misses > 0){ w.streak = (w.streak||0) + 1; if(w.streak >= 2){ w.misses = 0; w.streak = 0; } }
+  } else {
+    w.misses = (w.misses||0) + 1; w.streak = 0;
+  }
+  saveWords(); renderWords(); nextCard();
+}
+$('revealBtn').addEventListener('click', reveal);
+$('flashcard').addEventListener('click', ()=>{ if(!practice.revealed) reveal(); });
+$('gotItBtn').addEventListener('click', ()=>mark(true));
+$('missedBtn').addEventListener('click', ()=>mark(false));
+$('skipBtn').addEventListener('click', nextCard);
+$('practiceMode').addEventListener('change', nextCard);
+$('practiceMistakesOnly').addEventListener('change', nextCard);
+document.addEventListener('keydown', e=>{
+  if(wordTab !== "practice" || $('panel-practice').hidden) return;
+  if(["INPUT","TEXTAREA","SELECT"].includes(document.activeElement.tagName)) return;
+  if(e.key === " " && !practice.revealed){ e.preventDefault(); reveal(); }
+  else if(practice.revealed && (e.key === "1" || e.key === "ArrowRight")) mark(true);
+  else if(practice.revealed && (e.key === "2" || e.key === "ArrowLeft")) mark(false);
+});
+
+function csvCell(s){ s = String(s); return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; }
+let downloadsApi = null;
+(async ()=>{ try{ if(window.claude && window.claude.use) downloadsApi = await window.claude.use("downloads"); }catch(e){ downloadsApi = null; } })();
+$('wordExportBtn').addEventListener('click', async ()=>{
+  const csv = "word,definition\n" + words.map(w=>csvCell(w.word)+","+csvCell(w.def)).join("\n");
+  if(downloadsApi){
+    try{
+      await downloadsApi.save({filename:"gamsat-words.csv", data:csv});
+      setWordStatus(`Exported ${words.length} words as gamsat-words.csv.`);
+      return;
+    }catch(err){
+      if(err && err.code === "declined"){ setWordStatus("Export cancelled."); return; }
+      if(err && err.code === "rate_limited"){ setWordStatus("A save prompt is already open — finish that one first."); return; }
+    }
+  }
+  if(!(window.claude && window.claude.use)){
+    try{
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv"}));
+      a.download = "gamsat-words.csv";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+      setWordStatus(`Exported ${words.length} words as gamsat-words.csv.`);
+      return;
+    }catch(e){}
+  }
+  try{ await navigator.clipboard.writeText(csv); setWordStatus(`Copied ${words.length} words to the clipboard as CSV.`); }
+  catch(e){ setWordStatus("Export isn't available here."); }
+});
+
+function parseCsvLine(line){
+  const out = []; let cur = "", q = false;
+  for(let i=0;i<line.length;i++){
+    const c = line[i];
+    if(q){ if(c === '"'){ if(line[i+1] === '"'){ cur += '"'; i++; } else q = false; } else cur += c; }
+    else if(c === '"') q = true;
+    else if(c === ','){ out.push(cur); cur = ""; }
+    else cur += c;
+  }
+  out.push(cur); return out;
+}
+function parseWordFile(text){
+  text = text.replace(/^\uFEFF/, "").trim();
+  if(text.startsWith("[")){
+    return JSON.parse(text).map(o=>({word:String(o.word||o.term||"").trim(), def:String(o.def||o.definition||o.meaning||"").trim()}));
+  }
+  return text.split(/\r?\n/).map(line=>{
+    if(!line.trim()) return null;
+    let parts;
+    if(line.includes("\t")) parts = line.split("\t");
+    else if(/\s[-–—:]\s/.test(line) && !line.includes(",")) parts = line.split(/\s[-–—:]\s/);
+    else parts = parseCsvLine(line);
+    const word = (parts[0]||"").trim(), def = parts.slice(1).join(", ").trim();
+    return {word, def};
+  }).filter(p=>p && p.word && p.def && !(p.word.toLowerCase() === "word" && /^defin/i.test(p.def)));
+}
+$('wordImportFile').addEventListener('change', async e=>{
+  const file = e.target.files && e.target.files[0]; e.target.value = "";
+  if(!file) return;
+  try{
+    const items = parseWordFile(await file.text());
+    let added = 0, updated = 0;
+    items.forEach(it=>{
+      const ex = words.find(w=>w.word.toLowerCase() === it.word.toLowerCase());
+      if(ex){ if(ex.def !== it.def){ ex.def = it.def; updated++; } }
+      else { words.push({id:newWordId(), word:capWord(it.word), def:it.def, misses:0, streak:0}); added++; }
+    });
+    await saveWords(); renderWords();
+    setWordStatus(`Imported: ${added} new, ${updated} updated.` + (items.length ? "" : " No word–definition pairs found."));
+  }catch(err){
+    setWordStatus("Couldn't read that file. Use a CSV with word,definition on each line.");
+  }
+});
+
+(async function init(){
+  await loadExamDate();
+  await loadWeek();
+  await loadFormulas();
+  await loadMistakes();
+  await loadDaily();
+  await loadWords();
+})();
+</script>
+</body>
+</html>
