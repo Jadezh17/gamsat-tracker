@@ -758,6 +758,24 @@
   .daily-q{ display:flex; gap:10px; font-size:14px; line-height:1.9; padding:5px 0; }
   .daily-q .daily-n{ font-family:var(--f-num); font-size:12px; color:var(--text-muted); min-width:24px; text-align:right; }
   .daily-answers{ display:none; margin-top:30px; }
+  .fund-part{ margin:2px 0 8px; line-height:1.55; }
+  .fund-tag{ display:inline-block; font-size:11px; font-weight:700; color:var(--ink); background:var(--teal-soft); border-radius:999px; padding:1px 9px; margin-right:8px; vertical-align:1px; }
+  .fund-stem{ margin:6px 0; padding:8px 12px; background:var(--parchment); border-left:3px solid var(--teal); border-radius:4px; font-size:13.5px; }
+  .fund-gq{ font-weight:700; margin-top:4px; }
+  ol.mcq{ list-style:upper-alpha; margin:4px 0 0; padding-left:24px; }
+  ol.mcq li{ margin:2px 0; line-height:1.5; }
+  .flip{ position:relative; }
+  .flip-btn{ float:right; margin:0 0 6px 10px; background:#fff; color:var(--ink); border:1px solid var(--line); border-radius:999px; padding:3px 11px; font-size:12px; font-weight:700; cursor:pointer; font-family:var(--f-body); }
+  .flip-btn:hover{ background:var(--teal-soft); border-color:var(--teal); }
+  .flip-inner{ display:grid; perspective:1400px; clear:right; }
+  .flip-face{ grid-area:1 / 1; backface-visibility:hidden; -webkit-backface-visibility:hidden; transition:transform .5s ease; transform-style:preserve-3d; }
+  .flip-back{ transform:rotateY(180deg); pointer-events:none; background:var(--brick-soft); border:1px solid var(--brick); border-radius:12px; padding:12px 16px 10px; }
+  .flip.is-flipped .flip-front{ transform:rotateY(-180deg); pointer-events:none; }
+  .flip.is-flipped .flip-back{ transform:rotateY(0deg); pointer-events:auto; }
+  .flip-title{ font-family:var(--f-display); font-weight:700; font-size:15px; color:var(--ink); margin-bottom:4px; }
+  .flip-back ul{ margin:0; padding-left:18px; }
+  .flip-back li{ font-size:13.5px; line-height:1.5; margin:4px 0; color:var(--ink); }
+  .daily-label{ font-size:11.5px; font-weight:700; color:var(--text-muted); letter-spacing:0.02em; margin-bottom:1px; line-height:1.5; }
   .daily-answers.is-open{ display:block; }
   .daily-a{ color:var(--ink-soft); }
   .daily-a b{ color:var(--ink); }
@@ -765,10 +783,11 @@
 
   @media print{
     body.print-daily{ background:#fff !important; }
-    body.print-daily > *:not(#dailyWrap){ display:none !important; }
-    body.print-daily #dailyWrap{ padding:0; max-width:none; }
-    body.print-daily #dailyWrap section.card{ border:none; box-shadow:none; padding:0; margin:0; }
+    body.print-daily > *:not(.print-target){ display:none !important; }
+    body.print-daily .print-target{ padding:0; max-width:none; }
+    body.print-daily .print-target section.card{ border:none; box-shadow:none; padding:0; margin:0; }
     body.print-daily .no-print{ display:none !important; }
+    body.print-daily .flip-front{ transform:none !important; }
     body.print-daily #dailySheet{ border-top:none; padding-top:0; }
     body.print-daily .daily-q{ break-inside:avoid; font-size:11.5pt; }
     body.print-daily .daily-topic > .daily-q:not(.daily-a){ padding-bottom:34px; }
@@ -1063,7 +1082,7 @@
   <section class="card accent-teal">
     <div class="no-print">
       <h2>Daily maths sheet</h2>
-      <div class="card-note">A fresh no-calculator set every day, three questions from each of the eight maths topics: arithmetic, proportion, algebra, logs, graphs, units, trigonometry and probability. The questions change with the date, so today's sheet is the same whenever you open it and tomorrow's is new. Save it as a PDF to print or annotate; answers go on their own page.</div>
+      <div class="card-note">A fresh no-calculator set every day across the eight maths topics: arithmetic, proportion, algebra, logs, graphs, units, trigonometry and probability. Each topic has two core questions, then two <b>two-step</b> GAMSAT-style questions where you have to convert, rearrange or read a graph before applying the idea (any formula needed is given). The questions change with the date, so today\'s sheet is the same whenever you open it. Save it as a PDF to print; answers go on their own page.</div>
       <div class="daily-controls">
         <label>Date <input type="date" id="dailyDate"></label>
         <button class="ghost-btn" id="dailyToday" type="button">Today</button>
@@ -1075,6 +1094,26 @@
       <div class="status-text" id="dailyStatus" style="margin:-8px 2px 10px;"></div>
     </div>
     <div id="dailySheet"></div>
+  </section>
+</div>
+
+<div class="wide-wrap" id="fundWrap">
+  <section class="card accent-teal">
+    <div class="no-print">
+      <h2>Section 3 fundamentals check</h2>
+      <div class="card-note">For every topic on your Section 3 checklist (15 biology, 12 chemistry, 10 physics, 5 maths): a short theory question, then a GAMSAT-style multiple-choice question that applies the same idea to an unfamiliar stem. Each topic rotates through its question sets day by day, so you never get the same one two days running. Stuck? Hit <b>Theory card</b> on any question to flip it and see all the theory you need for it.</div>
+      <div class="daily-controls">
+        <label>Date <input type="date" id="fundDate"></label>
+        <button class="ghost-btn" id="fundToday" type="button">Today</button>
+        <button class="ghost-btn" id="fundFlipAll" type="button">Flip all to theory</button>
+        <span class="spacer"></span>
+        <button class="ghost-btn" id="fundToggleAnswers" type="button">Show answers</button>
+        <label><input type="checkbox" id="fundIncludeAnswers" checked> Answers in PDF</label>
+        <button class="add-btn" id="fundPdfBtn" type="button">Save as PDF</button>
+      </div>
+      <div class="status-text" id="fundStatus" style="margin:-8px 2px 10px;"></div>
+    </div>
+    <div id="fundSheet"></div>
   </section>
 </div>
 
@@ -1255,7 +1294,7 @@
 </div>
 
 <footer id="storageFooter">logged to your account &middot; nothing shared</footer>
-<div class="version-stamp" id="versionStamp">Tracker version: 12 Oct 2026, 3:46 pm</div>
+<div class="version-stamp" id="versionStamp">Tracker version: 14 Oct 2026, 2:05 pm</div>
 
 <script>
 const $ = (id) => document.getElementById(id);
@@ -2579,80 +2618,1311 @@ const DAILY_TOPICS = [
 ]}
 ];
 
-function buildDailySet(dateStr, perTopic){
-  const out = [];
-  DAILY_TOPICS.forEach((topic, ti)=>{
-    const R = dmRng(`gamsat-daily|${dateStr}|${ti}`);
-    const order = R.shuffle(topic.gens.map((_,i)=>i)).slice(0, perTopic);
-    out.push({ name: topic.name, items: order.map(gi=>{ const [q,a] = topic.gens[gi](R); return {q,a}; }) });
-  });
-  return out;
-}
-
 function localDateStr(d){
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
+function dayNumber(dateStr){ const [y,m,d] = dateStr.split("-").map(Number); return Math.round(Date.UTC(y,m-1,d)/DAY_MS); }
+const sf = (x,p=3)=> nf(Number(Number(x).toPrecision(p)));
+function piStr(n,d){ const g = gcd(n,d); n/=g; d/=g; return d===1 ? `${n===1?"":n}pi` : `${n===1?"":n}pi/${d}`; }
 
-let dailyState = { date: localDateStr(new Date()), perTopic: 3, showAnswers: false };
+// ---- Harder daily maths: same eight topics, but each question needs two steps ----
+const HARD_TOPICS = [
+{ name:"Mental arithmetic and estimation", gens:[
+  R=>{ const d=R.pick([10,20,50,100]), c=R.pick([24,36,40,48,60,72,80]);
+       return [`A blood sample is diluted 1 in ${d}. In a counting chamber, ${c} cells are counted in 0.1 µL of the diluted sample. How many cells per mL were in the original sample?`,
+       `${B(M(sciOf(c*d*1e4))+" cells/mL")}. 0.1 µL = ${M("10^−4")} mL, so the diluted sample holds ${M(sciOf(c*1e4))} cells/mL; multiply by ${d} to undo the dilution.`]; },
+  R=>{ const r=R.pick([60,70,75,80]), y=R.pick([70,80,90]), x=r*60*24*365*y;
+       return [`A resting heart beats about ${r} times a minute. Estimate the number of beats in a ${y}-year lifetime, to one significant figure.`,
+       `${B("About "+M(sciOf(Number(x.toPrecision(1)))))}. A year is about ${M("5.3 × 10^5")} minutes, so ${M(`${r} × 5.3 × 10^5 × ${y}`)} ≈ ${M(sciOf(Number(x.toPrecision(2))))}.`]; },
+  R=>{ const o=R.pick([80,120,200,240,400,600]), p=R.pick([20,25,40,50]), t=R.pick([10,20,25]), f=(1-p/100)*(1+t/100), fin=Math.round(o*f*100)/100;
+       return [`A price is cut by ${p}%, then a ${t}% tax is added to the reduced price. The final price is $${nf(fin)}. What was the original price?`,
+       `${B("$"+o)}. The overall multiplier is ${M(`${nf(1-p/100)} × ${nf(1+t/100)} = ${nf(f)}`)}, so divide: ${M(`${nf(fin)} ÷ ${nf(f)}`)}.`]; },
+  R=>{ const C=R.pick([50,200,500,800]), n=R.pick([2,3,4]), v=R.pick([[2,8],[1,4],[5,20],[1,9]]), tot=v[0]+v[1], fin=C/Math.pow(10,n)*v[0]/tot;
+       return [`A ${C} mg/mL stock is diluted tenfold ${n} times in a row. Then ${v[0]} mL of the result is mixed with ${v[1]} mL of water. What is the final concentration in µg/mL?`,
+       `${B(sf(fin*1000)+" µg/mL")}. After the serial dilutions it is ${M(sciOf(C/Math.pow(10,n)))} mg/mL; the last step divides by ${M(`${tot}/${v[0]}`)}, then × 1000 converts mg to µg.`]; },
+  R=>{ const [a,m,b,n]=R.pick([[3,20,2,30],[3,40,2,60],[5,10,2,25],[3,30,5,20],[2,50,3,30],[5,30,3,40]]);
+       const L={2:"0.30",3:"0.48",5:"0.70"}, la=m*+L[a], lb=n*+L[b];
+       return [`Without a calculator, decide which is larger: ${M(`${a}^${m}`)} or ${M(`${b}^${n}`)}. Use ${M("log 2 ≈ 0.30")}, ${M("log 3 ≈ 0.48")} and ${M("log 5 ≈ 0.70")}.`,
+       `${B(M(la>lb?`${a}^${m}`:`${b}^${n}`))}. Compare the logs: ${M(`${m} × ${L[a]} = ${la.toFixed(1)}`)} against ${M(`${n} × ${L[b]} = ${lb.toFixed(1)}`)}.`]; },
+  R=>{ const df=R.pick([15,20,60]), V=R.pick([0.5,1,1.2,1.5]), h=R.pick([4,6,8,10,12]), r=V*1000*df/(h*60);
+       return [`A giving set delivers ${df} drops per mL. ${nf(V)} L must run over ${h} hours. How many drops per minute is that?`,
+       `${B(`About ${nf(Math.round(r*10)/10)} drops/min`)}. ${M(`${nf(V*1000)} ÷ ${h*60} = ${sf(V*1000/(h*60))}`)} mL/min, then × ${df}.`]; }
+]},
+{ name:"Proportional reasoning", gens:[
+  R=>{ const [n,d]=R.pick([[1,2],[2,3],[3,4],[4,5]]), e=R.pick([1,2,3]);
+       return [`Flow through a vessel follows ${M("Q ∝ (DeltaP r^4)/(etaL)")}. The radius is ${scaleWord(n,d)}${e>1?` and the blood viscosity is ${scaleWord(e,1)}`:""}. By what factor must the pressure difference change to keep the flow the same?`,
+       `${B(factorWord(fr(e*Math.pow(d,4), Math.pow(n,4))))}. The radius alone multiplies ${M("Q")} by ${M(ratPow(n,d,4))}${e>1?` and the viscosity by ${M("1/"+e)}`:""}; ${M("DeltaP")} has to undo ${e>1?"both":"it"}.`]; },
+  R=>{ const [t,a]=R.pick([[8,4],[27,9],[64,16],[125,25]]);
+       return [`For planets orbiting the same star, ${M("T^2 ∝ a^3")}, where ${M("T")} is the period and ${M("a")} the orbital radius. Planet B's year is ${t} times as long as planet A's. How many times further from the star is B?`,
+       `${B(a+" times")}. ${M(`a^3 ∝ T^2 = ${t*t}`)}, so ${M("a")} is multiplied by the cube root of ${t*t}, which is ${a}.`]; },
+  R=>{ const [k,txt]=R.pick([[2,"doubled"],[1.25,"increased by 25%"],[0.5,"halved"],[0.8,"reduced by 20%"],[1.5,"increased by 50%"]]), f=1/(k*k);
+       return [`Light intensity follows ${M("I ∝ 1/d^2")}. The distance from the source is ${txt}. What is the percentage change in intensity?`,
+       `${B(pctWord(Math.round((f-1)*1e4)/100))}. The intensity factor is ${M(`1/${nf(k)}^2 ≈ ${sf(f,4)}`)}.`]; },
+  R=>{ const [m,t,pk]=R.pick([["16","8","1/2"],["81","27","1/3"],["256","64","1/4"],["1/16","1/8","2"],["1/81","1/27","3"]]);
+       return [`Metabolic rate scales with body mass as ${M("B ∝ M^(3/4)")}. Animal Y has ${m.includes("/")?M(m)+" of":m+" times"} the mass of animal X. By what factors do Y's total metabolic rate and its metabolic rate per kilogram differ from X's?`,
+       `${B(`Total × ${M(t)}, per kg × ${M(pk)}`)}. ${M(`(${m})^(3/4) = ${t}`)}; per kilogram, divide by the mass factor too, since ${M("B/M ∝ M^(−1/4)")}.`]; },
+  R=>{ const a=R.pick([5,10,15]), b=R.pick([30,40,50,60]); let t; do{ t=R.int(a+1,b-1); }while(t%5!==0);
+       let x=b-t, y=t-a; const g=gcd(x,y); x/=g; y/=g; const u=R.pick([10,20,25,50]), V=(x+y)*u;
+       return [`Solution A is ${a}% w/v glucose and solution B is ${b}% w/v. In what ratio must A and B be mixed to make a ${t}% solution, and how much of each is needed for ${V} mL?`,
+       `${B(`${x} : ${y}, so ${x*u} mL of A and ${y*u} mL of B`)}. A is ${t-a} points below the target and B is ${b-t} above, so the volumes go in the inverse ratio ${b-t} : ${t-a}.`]; },
+  R=>{ const Ts=[[27,300],[127,400],[-73,200],[327,600]]; const [c1,k1]=R.pick(Ts); let c2,k2; do{ [c2,k2]=R.pick(Ts); }while(k2===k1);
+       const [n,d]=R.pick([[2,1],[1,2],[3,1],[1,3]]);
+       return [`A fixed amount of gas is ${k2>k1?"heated":"cooled"} from ${nf(c1)} °C to ${nf(c2)} °C while its pressure is ${scaleWord(n,d)}. Using ${M("PV = nRT")}, by what factor does its volume change?`,
+       `${B(factorWord(fr(k2*d, k1*n)))}. Convert to kelvin (${k1} K to ${k2} K). ${M("V ∝ T/P")}, so ${M(`${k2}/${k1} × ${fr(d,n)}`)}.`]; },
+  R=>{ const [n,d]=R.pick([[1,2],[2,3],[1,3],[3,4]]);
+       return [`By continuity, ${M("A1v1 = A2v2")}. A blood vessel narrows so its diameter is ${scaleWord(n,d)}. By what factor does the blood speed change, and what percentage change is that?`,
+       `${B(`${factorWord(fr(d*d,n*n))}, a ${nf(Math.round((d*d/(n*n)-1)*1e4)/100)}% increase`)}. Area goes with diameter squared (× ${M(fr(n*n,d*d))}), and speed is inversely proportional to area.`]; }
+]},
+{ name:"Algebra", gens:[
+  R=>{ const T=R.pick([1,2,3,4,5]);
+       return [`A pendulum's period is ${M("T = 2pi sqrt(L/g)")}. Find the length ${M("L")} that gives ${M("T = "+T)} s, taking ${M("g = 10")} ${U("m/s^2")} and ${M("pi^2 ≈ 10")}.`,
+       `${B(nf(T*T/4)+" m")}. Rearrange to ${M("L = gT^2/(4pi^2)")}, then ${M(`(10 × ${T*T})/40`)}.`]; },
+  R=>{ const [[an,ma],[bn,mb]]=R.pick([[["methane",16],["carbon dioxide",44]],[["water",18],["ethanol",46]],[["helium",4],["argon",40]],[["glucose",180],["sucrose",342]]]), x=R.int(1,5), y=R.int(1,5), n=x+y, m=ma*x+mb*y;
+       return [`A mixture of ${an} (${ma} g/mol) and ${bn} (${mb} g/mol) contains ${n} mol in total and has a mass of ${nf(m)} g. How many moles of each are present?`,
+       `${B(`${x} mol ${an} and ${y} mol ${bn}`)}. Let ${M("a + b = "+n)} and ${M(`${ma}a + ${mb}b = ${nf(m)}`)}; substituting ${M(`a = ${n} − b`)} gives ${M(`${mb-ma}b = ${nf(m-ma*n)}`)}.`]; },
+  R=>{ const [p,q]=R.pick([[1,2],[2,3],[3,4],[4,5],[9,10],[1,4],[1,3]]), k=R.pick([2,4,5,10]);
+       return [`Using ${M("v = Vmax[S]/(Km + [S])")} with ${M("Km = "+k)} mM, what substrate concentration gives ${M(`v = ${fr(p,q)} Vmax`)}?`,
+       `${B(M("[S] = "+fr(k*p,q-p))+" mM")}. Rearranging gives ${M("[S] = fKm/(1 − f)")} with ${M("f = "+fr(p,q))}, so ${M(`${k} × ${fr(p,q)} ÷ ${fr(q-p,q)}`)}.`]; },
+  R=>{ const t1=R.pick([1,2]), t2=R.pick([3,4,5]), u=5*(t1+t2), H=5*t1*t2;
+       return [`A ball is thrown straight up at ${u} m/s, so its height is ${M(`h = ${u}t − 5t^2`)}. At what times is it ${H} m above the ground, and what is its maximum height?`,
+       `${B(`${t1} s and ${t2} s; maximum ${nf(u*u/20)} m`)}. ${M(`5t^2 − ${u}t + ${H} = 0`)} simplifies to ${M(`(t − ${t1})(t − ${t2}) = 0`)}. The top is halfway, at ${M(`t = ${nf((t1+t2)/2)}`)} s.`]; },
+  R=>{ const [f,u,v]=R.pick([[10,15,30],[10,20,20],[10,30,15],[20,30,60],[12,18,36],[5,10,10],[15,20,60],[6,9,18]]);
+       return [`A converging lens obeys ${M("1/f = 1/u + 1/v")}, with magnification ${M("m = v/u")}. With ${M("f = "+f)} cm and the object ${u} cm away, find the image distance and the magnification.`,
+       `${B(`${M("v = "+v)} cm, ${M("m = "+fr(v,u))}`)}. ${M(`1/v = 1/${f} − 1/${u} = ${fr(u-f,f*u)}`)}.`]; },
+  R=>{ const a=R.pick([2,3,5,6]), n=R.pick([1,2,3]), y1=a*Math.pow(2,n), y2=a*Math.pow(4,n);
+       return [`Data follow ${M("y = ax^n")}. When ${M("x = 2")}, ${M("y = "+y1)}; when ${M("x = 4")}, ${M("y = "+y2)}. Find ${M("n")} and ${M("a")}.`,
+       `${B(M(`n = ${n}, a = ${a}`))}. Divide the two equations: ${M(`2^n = ${y2}/${y1} = ${Math.pow(2,n)}`)}, then ${M(`a = ${y1}/2^${n}`)}.`]; },
+  R=>{ let a,b,c,k; do{ a=R.int(1,4); b=R.int(1,9); c=R.int(1,5); k=R.int(a+1,a+5); }while(b+k*c===0);
+       const ax = a===1?"":a, kx = k-a===1?"":k-a;
+       return [`Solve ${M(`(${ax}x + ${b})/(x − ${c}) = ${k}`)}.`,
+       `${B(M("x = "+fr(b+k*c,k-a)))}. Multiply out: ${M(`${ax}x + ${b} = ${k}x − ${k*c}`)}, so ${M(`${kx}x = ${b+k*c}`)}.`]; }
+]},
+{ name:"Exponents and logarithms", gens:[
+  R=>{ const s=R.pick([1,2,3]), m=R.pick([1,2,3]), e=s+3*m, d=R.pick([15,20,30]);
+       return [`A bacterial culture starts with ${M("10^"+s)} cells and doubles every ${d} minutes. Using ${M("2^10 ≈ 10^3")}, roughly how long until it reaches ${M("10^"+e)} cells?`,
+       `${B(`About ${10*m*d} minutes (${nf(Math.round(10*m*d/6)/10)} h)`)}. It must grow ${M("10^"+3*m)}-fold, which is about ${M("2^"+10*m)}, so ${10*m} doublings.`]; },
+  R=>{ const m=R.pick([1,2,5]), j=R.pick([1,2]), f=R.pick([1,2]), c=m*Math.pow(10,-j);
+       return [`${nf(c)} M hydrochloric acid (a strong acid) is diluted ${Math.pow(10,f)}-fold. What is the pH before and after dilution? Use ${M("log 2 ≈ 0.30")} and ${M("log 5 ≈ 0.70")}.`,
+       `${B(`${(j-DM_LOG[m]).toFixed(1)} before, ${(j+f-DM_LOG[m]).toFixed(1)} after`)}. ${M(`[H^+] = ${sciStr(m,-j)}`)} M, then ${M(sciStr(m,-j-f))} M; each tenfold dilution raises the pH by 1.`]; },
+  R=>{ const n1=R.pick([2,3,4]), h=R.pick([2,5,6,10]), n2=R.pick([5,6,7]);
+       return [`A radioactive sample's activity falls to ${M("1/"+Math.pow(2,n1))} of its starting value in ${n1*h} hours. What fraction remains after ${n2*h} hours?`,
+       `${B(M("1/"+Math.pow(2,n2))+` (about ${sf(100/Math.pow(2,n2),2)}%)`)}. ${M("1/"+Math.pow(2,n1))} is ${n1} half-lives, so the half-life is ${h} h and ${n2*h} h is ${n2} half-lives.`]; },
+  R=>{ let a,b; do{ a=R.int(3,9); b=R.int(1,3); }while((a+b)%2);
+       return [`For a weak acid, ${M("[H^+] ≈ sqrt(K_a c)")}. Find the pH of a ${M(sciStr(1,-b))} M solution with ${M("K_a = "+sciStr(1,-a))}.`,
+       `${B("pH "+(a+b)/2)}. ${M(`K_a c = 10^−${a+b}`)}, and the square root halves the exponent: ${M(`[H^+] = 10^−${(a+b)/2}`)}.`]; },
+  R=>{ const [a,b,k]=R.pick([[50,2,2],[25,4,2],[125,8,3],[20,5,2],[250,4,3],[500,20,4]]), j=R.pick([1,2,3]);
+       return [`Evaluate ${M(`log ${a} + log ${b} − log ${nf(Math.pow(10,-j))}`)} without a calculator.`,
+       `${B(k+j)}. ${M(`log(${a} × ${b}) = log ${Math.pow(10,k)} = ${k}`)}, and subtracting ${M(`log 10^−${j}`)} adds ${j}.`]; },
+  R=>{ const [k,th]=R.pick([[0.1,6.9],[0.2,3.45],[0.05,13.8],[0.023,30]]), n=R.pick([2,3,4]);
+       return [`A drug's plasma level follows ${M("C = C0 e^(−kt)")} with ${M("k = "+k)} per hour. Using ${M("ln 2 ≈ 0.69")}, find the half-life, then how long until ${M("C")} is ${M("1/"+Math.pow(2,n))} of ${M("C0")}.`,
+       `${B(`Half-life ≈ ${th} h; ${sf(th*n)} h`)}. Half-life ${M(`= ln 2/k = 0.69/${k}`)}, and ${M("1/"+Math.pow(2,n))} takes ${n} half-lives.`]; },
+  R=>{ const [N,add]=R.pick([[2,3],[4,6],[10,10],[100,20]]), L=R.pick([60,70,80]);
+       return [`Sound level is ${M("L = 10 log(I/I0)")} dB. One machine produces ${L} dB. What level do ${N} identical machines produce together? Use ${M("log 2 ≈ 0.30")}.`,
+       `${B((L+add)+" dB")}. Intensities add, so ${M("I")} is ${N} times larger, which adds ${M(`10 log ${N} = ${add}`)} dB.`]; }
+]},
+{ name:"Graphs and data interpretation", gens:[
+  R=>{ const s=R.pick([1,2,3]), r=R.pick([2,3,4]), ten=R.pick([1,2,3]), T=r*ten;
+       return [`A plot of ${M("log N")} against time is a straight line from (0, ${s}) to (${T} h, ${s+r}). How long does ${M("N")} take to grow tenfold, and roughly what is its doubling time?`,
+       `${B(`${ten} h per tenfold rise; doubling ≈ ${Math.round(ten*0.301*60)} min`)}. ${M("log N")} rises by ${r} in ${T} h. Doubling needs a rise of 0.30, so ${M(`0.30 × ${ten}`)} h.`]; },
+  R=>{ const c=R.pick([0,1]), [g,xs]=R.pick([[1,[3,5,20]],[2,[3,5,20]],[3,[2,3,10]],[0.5,[4,9,100]]]), x=R.pick(xs), y=Math.pow(10,c)*Math.pow(x,g);
+       const expo = g===1?"":(g===0.5?"^(1/2)":"^"+g);
+       return [`A plot of ${M("log y")} against ${M("log x")} is a straight line through (0, ${c}) and (2, ${nf(c+2*g)}). Write the relationship between ${M("y")} and ${M("x")}, then find ${M("y")} when ${M("x = "+x)}.`,
+       `${B(`${M(`y = ${c?"10":""}x${expo}`)}; ${M("y = "+nf(y))}`)}. The gradient ${nf(g)} is the power, and the intercept ${c} is ${M("log a")}, so ${M(`a = ${Math.pow(10,c)}`)}.`]; },
+  R=>{ const v=R.pick([10,15,20,25,30]), tr=R.pick([0.5,1,1.5]), a=R.pick([5,10]);
+       return [`A driver travelling at ${v} m/s sees a hazard. On the velocity–time graph, speed stays constant for a ${nf(tr)} s reaction time, then falls in a straight line to zero at ${a} ${U("m/s^2")}. What is the total stopping distance?`,
+       `${B(nf(v*tr+v*v/(2*a))+" m")}. Rectangle ${M(`${v} × ${nf(tr)} = ${nf(v*tr)}`)} m; braking lasts ${nf(v/a)} s, so the triangle is ${M(`1/2 × ${v} × ${nf(v/a)} = ${nf(v*v/(2*a))}`)} m.`]; },
+  R=>{ const P=R.pick([0.8,1.6,2.4]), h=R.pick([10,20,30]), vals=[1,2,3].map(i=>nf(P*(1-Math.pow(0.5,i))));
+       return [`Product concentration in a reaction is 0, ${vals.join(", ")} M at ${[0,h,2*h,3*h].join(", ")} s. Compare the average rate over the first and last intervals, and explain the pattern in terms of the reactant.`,
+       `${B(`${sf(P/2/h)} vs ${sf(P/8/h)} ${U("M s^-1")}, a fourfold drop`)}. Each interval forms half as much product as the one before: the remaining reactant halves every ${h} s, a constant half-life, which is typical of first-order kinetics.`]; },
+  R=>{ const b=R.pick([0,0.05,0.1]), s=R.pick([0.04,0.05,0.08,0.1]), u=R.pick([2,4,5,6]), d=R.pick([2,5,10]), A=Math.round((b+s*u)*1000)/1000;
+       return [`A standard curve of absorbance against concentration is a straight line through (0 µM, ${nf(b)}) and (10 µM, ${nf(b+10*s)}). A sample diluted ${d}-fold reads ${nf(A)}. What was the concentration of the undiluted sample?`,
+       `${B(nf(u*d)+" µM")}. The gradient is ${nf(s)} per µM, so the diluted sample is ${M(`(${nf(A)} − ${nf(b)})/${nf(s)} = ${u}`)} µM; multiply by ${d}.`]; },
+  R=>{ const N0=R.pick([64,80,160,320]), h=R.pick([2,3,5]), n=R.pick([4,5,6]);
+       return [`Read from a graph, a quantity is ${N0} at ${M("t = 0")}, ${N0/2} at ${M("t = "+h)} and ${N0/4} at ${M("t = "+2*h)}. Predict its value at ${M("t = "+n*h)}, and give the gradient of ${M("log N")} against ${M("t")}.`,
+       `${B(`${nf(N0/Math.pow(2,n))}; gradient ≈ −${nf(Math.round(30/h)/100)} per unit time`)}. It halves every ${h} units, so ${n} half-lives give ${M(`${N0}/2^${n}`)}; each half-life lowers ${M("log N")} by 0.30.`]; },
+  R=>{ const [F,d1,d2,m,v]=R.pick([[10,2,4,4,5],[20,2,4,8,5],[10,4,3,1,10],[40,1,2,2,10],[12,2,2,2,6],[8,2,4,5,4]]), W=F*(d1/2+d2);
+       return [`A ${m} kg trolley starts at rest on a frictionless track. The force on it rises in a straight line from 0 to ${F} N over the first ${d1} m, then stays at ${F} N for another ${d2} m. Using the area under the force–distance graph, find the work done and the final speed.`,
+       `${B(`${nf(W)} J and ${v} m/s`)}. Triangle ${nf(F*d1/2)} J + rectangle ${F*d2} J; then ${M(`1/2 × ${m} × v^2 = ${nf(W)}`)}.`]; }
+]},
+{ name:"Units and dimensional analysis", gens:[
+  R=>{ const [nm,Mm]=R.pick([["glucose",180],["urea",60]]), mm=R.pick([4,5,6,7,8,10]), mgdl=mm*Mm/10;
+       return [`A blood ${nm} level is ${nf(mgdl)} mg/dL. With a molar mass of ${Mm} g/mol, what is it in mmol/L?`,
+       `${B(mm+" mmol/L")}. ${nf(mgdl)} mg/dL = ${nf(mgdl*10)} mg/L; divide by ${Mm} mg/mmol.`]; },
+  R=>{ const [ex,given,ans,q]=R.pick([
+         ["1/2 rhov^2", `${M("rho")} in ${U("kg m^-3")} and ${M("v")} in ${U("m s^-1")}`, "kg m^-1 s^-2", "pressure (Pa)"],
+         ["P/(rhog)", `${M("P")} in Pa, ${M("rho")} in ${U("kg m^-3")} and ${M("g")} in ${U("m s^-2")}`, "m", "a length (a height of fluid)"],
+         ["sqrt(T/mu)", `tension ${M("T")} in N and ${M("mu")} in ${U("kg m^-1")}`, "m s^-1", "a speed"],
+         ["mgh/t", `${M("m")} in kg, ${M("g")} in ${U("m s^-2")}, ${M("h")} in m and ${M("t")} in s`, "kg m^2 s^-3", "power (W)"],
+         ["Fv", `${M("F")} in N and ${M("v")} in ${U("m s^-1")}`, "kg m^2 s^-3", "power (W)"],
+         ["PV/T", `${M("P")} in Pa, ${M("V")} in ${U("m^3")} and ${M("T")} in K`, "J K^-1", "an energy per kelvin, the same units as nR"]]);
+       return [`Taking ${given}, what are the SI units of ${M(ex)}, and what kind of quantity is it?`, `${B(U(ans))}, which is ${q}.`]; },
+  R=>{ const k=R.pick([1800,2000,2400,3000]), W=k*4200/86400;
+       return [`A person eats ${k} kcal a day. Taking 1 kcal = 4.2 kJ, what is their average power in watts?`,
+       `${B("About "+Math.round(W)+" W")}. ${M(`${k} × 4200 = ${sciOf(k*4200)}`)} J spread over 86 400 s.`]; },
+  R=>{ const Q=R.pick([4.5,5,6]), A=R.pick([2.5,3,4,5]), v=Q*1e-3/60/(A*1e-4);
+       return [`Cardiac output is ${nf(Q)} L/min and the aorta's cross-sectional area is ${nf(A)} ${U("cm^2")}. Using ${M("Q = Av")}, what is the mean blood speed in m/s?`,
+       `${B("About "+sf(v,2)+" m/s")}. ${M(`Q = ${sciOf(Number((Q*1e-3/60).toPrecision(3)))}`)} ${U("m^3/s")} and ${M(`A = ${sciOf(A*1e-4)}`)} ${U("m^2")}.`]; },
+  R=>{ const [cp,ce]=R.pick([["µM",-6],["nM",-9],["mM",-3]]), c=R.pick([1,2,5]), [vt,ve]=R.pick([["1 µL",-6],["1 pL (about one cell)",-12],["10 mL",-2]]);
+       return [`How many molecules are in ${vt} of a ${c} ${cp} solution? Use ${M("N_A ≈ 6 × 10^23")} ${U("mol^-1")}.`,
+       `${B(M(sciStr(6*c, ce+ve+23)))}. Moles ${M(`= ${c} × 10^${ce} × 10^${ve} = ${sciStr(c,ce+ve)}`)}, then multiply by ${M("6 × 10^23")}.`]; },
+  R=>{ const m=R.pick([50,60,80]), [A,txt]=R.pick([[1,"a stiletto heel of area 1"],[2,"a heel of area 2"],[250,"two flat feet totalling 250"],[5,"a crutch tip of area 5"]]), P=m*10/(A*1e-4);
+       return [`A ${m} kg person balances on ${txt} ${U("cm^2")}. Taking ${M("g = 10")}, what pressure is exerted, and roughly how many atmospheres is that (1 atm ≈ ${M("10^5")} Pa)?`,
+       `${B(`${M(sciOf(P))} Pa ≈ ${sf(P/1e5,2)} atm`)}. Force ${m*10} N over ${M(sciOf(A*1e-4))} ${U("m^2")}.`]; },
+  R=>{ const r=R.pick([0.1,0.25,0.5,1]), m=R.pick([60,70,80]), c=R.pick([100,200,400]), x=r*m*60/c;
+       return [`An infusion is prescribed at ${nf(r)} µg/kg/min for a ${m} kg patient. The bag contains ${c} µg/mL. What pump rate is needed in mL/h?`,
+       `${B(nf(Math.round(x*100)/100)+" mL/h")}. Dose ${M(`${nf(r)} × ${m} = ${nf(r*m)}`)} µg/min = ${nf(r*m*60)} µg/h, then divide by ${c}.`]; }
+]},
+{ name:"Geometry and trigonometry", gens:[
+  R=>{ const v=R.pick([10,20,30,40]), th=R.pick([30,60]), s=th===30?0.5:0.87, c=th===30?0.87:0.5, vy=v*s, vx=v*c, T=2*vy/10;
+       return [`A ball is launched at ${v} m/s at ${th}° above level ground (${M("g = 10")} ${U("m/s^2")}, ${M("sin 30° = cos 60° = 0.5")}, ${M("cos 30° = sin 60° ≈ 0.87")}). By resolving the velocity, find the time of flight and the range.`,
+       `${B(`${sf(T)} s and about ${sf(vx*T,2)} m`)}. The vertical part ${M("v_y ≈ "+sf(vy))} m/s is lost and regained at 10 ${U("m/s^2")}, so ${M("T = 2v_y/g")}. The horizontal part ${M("v_x ≈ "+sf(vx))} m/s stays constant, so range ${M("= v_x T")}.`]; },
+  R=>{ const th=R.pick([30,45,60]), mu=R.pick([0.2,0.4,0.6,0.8]), S={30:0.5,45:0.71,60:0.87}[th], C={30:0.87,45:0.71,60:0.5}[th], a=10*(S-mu*C);
+       const pull = `${M(`10 sin ${th}° ≈ ${sf(10*S)}`)}`, fric = `${M(`${mu} × 10 cos ${th}° ≈ ${sf(10*mu*C)}`)}`;
+       return [`A block sits on a ${th}° slope with coefficient of friction ${M("mu = "+mu)} (take ${M("g = 10")}). Friction can supply at most ${M("mu mg cos theta")}. Will the block slide, and if so with what acceleration?`,
+       a>0 ? `${B(`Yes, at about ${sf(a,2)} ${U("m/s^2")}`)}. The down-slope pull per kg, ${pull}, beats the maximum friction per kg, ${fric}; the difference is the acceleration.`
+           : `${B("No, it stays put")}. The down-slope pull per kg, ${pull}, is no more than the maximum friction per kg, ${fric}.`]; },
+  R=>{ const [F1,F2,Rr]=R.pick([[3,5,7],[5,3,7],[8,7,13],[5,16,19],[16,5,19],[7,8,13]]);
+       return [`Two forces act on a point: ${F1} N along the x-axis and ${F2} N at 60° to it. By resolving into components, find the size of the resultant.`,
+       `${B(Rr+" N")}. ${M(`R_x = ${F1} + ${F2} cos 60° = ${nf(F1+F2/2)}`)} and ${M(`R_y = ${F2} sin 60°`)}, so ${M(`R^2 = ${nf((F1+F2/2)**2)} + ${nf(3*F2*F2/4)} = ${Rr*Rr}`)}.`]; },
+  R=>{ const r=R.pick([1,2,3]), L=R.pick([4,6,10]), n=3*r*r*L+4*r*r*r;
+       return [`A capsule is a cylinder ${L} mm long with a hemisphere of radius ${r} mm on each end. Using ${M("V = pi r^2 h")} and ${M("V = 4/3 pi r^3")}, find its volume.`,
+       `${B(`${M(piStr(n,3))} ≈ ${sf(n/3*Math.PI)} ${U("mm^3")}`)}. Cylinder ${M(piStr(r*r*L,1))}; the two ends make one whole sphere, ${M(piStr(4*r*r*r,3))}.`]; },
+  R=>{ const h=R.pick([1.5,1.6,1.8]), s=R.pick([0.9,1.2,1.5,2.4,3]), T=R.pick([8,10,12,20]), H=h/s*T;
+       return [`A person ${nf(h)} m tall casts a ${nf(s)} m shadow while a nearby tree's shadow is ${T} m long. How tall is the tree, and is the sun more or less than 45° above the horizon?`,
+       `${B(`${sf(H)} m; ${h===s?"exactly 45°":(h>s?"more":"less")+" than 45°"}`)}. Similar triangles: ${M(`${T} × ${nf(h)}/${nf(s)}`)}. The sun's elevation has ${M(`tan theta = ${nf(h)}/${nf(s)}`)}, and ${M("tan 45° = 1")}.`]; },
+  R=>{ const L=R.pick([0.9,1.6,2.5,3.6,4.9]), v=Math.sqrt(10*L);
+       return [`A pendulum ${nf(L)} m long is released from 60° to the vertical (${M("g = 10")}). Find the arc length to the lowest point, and the speed there using ${M("h = L(1 − cos theta)")} and ${M("v = sqrt(2gh)")}.`,
+       `${B(`Arc ≈ ${sf(L*Math.PI/3)} m; speed ${nf(Math.round(v*100)/100)} m/s`)}. 60° is ${M("pi/3")} rad, so arc ${M("= L pi/3")}. Height drop ${M(`h = ${nf(L)} × (1 − 0.5) = ${nf(L/2)}`)} m.`]; },
+  R=>{ const [c,nt,sv]=R.pick([[30,"2.0","0.5"],[45,"1.41","0.71"],[60,"1.15","0.87"]]), i=R.pick([20,40,50,70]);
+       return [`Light travels inside a material of refractive index ${nt} towards a surface with air. The critical angle satisfies ${M("sin theta_c = 1/n")}. If the light meets the surface at ${i}° to the normal, does it escape or totally internally reflect?`,
+       `${B(i<c?"It escapes (refracts out)":"Total internal reflection")}. ${M(`sin theta_c = 1/${nt} ≈ ${sv}`)}, so ${M(`theta_c = ${c}°`)}, and ${i}° is ${i<c?"below":"above"} that.`]; }
+]},
+{ name:"Probability and statistics", gens:[
+  R=>{ const [desc,a,w]=R.pick([
+         ["her partner is a known carrier", "1/6", "2/3 × 1/4"],
+         ["her partner also has an affected sibling and unaffected parents", "1/9", "2/3 × 2/3 × 1/4"],
+         ["her partner is affected", "1/3", "2/3 × 1/2"],
+         ["her partner comes from a population where 1 in 50 people are carriers", "1/300", "2/3 × 1/50 × 1/4"]]);
+       return [`An unaffected woman has a brother with an autosomal recessive condition; both her parents are unaffected. If ${desc}, what is the probability that their first child is affected?`,
+       `${B(M(a))}. She is a carrier with probability ${M("2/3")} (unaffected rules out aa), so ${M(w)}.`]; },
+  R=>{ const p=R.pick([1,2,5,10]), s=R.pick([90,95,80]), N=10000, dis=p*100, tp=dis*(s/100)**2, fp=(N-dis)*((100-s)/100)**2, one=dis*s/(dis*s+(N-dis)*(100-s));
+       return [`A disease has ${p}% prevalence. A test has ${s}% sensitivity and ${s}% specificity. A person tests positive on two independent runs. Roughly what is the probability they have the disease, compared with after one positive?`,
+       `${B(`About ${Math.round(tp/(tp+fp)*100)}% after two (about ${Math.round(one*100)}% after one)`)}. In 10,000 people, ${dis} have it and ${nf(Math.round(tp))} test positive twice; of the ${N-dis} without it, ${nf(Math.round(fp))} do.`]; },
+  R=>{ const [k,q,c]=R.pick([[2500,50,25],[10000,100,50],[3600,60,30],[1600,40,20]]);
+       return [`An autosomal recessive condition affects 1 in ${k.toLocaleString()} people (assume Hardy–Weinberg and ${M("p ≈ 1")}). A man whose brother is affected (parents unaffected) has a child with an unrelated woman from this population. What is the risk the child is affected?`,
+       `${B(M("1/"+3*q))}. ${M(`q = 1/${q}`)}, so she is a carrier with ${M(`2q ≈ 1/${c}`)}; he is a carrier with ${M("2/3")}: ${M(`2/3 × 1/${c} × 1/4`)}.`]; },
+  R=>{ const [n,m]=R.pick([[3,4],[4,4],[3,5],[4,5],[5,4]]);
+       const C=(a,b)=>{ let r=1; for(let i=0;i<b;i++) r=r*(a-i)/(i+1); return r; };
+       let num=0; for(let j=2;j<=n;j++) num += C(n,j)*Math.pow(m-1,n-j); const den=Math.pow(m,n);
+       return [`A student guesses ${n} multiple-choice questions, each with ${m} options. What is the probability of getting at least 2 right?`,
+       `${B(M(fr(num,den))+` ≈ ${sf(num/den,2)}`)}. Use ${M("1 − P(0) − P(1)")}, with ${M(`P(0) = ${fr(Math.pow(m-1,n),den)}`)} and ${M(`P(1) = ${fr(n*Math.pow(m-1,n-1),den)}`)}.`]; },
+  R=>{ let n,mu,r,mu2,x; do{ n=R.pick([5,8,10]); mu=R.int(10,20); r=R.int(15,30); mu2=mu+R.pick([-2,-1,1,2]); x=r+n*(mu2-mu); }while(x<=0||x===r);
+       return [`The mean of ${n} measurements is ${mu}. One reading of ${r} turns out to be an error; after it is replaced with the correct value the mean is ${mu2}. What was the correct value?`,
+       `${B(x)}. The total goes from ${n*mu} to ${n*mu2}, a change of ${nf(n*(mu2-mu))}, so the reading becomes ${M(`${r} ${mu2>mu?"+":"−"} ${Math.abs(n*(mu2-mu))}`)}.`]; },
+  R=>{ const za=R.pick([0.5,1.5,2.5]), zb=R.pick([1,2]), sa=R.pick([4,8,10]), ma=R.pick([50,60]), sb=R.pick([5,6,12]), mb=R.pick([55,65,70]), pct=zb===1?"16":"2.5";
+       return [`A student scored ${nf(ma+za*sa)} on test A (mean ${ma}, SD ${sa}) and ${mb+zb*sb} on test B (mean ${mb}, SD ${sb}). On which test did they do relatively better? If B's scores are normally distributed, roughly what percentage of students beat them on B?`,
+       `${B(`Test ${za>zb?"A":"B"}; about ${pct}%`)}. ${M(`z_A = ${nf(za)}`)} and ${M(`z_B = ${zb}`)}; about ${pct}% of a normal distribution lies more than ${zb} SD above the mean.`]; },
+  R=>{ const d=R.pick([10,20,30,40]), cls=R.pick(["Ab/ab","aB/ab","AB/ab","ab/ab"]), rec= cls==="Ab/ab"||cls==="aB/ab";
+       return [`Genes A and B are ${d} map units apart (1 map unit = 1% recombinant offspring). In the test cross <i>AB/ab</i> × <i>ab/ab</i>, what percentage of offspring have the genotype <i>${cls}</i>?`,
+       `${B((rec?d/2:(100-d)/2)+"%")}. ${rec?`It is a recombinant class: the ${d}% recombinants split equally between Ab and aB.`:`It is a parental class: the ${100-d}% parentals split equally between AB and ab.`}`]; }
+]}
+];
 
-function renderDaily(){
-  const sheet = $('dailySheet');
-  const set = buildDailySet(dailyState.date, dailyState.perTopic);
-  const total = set.reduce((a,t)=>a+t.items.length, 0);
-  const [y,m,d] = dailyState.date.split("-").map(Number);
-  const pretty = new Date(y, m-1, d).toLocaleDateString(undefined,{weekday:"long", day:"numeric", month:"long", year:"numeric"});
-  let n = 0, qHtml = "", aHtml = "";
-  set.forEach((topic, ti)=>{
-    const start = n + 1;
-    qHtml += `<div class="daily-topic"><h3>${ti+1}. ${topic.name}</h3>` +
-      topic.items.map(it=>`<div class="daily-q"><span class="daily-n">${++n}.</span><div>${it.q}</div></div>`).join("") + `</div>`;
-    let k = start;
-    aHtml += `<div class="daily-topic"><h3>${ti+1}. ${topic.name}</h3>` +
-      topic.items.map(it=>`<div class="daily-q daily-a"><span class="daily-n">${k++}.</span><div>${it.a}</div></div>`).join("") + `</div>`;
+// ---- Section 3 fundamentals: per checklist topic, a theory question plus a GAMSAT-style
+// question that applies the same theory. Each entry:
+// [theory question, short answer, explanation, stem, question, [options A-D], correct index, explanation]
+const FUND_SUBJECTS = [
+{ name:"Biology", topics:[
+  { name:"Biomolecules and the cell", qs:[
+    ["Which organelles would be most abundant in a cell that secretes large amounts of protein, and why?","Rough ER and Golgi","Ribosomes on the rough ER make proteins for export; the Golgi modifies and packages them into secretory vesicles.",
+     "Pancreatic acinar cells secrete large amounts of digestive enzymes. In a pulse–chase experiment, cells are briefly given radioactive amino acids, then only unlabelled ones, and the location of the radioactivity is tracked over time.",
+     "Which sequence of locations would the label most likely follow?",
+     ["Nucleus → rough ER → Golgi → lysosomes","Rough ER → Golgi → secretory vesicles → outside the cell","Golgi → rough ER → secretory vesicles → outside the cell","Smooth ER → mitochondria → Golgi → outside the cell"],1,
+     "Secreted proteins are made on rough ER ribosomes, processed in the Golgi, packaged into vesicles and released by exocytosis."],
+    ["Name the monomer of proteins, nucleic acids and polysaccharides, and the bond linking each.","Amino acids (peptide), nucleotides (phosphodiester), monosaccharides (glycosidic)","All three bonds form by condensation and break by hydrolysis.",
+     "Lactase hydrolyses lactose, a disaccharide of glucose and galactose, and is specific for the bond in its substrate. A student incubates lactase with a mixture of lactose, a short peptide and a short single-stranded DNA fragment, then tests for free monomers.",
+     "Which free monomers would be detected?",
+     ["Monosaccharides only","Monosaccharides and amino acids","Nucleotides only","Monosaccharides, amino acids and nucleotides"],0,
+     "Lactase only breaks the glycosidic bond in lactose; peptide and phosphodiester bonds need other enzymes."],
+    ["Why can O₂ diffuse straight through the plasma membrane while Na⁺ cannot?","O₂ is small and non-polar; Na⁺ is charged","The hydrophobic core of the bilayer lets non-polar molecules through but repels ions, which need channels or pumps.",
+     "Approximate permeability of a pure lipid bilayer, from most to least permeable: O₂ > CO₂ > H₂O > urea > glucose > Na⁺. Na⁺ is the smallest of these particles apart from O₂; glucose is the largest.",
+     "Which conclusion is best supported?",
+     ["Permeability falls steadily as molecular size increases","Water crosses faster than O₂ because it is smaller","Charge reduces permeability more strongly than size does","All polar molecules cross at the same rate"],2,
+     "Na⁺ is tiny yet least permeable, so charge matters more than size; size alone cannot explain the order."]]},
+  { name:"Enzymes, metabolism and the central dogma", qs:[
+    ["A competitive inhibitor is added to an enzyme reaction. What happens to Vmax and Km?","Vmax unchanged, apparent Km increases","It competes for the active site, so enough substrate still reaches full speed, but more is needed to reach half of it.",
+     "Methanol is toxic because the enzyme alcohol dehydrogenase converts it into formaldehyde. Ethanol binds the same active site and is sometimes given as an antidote.",
+     "How does ethanol help, and what does it do to the enzyme's kinetics for methanol?",
+     ["It denatures the enzyme, lowering Vmax","It binds an allosteric site, lowering Vmax but not Km","It competes for the active site, raising the apparent Km for methanol","It speeds up the breakdown of formaldehyde, without affecting the enzyme"],2,
+     "Ethanol is a competing substrate: methanol conversion slows (apparent Km rises) while Vmax is unchanged."],
+    ["A DNA template strand reads 3′-TAC GGA-5′. What is the mRNA (5′→3′), and what does its first codon code for?","5′-AUG CCU-3′; AUG is methionine, the start codon","mRNA is complementary to the template strand, with U in place of T.",
+     "In a mutant gene, an mRNA codon 5′-UGG-3′ (tryptophan) becomes 5′-UGA-3′. The stop codons are UAA, UAG and UGA.",
+     "What is the most likely effect on the protein?",
+     ["One amino acid is substituted for another","The protein is cut short at that point","There is no change in the protein","Every amino acid after that point changes (frameshift)"],1,
+     "UGA is a stop codon, so translation ends early (a nonsense mutation); no bases were added or removed, so it is not a frameshift."],
+    ["Where in the cell do glycolysis, the Krebs cycle and oxidative phosphorylation happen?","Cytoplasm; mitochondrial matrix; inner mitochondrial membrane","Oxidative phosphorylation makes most of the ATP and needs O₂ as the final electron acceptor.",
+     "Cyanide blocks the last protein of the electron transport chain on the inner mitochondrial membrane, so O₂ can no longer accept electrons. Cyanide-exposed cells rapidly produce lactate.",
+     "Which best explains the lactate production?",
+     ["The Krebs cycle speeds up to compensate","Lactate is made by the electron transport chain","Cyanide is converted into lactate","Cells rely on glycolysis in the cytoplasm, making lactate to regenerate NAD⁺"],3,
+     "With oxidative phosphorylation blocked, the Krebs cycle also stalls; glycolysis can continue only if NAD⁺ is regenerated by turning pyruvate into lactate."]]},
+  { name:"Cell division", qs:[
+    ["A human cell has 2n = 46. How many chromosomes and chromatids are present at metaphase of mitosis, and how many chromosomes are in each cell after meiosis II?","46 chromosomes and 92 chromatids; 23 chromosomes","DNA is copied in S phase, so each chromosome has two sister chromatids until anaphase.",
+     "A species has 2n = 8. DNA content per cell is measured in arbitrary units; a cell in G1 contains 2 units.",
+     "How much DNA is in a cell at metaphase II of meiosis, and in each gamete?",
+     ["2 units and 1 unit","4 units and 2 units","1 unit and 0.5 units","4 units and 1 unit"],0,
+     "DNA doubles to 4 before meiosis I; each cell after meiosis I holds 2 (haploid set, still with sister chromatids); each gamete holds 1."],
+    ["In which phase of meiosis do homologous chromosomes separate, and when does crossing over occur?","Anaphase I; prophase I","Sister chromatids separate later, in anaphase II.",
+     "In nondisjunction, chromosomes fail to separate. If homologues fail to separate in meiosis I, all four gametes are abnormal; if sister chromatids fail to separate in one cell during meiosis II, only two are. Of the four sperm from one meiosis, two are normal, one has an extra chromosome 21 and one lacks chromosome 21.",
+     "When did the error most likely occur?",
+     ["Anaphase I","Anaphase II","Prophase I, during crossing over","Mitosis in the early embryo"],1,
+     "Only two of four gametes are abnormal, which matches failure of sister chromatids to separate in one cell at anaphase II."],
+    ["State the key difference in outcome between mitosis and meiosis.","Mitosis: 2 identical diploid cells; meiosis: 4 genetically different haploid cells","Meiosis adds variation through crossing over and independent assortment.",
+     "A plant can reproduce asexually, growing new plantlets from cells divided by mitosis, and sexually, by seeds. A fungus spreads that kills only plants with one particular genotype.",
+     "If the parent plant has the susceptible genotype, which offspring are most at risk of being wiped out?",
+     ["Seeds, because meiosis halves the chromosome number","Both groups equally","Plantlets, because they are genetically identical to the parent","Seeds, because crossing over creates susceptibility"],2,
+     "Mitosis makes clones, so every plantlet shares the susceptible genotype; seeds vary genetically, so some may resist."]]},
+  { name:"Gene expression and inheritance", qs:[
+    ["A base change in the third position of a codon leaves the protein unchanged. What kind of mutation is it, and why is this possible?","A silent mutation","The genetic code is degenerate: several codons code for the same amino acid.",
+     "Part of the codon table: GCU, GCC, GCA and GCG all code for alanine; GAU and GAC code for aspartate; GAA and GAG code for glutamate.",
+     "A codon GCA undergoes a single-base change. Which change would alter the amino acid?",
+     ["GCA → GCU","GCA → GCG","GCA → GAA","GCA → GCC"],2,
+     "Changes in the third position all keep alanine; changing the second base to A gives GAA, glutamate."],
+    ["What are introns and exons, and which remain in mature mRNA?","Exons remain; introns are spliced out","Splicing happens in the nucleus before the mRNA is exported.",
+     "A gene has three exons (150, 90 and 210 nucleotides) separated by two introns (400 and 1200 nucleotides). In muscle cells, alternative splicing also removes exon 2.",
+     "Counting only exon sequence, how long is the spliced mRNA in muscle cells and in other cells?",
+     ["360 and 450 nucleotides","1960 and 2050 nucleotides","450 and 360 nucleotides","1960 and 360 nucleotides"],0,
+     "Other cells keep all exons: 150 + 90 + 210 = 450; muscle skips exon 2: 150 + 210 = 360. Introns are never kept."],
+    ["Distinguish codominance from incomplete dominance with an example of each.","Codominance: both alleles show (AB blood group); incomplete dominance: a blend (red × white giving pink)","In codominance neither allele masks the other; in incomplete dominance the heterozygote is intermediate.",
+     "In a flower, red (R) and white (W) alleles show incomplete dominance, so RW plants are pink.",
+     "Two pink plants are crossed. What proportion of the offspring are pink?",
+     ["3/4","All of them","1/4","1/2, in a 1 red : 2 pink : 1 white ratio"],3,
+     "RW × RW gives RR : RW : WW in 1 : 2 : 1, and only RW is pink."]]},
+  { name:"Nervous system", qs:[
+    ["Which ion moves, and in which direction, during the rising (depolarisation) phase of an action potential?","Na⁺ flows into the cell","Voltage-gated Na⁺ channels open; repolarisation follows as K⁺ flows out.",
+     "Tetrodotoxin (TTX), from pufferfish, blocks voltage-gated Na⁺ channels. A nerve is bathed in TTX and then stimulated.",
+     "What is recorded?",
+     ["No action potential, while the resting potential is roughly maintained","A larger action potential than normal","A prolonged depolarisation","Hyperpolarisation followed by an action potential"],0,
+     "Without Na⁺ influx the membrane cannot depolarise to fire; the resting potential depends mainly on K⁺, so it stays."],
+    ["Name the two divisions of the autonomic nervous system and the effect of each on heart rate.","Sympathetic raises it; parasympathetic lowers it","Sympathetic is 'fight or flight'; parasympathetic is 'rest and digest'.",
+     "Atropine blocks the receptors that parasympathetic nerves act on, leaving sympathetic signalling intact. Parasympathetic activity normally slows the heart and constricts the pupils.",
+     "What is the expected effect of atropine?",
+     ["Slower heart rate, constricted pupils","Faster heart rate, dilated pupils","Faster heart rate, constricted pupils","No change in either"],1,
+     "Removing the parasympathetic brake leaves sympathetic effects unopposed: the heart speeds up and the pupils dilate."],
+    ["Why does myelin speed up nerve conduction?","The impulse jumps between nodes of Ranvier (saltatory conduction)","Myelin insulates the axon, so depolarisation only happens at the gaps.",
+     "Multiple sclerosis damages myelin in the central nervous system. In myelinated axons, conduction speed is roughly proportional to axon diameter; in unmyelinated axons it is roughly proportional to the square root of diameter.",
+     "What would you expect in demyelinated regions?",
+     ["Faster conduction, because more membrane is exposed","Unchanged speed, because axon diameter is unchanged","Slowed or blocked conduction, because impulses can no longer jump between nodes","Faster conduction in thick axons only"],2,
+     "Without myelin, current leaks out and saltatory conduction fails, so signals slow or stop."]]},
+  { name:"Musculoskeletal system", qs:[
+    ["Which ion triggers skeletal muscle contraction by binding troponin, and where is it released from?","Ca²⁺, from the sarcoplasmic reticulum","Ca²⁺ binding shifts tropomyosin, exposing myosin-binding sites on actin.",
+     "Dantrolene blocks Ca²⁺ release from the sarcoplasmic reticulum. It treats malignant hyperthermia, where uncontrolled Ca²⁺ release causes sustained contraction and heat.",
+     "What does dantrolene do?",
+     ["Increases acetylcholine release at the neuromuscular junction","Relaxes skeletal muscle, because less Ca²⁺ is available to bind troponin","Blocks action potentials in motor neurons","Raises ATP levels so myosin detaches"],1,
+     "Less Ca²⁺ means troponin–tropomyosin keeps blocking actin, so cross-bridges cannot form and the muscle relaxes."],
+    ["What connects muscle to bone, and bone to bone?","Tendons (muscle to bone); ligaments (bone to bone)","",
+     "In the knee, the anterior cruciate ligament (ACL) runs from the femur to the tibia and stops the tibia sliding forward. The patellar tendon links the quadriceps, via the kneecap, to the tibia.",
+     "A patient can straighten the leg strongly, but the tibia slides forward abnormally when pulled. Which structure is most likely damaged?",
+     ["Patellar tendon","Quadriceps muscle","Anterior cruciate ligament","Femur"],2,
+     "Strong extension shows the quadriceps and its tendon work; abnormal forward sliding means the ligament that limits it has failed."],
+    ["During contraction, what happens to the sarcomere, the A band and the I band?","Sarcomere and I band shorten; A band stays the same","Filaments slide past each other but do not change length.",
+     "In a sarcomere, myosin (thick) filaments are 1.6 µm long and define the A band. The I band is the part of the sarcomere containing only thin filaments, so its total width = sarcomere length − A band.",
+     "A fibre contracts and sarcomere length falls from 2.6 µm to 2.2 µm. How do the I band and A band change?",
+     ["Both shorten by 0.2 µm","The A band shortens by 0.4 µm; the I band is unchanged","The I band is unchanged; the A band lengthens","The I band shortens by 0.4 µm; the A band is unchanged"],3,
+     "Myosin length never changes, so the A band stays 1.6 µm; the I band goes from 1.0 to 0.6 µm."]]},
+  { name:"Cardiovascular system", qs:[
+    ["Trace blood from the vena cava to the aorta, naming chambers and valves.","RA → tricuspid → RV → pulmonary valve → lungs → LA → mitral → LV → aortic valve → aorta","The pulmonary artery carries blood to the lungs; pulmonary veins return it.",
+     "A ventricular septal defect is a hole between the two ventricles. During contraction, pressure in the left ventricle is much higher than in the right.",
+     "Which way does blood flow through the hole, and what is the consequence?",
+     ["Right to left, sending deoxygenated blood to the body","Left to right, increasing blood flow to the lungs","No flow, because the valves prevent it","Left to right, reducing blood flow to the lungs"],1,
+     "Blood flows down the pressure gradient from LV to RV, so extra blood goes round the pulmonary circuit."],
+    ["Why is the left ventricle wall thicker than the right?","It pumps blood round the whole body at higher pressure","The systemic circulation has much more resistance than the pulmonary circulation.",
+     "In pulmonary hypertension, resistance in the blood vessels of the lungs rises greatly over years.",
+     "Which change in the heart is most expected?",
+     ["Thickening of the right ventricle wall","Thinning of the left ventricle wall","Thickening of the left atrium only","No change, since lung vessels are separate from the heart"],0,
+     "The right ventricle pumps into the lungs; working against higher resistance makes its muscle thicken, just as the LV is thick from pumping into the systemic circuit."],
+    ["Cardiac output = heart rate × stroke volume. With a heart rate of 70 /min and stroke volume of 70 mL, what is the cardiac output?","4.9 L/min","70 × 70 = 4900 mL/min.",
+     "Cardiac output (CO) = heart rate × stroke volume, and mean arterial pressure ≈ CO × total peripheral resistance. During exercise, heart rate rises from 60 to 150 /min and stroke volume from 70 to 100 mL, while mean arterial pressure rises only from 90 to 105 mmHg.",
+     "By roughly what factor did peripheral resistance change?",
+     ["× 3.6","× 1.2","× 1/3","Unchanged"],2,
+     "CO goes from 4.2 to 15 L/min (× 3.6) while pressure rises only × 1.17, so resistance ≈ 1.17 ÷ 3.6 ≈ 1/3 (blood vessels in muscle dilate)."]]},
+  { name:"Respiratory system", qs:[
+    ["Where does gas exchange occur in the lungs, and what makes it efficient?","The alveoli","Huge surface area, walls one cell thick, dense capillaries and steep concentration gradients.",
+     "Fick's law: rate of diffusion ∝ (surface area × concentration difference) ÷ membrane thickness. In emphysema, alveolar walls break down, so many small alveoli merge into fewer large air spaces.",
+     "Why does emphysema reduce gas exchange?",
+     ["The membrane becomes thinner","The alveoli become more numerous","The total surface area falls","The concentration difference increases"],2,
+     "Fewer, larger air spaces have far less total wall area, so diffusion falls."],
+    ["During inspiration, what do the diaphragm, thoracic volume and lung pressure do?","Diaphragm contracts and flattens; volume rises; pressure falls below atmospheric","Air flows in down the pressure gradient.",
+     "The lungs stay inflated because pressure in the pleural space (between lung and chest wall) is lower than in the lungs. In a pneumothorax, air enters the pleural space and its pressure rises to atmospheric.",
+     "What happens to the lung on that side?",
+     ["It over-inflates","It is unaffected","It inflates only during expiration","It collapses, because the pressure difference holding it open is lost"],3,
+     "Without the lower pleural pressure, the lung's elastic recoil makes it collapse, and chest movement no longer draws air in."],
+    ["In what form is most CO₂ carried in the blood?","As bicarbonate (HCO₃⁻)","Carbonic anhydrase in red blood cells converts CO₂ and water to H⁺ and HCO₃⁻.",
+     "In blood: CO₂ + H₂O ⇌ H₂CO₃ ⇌ H⁺ + HCO₃⁻. During a panic attack, a person hyperventilates, breathing out CO₂ faster than it is produced.",
+     "What happens to blood pH?",
+     ["It rises, because the equilibria shift left and H⁺ falls","It falls, because H⁺ accumulates","It does not change","It falls, because HCO₃⁻ rises"],0,
+     "Removing CO₂ pulls the equilibria to the left, consuming H⁺, so pH rises (respiratory alkalosis)."]]},
+  { name:"Gastrointestinal system", qs:[
+    ["Where are most nutrients absorbed, and what structural feature helps?","The small intestine","Villi and microvilli greatly increase the surface area.",
+     "In coeliac disease, an immune reaction to gluten flattens the villi of the small intestine.",
+     "Which problem is most directly explained?",
+     ["Excess stomach acid","Poor absorption of nutrients such as iron, leading to deficiency","Failure to produce bile","Faster absorption of fats"],1,
+     "Flattened villi mean much less absorptive surface, so nutrients pass through unabsorbed."],
+    ["What does bile do, and where is it made and stored?","Emulsifies fats; made in the liver, stored in the gallbladder","Smaller fat droplets give lipase more surface to act on.",
+     "A gallstone blocks the common bile duct, stopping bile reaching the duodenum. Bile also carries bilirubin, the pigment that gives faeces its brown colour.",
+     "Which findings are expected?",
+     ["Dark stools with normal fat content","Watery stools containing undigested protein","Pale, fatty stools","Normal stools, because the pancreas compensates"],2,
+     "No bile means fat is poorly emulsified and absorbed (fatty stools) and no bilirubin reaches the gut (pale stools)."],
+    ["Which organ secretes most digestive enzymes, and why is its secretion alkaline?","The pancreas","Its bicarbonate neutralises stomach acid entering the duodenum so the enzymes can work.",
+     "Pancreatic enzymes work best near pH 7–8. In some patients the pancreas makes enzymes normally but secretes too little bicarbonate.",
+     "What is the most likely consequence in the duodenum?",
+     ["The enzymes become overactive","The acidic contents lower enzyme activity, impairing digestion","The stomach makes less acid","Fats are absorbed faster"],1,
+     "Without bicarbonate, chyme stays acidic, far from the enzymes' optimum pH."]]},
+  { name:"Renal system", qs:[
+    ["Name the functional unit of the kidney and the process at the glomerulus.","The nephron; filtration","Blood pressure forces water and small solutes into Bowman's capsule; cells and proteins stay in the blood.",
+     "The glomerular filtration rate (GFR) depends on the pressure pushing fluid out of the glomerular capillaries. The afferent arteriole brings blood into the glomerulus; the efferent arteriole carries it away.",
+     "What would constricting the efferent arteriole most likely do?",
+     ["Lower GFR","Stop filtration completely","Have no effect, as only the afferent arteriole matters","Raise GFR, by raising pressure inside the glomerulus"],3,
+     "Narrowing the exit backs blood up in the glomerulus, raising capillary pressure and filtration."],
+    ["ADH is released when the blood is too concentrated. What is its effect on urine?","Less, more concentrated urine","ADH makes the collecting duct more permeable to water, so more water is reabsorbed.",
+     "Alcohol inhibits ADH release from the posterior pituitary.",
+     "After drinking alcohol, what happens to urine and to the blood?",
+     ["More, dilute urine; the blood becomes more concentrated","Less urine; the blood becomes diluted","More concentrated urine; the blood is unchanged","No change in either"],0,
+     "Less ADH means less water reabsorbed, so large volumes of dilute urine and dehydration."],
+    ["Glucose is normally absent from urine. Why can it appear in uncontrolled diabetes?","The filtered load exceeds the tubule's reabsorption capacity","The glucose transporters in the proximal tubule saturate.",
+     "Filtered glucose = GFR × plasma glucose concentration. The tubules can reabsorb at most about 375 mg of glucose per minute. GFR is 125 mL/min.",
+     "Above roughly what plasma glucose concentration would glucose start to appear in urine?",
+     ["0.3 mg/mL","3 mg/mL","30 mg/mL","47 mg/mL"],1,
+     "375 ÷ 125 = 3 mg/mL; above this the filtered load exceeds what can be reabsorbed."]]},
+  { name:"Endocrine system", qs:[
+    ["Which cells make insulin and glucagon, and what does each do to blood glucose?","Pancreatic β cells: insulin (lowers); α cells: glucagon (raises)","They act antagonistically to keep glucose stable.",
+     "In type 1 diabetes, the immune system destroys pancreatic β cells. Insulin lets muscle and fat take up glucose; without it, cells break down fat for energy, producing ketones.",
+     "Which pattern is expected in untreated type 1 diabetes?",
+     ["Low blood glucose, low ketones","High blood glucose, high insulin","High blood glucose, high ketones","Low glucagon, low blood glucose"],2,
+     "No insulin: glucose cannot enter cells so it builds up in blood, and fat breakdown produces ketones."],
+    ["Why do steroid hormones use intracellular receptors while peptide hormones use surface receptors?","Steroids are lipid-soluble; peptides are not","Steroids cross the membrane and alter gene transcription; peptides need surface receptors and second messengers.",
+     "Hormone X acts within seconds and its effect fades quickly. Hormone Y takes hours to act, and its effect is blocked by drugs that inhibit transcription.",
+     "Which is most likely?",
+     ["X is a steroid; Y is a peptide","Both are peptides","Both are steroids","X is a peptide acting via surface receptors; Y is a steroid acting on gene expression"],3,
+     "Fast, short-lived signalling fits surface receptors; slow, transcription-dependent effects fit steroid action inside the cell."],
+    ["Describe the negative feedback loop that controls thyroid hormone.","Hypothalamus (TRH) → pituitary (TSH) → thyroid (T3/T4)","High T3/T4 inhibits TRH and TSH release.",
+     "Primary hypothyroidism means the thyroid gland itself fails. Secondary hypothyroidism means the pituitary does not release enough TSH.",
+     "Which blood results fit primary hypothyroidism?",
+     ["Low T4, high TSH","Low T4, low TSH","High T4, low TSH","High T4, high TSH"],0,
+     "The failing thyroid makes little T4, so negative feedback is removed and the pituitary raises TSH."]]},
+  { name:"Immune system", qs:[
+    ["Distinguish innate and adaptive immunity, with an example cell of each.","Innate: fast, non-specific (neutrophils, macrophages); adaptive: specific with memory (B and T lymphocytes)","",
+     "After a cut becomes infected, neutrophil numbers rise within hours, but antibodies specific to the bacteria first appear in the blood after about a week.",
+     "What best explains the delay in antibodies?",
+     ["Antibodies are part of the slow innate system","Neutrophils must make the antibodies first","Specific B cells must be activated and multiply before producing antibodies","The bacteria must die first"],2,
+     "Adaptive responses need the rare matching B cells to be selected and expanded (clonal expansion), which takes days."],
+    ["What do B cells produce, and what do cytotoxic T cells do?","B cells (as plasma cells) make antibodies; cytotoxic T cells kill infected cells","Cytotoxic T cells recognise antigen presented on MHC class I.",
+     "Viruses replicate inside host cells, where antibodies cannot reach them. Infected cells display fragments of viral protein on MHC class I molecules.",
+     "Which component is most important for clearing cells that are already infected?",
+     ["Antibodies","Cytotoxic T cells","Neutrophils engulfing free virus","Mast cells"],1,
+     "Cytotoxic T cells recognise viral antigen on MHC I and destroy the infected cell."],
+    ["Why is the response to a second exposure faster and stronger?","Memory B and T cells","They persist after the first exposure and respond quickly; this is how vaccines work.",
+     "Antibody levels are measured after a first vaccine dose and a booster 6 months later. After the booster, antibodies rise within 2 days, peak 10 times higher than after the first dose, and stay high for longer.",
+     "What best explains the booster response?",
+     ["The booster dose was larger","The innate immune system learned from the first dose","Antibodies from the first dose multiplied","Memory B cells formed after the first dose responded rapidly"],3,
+     "Memory cells give a faster, larger, longer-lasting secondary response; antibodies themselves cannot multiply."]]},
+  { name:"Genetics and evolution", qs:[
+    ["Explain natural selection in one sentence.","Heritable variation + differential survival and reproduction","Individuals with traits suited to the environment leave more offspring, so those alleles become more common.",
+     "After heavy antibiotic use in a hospital, the proportion of resistant Staphylococcus rises from 2% to 60% over several years. The resistance gene was present before the antibiotic was introduced.",
+     "Which best explains the change?",
+     ["Bacteria already carrying the resistance gene survived and reproduced more","The antibiotic caused resistance mutations","The bacteria learned to resist the antibiotic","All the bacteria adapted because they needed to"],0,
+     "Selection acts on existing variation: the antibiotic killed susceptible bacteria, so the resistant ones made up more of the next generations."],
+    ["What is genetic drift, and why is it stronger in small populations?","Random change in allele frequencies","Chance has a bigger effect when few individuals reproduce.",
+     "A population of 1000 beetles has an allele B at frequency 0.5. A flood kills all but 10 beetles at random, and in their offspring B has a frequency of 0.8.",
+     "This change is best described as:",
+     ["Natural selection for B","Gene flow","Genetic drift (a population bottleneck)","Mutation"],2,
+     "Survival was random, not linked to B, so the change came from chance sampling of a tiny group."],
+    ["Distinguish homologous and analogous structures, with an example of each.","Homologous: shared ancestry (human arm, bat wing); analogous: same function, separate origin (bird and insect wings)","Analogous structures arise by convergent evolution.",
+     "Dolphins (mammals) and sharks (fish) both have streamlined bodies and dorsal fins. A dolphin's flipper contains the same arrangement of bones as a human arm.",
+     "Which statement is correct?",
+     ["The dorsal fins of dolphins and sharks are homologous","The dolphin flipper and human arm are homologous; the body shapes are convergent","The dolphin flipper and human arm are analogous","Sharks and dolphins share a recent common ancestor"],1,
+     "Same bone plan means shared ancestry (homologous); similar shapes from different lineages reflect the same demands of swimming (analogous)."]]},
+  { name:"Reproductive systems", qs:[
+    ["Where does fertilisation usually occur, and where does implantation occur?","Fertilisation in the uterine (fallopian) tube; implantation in the uterine lining","",
+     "In an ectopic pregnancy, the embryo implants outside the uterus, usually in the uterine tube. Scarring of the tube from past infection is a major risk factor.",
+     "Why does scarring increase the risk?",
+     ["It slows the fertilised egg's journey to the uterus, so it implants in the tube","It prevents ovulation","It stops sperm production","It thickens the uterine lining"],0,
+     "Fertilisation happens in the tube; if the embryo is delayed there, it may implant before reaching the uterus."],
+    ["Which hormone surge triggers ovulation?","The LH surge","It follows rising oestrogen from the developing follicle (positive feedback).",
+     "The combined oral contraceptive pill gives steady levels of oestrogen and progesterone, which provide negative feedback to the hypothalamus and pituitary.",
+     "How does it mainly prevent pregnancy?",
+     ["It kills sperm","It causes early menstruation","It suppresses the LH surge, so ovulation does not occur","It only blocks implantation"],2,
+     "Steady hormone levels keep FSH and LH low, so there is no LH surge and no egg is released."],
+    ["Name the male gonad, its main hormone, and where sperm mature.","Testes; testosterone; the epididymis","",
+     "Sperm production needs a temperature 2–3 °C below core body temperature, which the scrotum provides. In cryptorchidism, the testes fail to descend into the scrotum.",
+     "What is the most likely effect of untreated cryptorchidism of both testes?",
+     ["No testosterone production at all","An increased sperm count","Sperm stored for longer","Reduced sperm production and infertility"],3,
+     "At core temperature sperm production fails, though testosterone production largely continues."]]},
+  { name:"Experimental design and data analysis", qs:[
+    ["In a trial testing a drug dose on blood pressure, name the independent variable, dependent variable and one controlled variable.","Independent: dose; dependent: blood pressure; controlled: e.g. age, time of measurement","Controlled variables are kept the same so only the independent variable differs.",
+     "A researcher tests whether caffeine improves memory. 40 students drink coffee or water, then take a memory test; the coffee group scores 15% higher. The coffee group was tested in the morning and the water group in the evening.",
+     "What is the main flaw?",
+     ["The sample is too large","Time of day is a confounding variable that was not controlled","The dependent variable is caffeine","There is no independent variable"],1,
+     "Any difference could come from time of day rather than caffeine; both groups should be tested under the same conditions."],
+    ["Why use a placebo group and double blinding?","To separate the drug's real effect from expectation and bias","Neither participants nor researchers know who got what.",
+     "In an open-label trial of a painkiller, patients who knew they were getting the drug reported 40% less pain. In a later double-blind trial, the placebo group reported 25% less pain than baseline, and the drug group 12% less pain than the placebo group.",
+     "Which conclusion is best supported?",
+     ["The drug reduces pain by 40%","The placebo has no effect","Much of the first result came from expectation; the drug's own effect is about 12%","The drug is ineffective"],2,
+     "The placebo group improved substantially on its own, so the drug's specific effect is the gap between drug and placebo."],
+    ["Ice cream sales correlate with drownings. Why isn't this evidence that ice cream causes drowning?","A confounder (hot weather) drives both","Correlation alone cannot show causation.",
+     "Across 20 countries, chocolate consumption per person correlates strongly (r = 0.79) with Nobel prizes per capita.",
+     "What is the most reasonable interpretation?",
+     ["A third factor, such as national wealth, may drive both","Chocolate improves thinking","Nobel winners eat more chocolate","A correlation of 0.79 proves causation"],0,
+     "Wealthier countries both consume more chocolate and fund more research; the correlation alone says nothing about cause."]]}
+]},
+{ name:"Chemistry", topics:[
+  { name:"Atoms and atomic structure", qs:[
+    ["An Fe³⁺ ion of mass number 56 (Z = 26): how many protons, neutrons and electrons?","26 protons, 30 neutrons, 23 electrons","Neutrons = 56 − 26; a 3+ charge means 3 electrons lost.",
+     "Atomic numbers: S = 16, Cl = 17, Ar = 18. An unknown particle has 16 protons, 18 neutrons and 18 electrons.",
+     "What is it?",
+     ["An argon-34 atom","A sulfur-34 ion with 2+ charge","A sulfur-32 ion with 2− charge","A sulfur-34 ion with 2− charge"],3,
+     "16 protons is sulfur; mass number 16 + 18 = 34; two more electrons than protons gives a 2− charge."],
+    ["Write the electron configuration of Na and explain why it forms Na⁺.","1s² 2s² 2p⁶ 3s¹","Losing the single 3s electron leaves the stable configuration of neon.",
+     "The successive ionisation energies (kJ/mol) of an element X are: 1st 738, 2nd 1451, 3rd 7733, 4th 10 540.",
+     "Which group is X in?",
+     ["Group 1","Group 2","Group 13","Group 14"],1,
+     "The huge jump comes after the 2nd electron: X has two outer electrons, and the third must come from a full inner shell (X is magnesium)."],
+    ["Isotopes differ in which particle? Do they have the same chemistry?","Neutrons; yes","Chemistry depends on electrons, which isotopes share.",
+     "Chlorine has two isotopes, chlorine-35 and chlorine-37, and a relative atomic mass of 35.5.",
+     "What is the approximate abundance of chlorine-35?",
+     ["25%","50%","75%","90%"],2,
+     "35.5 is a quarter of the way from 35 to 37, so the mix is 3 : 1, or 75% chlorine-35."]]},
+  { name:"Stoichiometry", qs:[
+    ["2H₂ + O₂ → 2H₂O. 4 g of H₂ reacts with 16 g of O₂. Which is limiting, and what mass of water forms?","O₂ is limiting; 18 g of water","2 mol H₂ needs 1 mol O₂, but only 0.5 mol is present, giving 1 mol of water.",
+     "Aspirin (M = 180 g/mol) is made from salicylic acid (M = 138) and acetic anhydride (M = 102) in a 1 : 1 ratio. A student reacts 13.8 g of salicylic acid with 20.4 g of acetic anhydride and obtains 14.4 g of aspirin.",
+     "What is the percentage yield?",
+     ["40%","80%","70%","100%"],1,
+     "0.1 mol salicylic acid is limiting (0.2 mol anhydride), so the maximum is 0.1 mol = 18 g; 14.4 ÷ 18 = 80%."],
+    ["How many moles of NaCl are in 250 mL of 0.4 M solution, and what mass is that (M = 58.5 g/mol)?","0.1 mol; 5.85 g","n = cV = 0.4 × 0.25.",
+     "A patient needs 2.0 g of potassium (K, M = 39 g/mol), given as a 2.0 mol/L KCl solution.",
+     "Roughly what volume is needed?",
+     ["13 mL","51 mL","26 mL","100 mL"],2,
+     "2.0 ÷ 39 ≈ 0.051 mol of K⁺ = mol of KCl; V = n ÷ c = 0.051 ÷ 2.0 ≈ 0.026 L."],
+    ["Balance: C₃H₈ + O₂ → CO₂ + H₂O.","C₃H₈ + 5O₂ → 3CO₂ + 4H₂O","Balance C, then H, then O last.",
+     "Glucose is respired: C₆H₁₂O₆ + O₂ → CO₂ + H₂O (unbalanced). A person oxidises 90 g of glucose (M = 180 g/mol).",
+     "How many moles of O₂ are used, and of CO₂ produced?",
+     ["3 and 3","0.5 and 0.5","6 and 6","3 and 6"],0,
+     "Balanced: C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O; 0.5 mol glucose needs 3 mol O₂ and gives 3 mol CO₂."]]},
+  { name:"Electronegativity and polarity", qs:[
+    ["CO₂ has polar bonds but is a non-polar molecule. Why?","It is linear, so the bond dipoles cancel","Compare bent H₂O, where they do not cancel.",
+     "A molecule with polar bonds is polar unless its shape makes the dipoles cancel. Shapes: BF₃ trigonal planar, NH₃ trigonal pyramidal, CCl₄ tetrahedral, CH₂Cl₂ tetrahedral.",
+     "Which pair are both polar?",
+     ["BF₃ and CCl₄","BF₃ and NH₃","CCl₄ and CH₂Cl₂","NH₃ and CH₂Cl₂"],3,
+     "BF₃ and CCl₄ are symmetrical so their dipoles cancel; NH₃ is pyramidal and CH₂Cl₂ has two different kinds of bond, so neither cancels."],
+    ["Name the strongest intermolecular force in CH₄, HCl and H₂O, and say which has the highest boiling point.","Dispersion; dipole–dipole; hydrogen bonding, so H₂O","",
+     "Boiling points: H₂O 100 °C, H₂S −60 °C, H₂Se −41 °C, H₂Te −2 °C.",
+     "Why does water break the trend in its group?",
+     ["It has the largest molar mass","Strong hydrogen bonding between its molecules","The O–H covalent bonds are stronger","It has the strongest dispersion forces"],1,
+     "From H₂S to H₂Te, boiling point rises with size (dispersion); water is far higher because of hydrogen bonding."],
+    ["How does electronegativity change across a period and down a group?","Increases across a period; decreases down a group","Fluorine is the most electronegative element.",
+     "Electronegativities: H 2.1, C 2.5, N 3.0, O 3.5, F 4.0. Treat a bond as ionic if the difference exceeds 1.7, polar covalent from 0.4 to 1.7, and non-polar below 0.4.",
+     "Which bond is the most polar covalent bond (not ionic by this rule)?",
+     ["C–H","N–H","O–H","H–F"],2,
+     "Differences: C–H 0.4, N–H 0.9, O–H 1.4, H–F 1.9; H–F counts as ionic under the stated rule, so O–H is the most polar covalent."]]},
+  { name:"Gases and gas laws", qs:[
+    ["A gas at 2 atm occupies 3 L. It is compressed at constant temperature to 1.5 L. What is the new pressure?","4 atm","Boyle's law: P₁V₁ = P₂V₂.",
+     "A diver's lungs hold 6 L of air at the surface (1 atm). Water pressure adds 1 atm for every 10 m of depth. Assume constant temperature and no extra air.",
+     "What is the lung volume at 20 m depth?",
+     ["2 L","3 L","4 L","18 L"],0,
+     "Pressure at 20 m is 3 atm, so volume falls to 6 ÷ 3 = 2 L."],
+    ["Why must temperature be in kelvin in gas-law calculations?","Pressure and volume are proportional to absolute temperature","0 °C is an arbitrary zero; 0 K is true zero.",
+     "A sealed rigid container of gas is at 27 °C and 150 kPa. It is heated to 327 °C.",
+     "What is the new pressure?",
+     ["About 1800 kPa","300 kPa","225 kPa","75 kPa"],1,
+     "In kelvin, 300 K → 600 K doubles the temperature, so pressure doubles. 1800 kPa comes from wrongly using °C."],
+    ["Equal volumes of two different gases at the same temperature and pressure contain what?","The same number of moles","Avogadro's law.",
+     "Container A holds 4 g of helium (M = 4 g/mol). Container B has the same volume, temperature and pressure and holds 44 g of an unknown gas.",
+     "Which gas could be in B?",
+     ["O₂ (32 g/mol)","N₂ (28 g/mol)","CH₄ (16 g/mol)","CO₂ (44 g/mol)"],3,
+     "Same conditions means same moles: A holds 1 mol, so B's gas has M = 44 g/mol."]]},
+  { name:"Thermodynamics and kinetics", qs:[
+    ["Using ΔG = ΔH − TΔS, when is a reaction with ΔH > 0 and ΔS > 0 spontaneous?","At high temperature","It becomes spontaneous once TΔS exceeds ΔH.",
+     "For ice melting, ΔH = +6.0 kJ/mol and ΔS = +22 J/(mol·K). A process is spontaneous when ΔG = ΔH − TΔS is negative.",
+     "Above what temperature is melting spontaneous?",
+     ["About 0.27 K","About 273 K","About 132 K","Never"],1,
+     "ΔG = 0 when T = ΔH ÷ ΔS = 6000 ÷ 22 ≈ 273 K; note the kJ to J conversion."],
+    ["Does a catalyst change ΔH or the equilibrium position? What does it change?","Neither; it lowers the activation energy","It speeds up both forward and reverse reactions.",
+     "An energy profile shows reactants at 50 kJ/mol, products at 20 kJ/mol and a transition-state peak at 120 kJ/mol. An enzyme lowers the peak to 80 kJ/mol.",
+     "What are ΔH and the forward activation energy with the enzyme?",
+     ["ΔH = −30 kJ/mol, Ea = 70 kJ/mol","ΔH = −70 kJ/mol, Ea = 30 kJ/mol","ΔH = −30 kJ/mol, Ea = 30 kJ/mol","ΔH = +30 kJ/mol, Ea = 60 kJ/mol"],2,
+     "ΔH = 20 − 50 = −30 regardless of the enzyme; Ea = 80 − 50 = 30."],
+    ["Is breaking a chemical bond endothermic or exothermic?","Endothermic","Energy is released when bonds form; ΔH is the balance.",
+     "Average bond energies (kJ/mol): H–H 436, Cl–Cl 243, H–Cl 432.",
+     "What is ΔH for H₂ + Cl₂ → 2HCl?",
+     ["+185 kJ/mol","−185 kJ/mol","−247 kJ/mol","+247 kJ/mol"],1,
+     "Bonds broken: 436 + 243 = 679; bonds formed: 2 × 432 = 864; ΔH = 679 − 864 = −185."]]},
+  { name:"Acids and bases", qs:[
+    ["Define a Brønsted–Lowry acid and base, and give the conjugate base of NH₄⁺.","Acid donates H⁺, base accepts H⁺; NH₃","Conjugate pairs differ by one H⁺.",
+     "Consider the reaction HCO₃⁻ + H₂O ⇌ H₂CO₃ + OH⁻.",
+     "In the forward reaction, which species is the acid, and what is its conjugate base?",
+     ["HCO₃⁻; CO₃²⁻","H₂O; OH⁻","H₂CO₃; HCO₃⁻","HCO₃⁻; H₂CO₃"],1,
+     "Water donates H⁺ to HCO₃⁻, becoming OH⁻; here HCO₃⁻ acts as a base."],
+    ["What is the pH of 0.01 M NaOH at 25 °C?","12","pOH = 2, and pH + pOH = 14.",
+     "In pure water, [H⁺] = [OH⁻]. Kw = [H⁺][OH⁻] = 1.0 × 10⁻¹⁴ at 25 °C, but about 1.0 × 10⁻¹³ at 60 °C.",
+     "What is the pH of pure water at 60 °C, and is it acidic?",
+     ["7, neutral","6.5, acidic","6.5, neutral","7.5, basic"],2,
+     "[H⁺] = √(10⁻¹³) = 10⁻⁶·⁵, so pH 6.5; [H⁺] still equals [OH⁻], so it is neutral."],
+    ["Why does a buffer resist changes in pH?","It contains a weak acid and its conjugate base","The base mops up added H⁺ and the acid neutralises added OH⁻.",
+     "Blood is buffered by H₂CO₃/HCO₃⁻ with pKa 6.1, and pH = pKa + log([HCO₃⁻]/[H₂CO₃]). Normal blood pH is 7.4. (log 20 ≈ 1.3)",
+     "What is the normal ratio of [HCO₃⁻] to [H₂CO₃]?",
+     ["20 : 1","1 : 20","1.3 : 1","13 : 1"],0,
+     "7.4 − 6.1 = 1.3, so the ratio is 10¹·³ ≈ 20."]]},
+  { name:"Electrochemistry", qs:[
+    ["In Zn + Cu²⁺ → Zn²⁺ + Cu, what is oxidised, and what is the reducing agent?","Zn is oxidised and is the reducing agent","OIL RIG: Zn loses electrons, Cu²⁺ gains them.",
+     "Standard reduction potentials: Ag⁺/Ag +0.80 V, Cu²⁺/Cu +0.34 V, Zn²⁺/Zn −0.76 V. In a cell, the half-reaction with the more positive potential runs as a reduction.",
+     "In a zinc–silver cell, what is the cell voltage, and which metal is oxidised?",
+     ["0.04 V; silver","1.56 V; zinc","1.56 V; silver","0.46 V; copper"],1,
+     "Ag⁺ is reduced, so Zn is oxidised; E = 0.80 − (−0.76) = 1.56 V."],
+    ["In a galvanic cell, at which electrode does oxidation occur, and what is its sign?","The anode, which is negative","Electrons flow from anode to cathode through the wire.",
+     "In electrolysis, a power supply drives a non-spontaneous reaction. Oxidation still happens at the anode, which is connected to the positive terminal. Molten NaCl is electrolysed.",
+     "What forms at each electrode?",
+     ["Sodium at the anode, chlorine at the cathode","Sodium at both electrodes","Chlorine at the cathode only","Sodium at the cathode, chlorine at the anode"],3,
+     "Cl⁻ is oxidised to Cl₂ at the positive anode; Na⁺ is reduced to Na at the negative cathode."],
+    ["What is the oxidation number of Mn in MnO₄⁻?","+7","x + 4(−2) = −1.",
+     "Breathalysers use acidified dichromate: Cr₂O₇²⁻ + 14H⁺ + 6e⁻ → 2Cr³⁺ + 7H₂O.",
+     "How does the oxidation number of each chromium atom change?",
+     ["+6 to +3, so chromium is reduced","+7 to +3","+3 to +6, so chromium is oxidised","+12 to +6"],0,
+     "In Cr₂O₇²⁻, 2x + 7(−2) = −2, so x = +6; each Cr gains 3 electrons to become +3."]]},
+  { name:"Organic chemistry", qs:[
+    ["Name the functional group in CH₃COOH, CH₃CH₂OH, CH₃CHO and CH₃COCH₃.","Carboxylic acid, alcohol, aldehyde, ketone","",
+     "Paracetamol is HO–C₆H₄–NH–CO–CH₃: a benzene ring carrying an –OH group and an –NH–CO–CH₃ group.",
+     "Which functional groups does it contain?",
+     ["Carboxylic acid and amine","A phenol (–OH on the ring) and an amide","Ketone and ester","Aldehyde and amine"],1,
+     "–NH–C(=O)– is an amide; –OH on a benzene ring is a phenol. There is no free acid or amine."],
+    ["Why are small alcohols more soluble in water than alkanes of similar size?","The –OH group hydrogen-bonds with water","Solubility falls as the non-polar chain grows.",
+     "Solubility in water (g per 100 mL): methanol, ethanol and propanol mix completely; butanol 7.7; pentanol 2.2; hexanol 0.6.",
+     "What explains the trend?",
+     ["The –OH group gets weaker in larger alcohols","Larger alcohols ionise less","The growing non-polar chain disrupts hydrogen bonding with water","Heavier molecules sink rather than dissolve"],2,
+     "Every alcohol has one –OH, but the hydrophobic chain grows, so the molecule fits less well into water's hydrogen-bond network."],
+    ["How many structural isomers does C₄H₁₀ have? Name them.","Two: butane and 2-methylpropane","Branching lowers the boiling point.",
+     "Structural isomers share a molecular formula but differ in how the atoms are joined. Ethanol, CH₃CH₂OH, boils at 78 °C.",
+     "Which compound is a structural isomer of ethanol, and how does its boiling point compare?",
+     ["Methanol; higher","Dimethyl ether (CH₃OCH₃); higher","Ethanal; the same","Dimethyl ether (CH₃OCH₃); lower"],3,
+     "Both are C₂H₆O, but the ether has no O–H, so no hydrogen bonding between molecules and a much lower boiling point (−24 °C)."]]},
+  { name:"Common and special organic reactions", qs:[
+    ["What forms when a carboxylic acid reacts with an alcohol with an acid catalyst, and what is the reaction called?","An ester and water; esterification (a condensation)","The reverse is hydrolysis.",
+     "Esters form as R–COOH + R′–OH → R–COO–R′ + H₂O. Ethyl ethanoate is CH₃COOCH₂CH₃.",
+     "Which pair of reactants forms ethyl ethanoate?",
+     ["Ethanoic acid and ethanol","Ethanol and ethanal","Methanoic acid and propanol","Ethanoic acid and methanol"],0,
+     "The CH₃CO– part comes from ethanoic acid and the –OCH₂CH₃ part from ethanol. Methanoic acid + propanol gives an isomer, propyl methanoate."],
+    ["What does oxidising a primary alcohol give, and a secondary alcohol?","Primary: aldehyde then carboxylic acid; secondary: ketone","Tertiary alcohols resist oxidation.",
+     "Orange acidified dichromate turns green when it oxidises an alcohol. It is added to propan-1-ol, propan-2-ol and 2-methylpropan-2-ol.",
+     "Which turn green?",
+     ["All three","Propan-1-ol only","Propan-1-ol and propan-2-ol","2-methylpropan-2-ol only"],2,
+     "The primary and secondary alcohols are oxidised; the tertiary alcohol has no H on its C–OH carbon, so it is not."],
+    ["What is the difference between an addition and a substitution reaction? Give an example of each.","Addition: alkene + Br₂ across the C=C; substitution: alkane + Cl₂ in UV light swaps H for Cl","Addition needs a multiple bond.",
+     "Orange bromine water is decolourised when it adds across a C=C double bond. Alkanes react with bromine only in UV light, by substitution. Cyclohexene and hexane are each shaken with bromine water in the dark.",
+     "What is observed?",
+     ["Both decolourise","Only cyclohexene decolourises","Only hexane decolourises","Neither decolourises"],1,
+     "Cyclohexene has a C=C bond and reacts by addition; hexane is saturated and needs UV."]]},
+  { name:"Stereochemistry and projections", qs:[
+    ["What makes a carbon atom a chiral centre?","Four different groups attached","One chiral centre gives two enantiomers.",
+     "Ibuprofen is CH₃–CH(COOH)–C₆H₄–CH₂–CH(CH₃)₂. Only one enantiomer is active.",
+     "How many chiral centres does ibuprofen have?",
+     ["None","One: the carbon bearing the –COOH group","Two, including the CH(CH₃)₂ carbon","One, in the benzene ring"],1,
+     "That carbon carries H, CH₃, COOH and the ring; the CH(CH₃)₂ carbon has two identical CH₃ groups."],
+    ["Distinguish enantiomers from diastereomers.","Enantiomers: non-superimposable mirror images; diastereomers: stereoisomers that are not mirror images","Enantiomers share most physical properties; diastereomers differ.",
+     "A molecule with n chiral centres has up to 2ⁿ stereoisomers. Erythrose and threose are both 2,3,4-trihydroxybutanal, with two chiral centres, and are not mirror images of each other.",
+     "How many stereoisomers are possible, and how are D-erythrose and D-threose related?",
+     ["4; diastereomers","2; enantiomers","4; enantiomers","8; identical"],0,
+     "2² = 4 stereoisomers; stereoisomers that are not mirror images are diastereomers."],
+    ["In a Fischer projection, do horizontal lines point towards or away from the viewer?","Towards the viewer","Vertical lines point away.",
+     "Swapping any two groups on a chiral centre gives its enantiomer.",
+     "What results from making two such swaps on the same chiral centre?",
+     ["The enantiomer","A diastereomer","A structural isomer","The same molecule"],3,
+     "Each swap inverts the configuration, so two swaps restore the original."]]},
+  { name:"Biochemistry", qs:[
+    ["Which level of protein structure is held by hydrogen bonds between backbone C=O and N–H groups, forming α-helices and β-sheets?","Secondary structure","Tertiary structure depends on interactions between R groups.",
+     "Proline's side chain bonds back to its own backbone nitrogen, so that nitrogen has no hydrogen, and the ring makes the backbone rigid.",
+     "Why is proline often found where α-helices break?",
+     ["It is hydrophobic","It forms disulfide bridges","Its nitrogen cannot donate a backbone hydrogen bond, and its ring restricts rotation","It carries a positive charge"],2,
+     "α-helices are held by backbone N–H···O=C hydrogen bonds; proline cannot donate one and cannot twist into the helix."],
+    ["Why do enzymes denature at high temperature?","Bonds holding the 3D shape break","The active site changes shape and no longer fits the substrate.",
+     "An enzyme's activity roughly doubles every 10 °C up to 40 °C, then falls to zero by 60 °C. When the 60 °C sample is cooled back to 37 °C, activity does not return.",
+     "Which best explains the results?",
+     ["At 60 °C the substrate has run out","Heat denatured the enzyme irreversibly, changing its active site","Enzymes work faster at all temperatures","Cooling inhibits enzymes"],1,
+     "Rising temperature first speeds collisions, then destroys the enzyme's shape; the loss persists after cooling, so it is denaturation."],
+    ["Which have the higher melting point, saturated or unsaturated fatty acids, and why?","Saturated","Straight chains pack closely; cis double bonds kink unsaturated chains.",
+     "Cell membranes must stay fluid. Fish living in cold water have more unsaturated fatty acids in their membranes than fish in warm water.",
+     "Why is this an advantage?",
+     ["Kinks from the double bonds stop tight packing, keeping membranes fluid in the cold","Unsaturated fatty acids have higher melting points","Saturated fats are toxic in cold water","Unsaturated fats store more energy"],0,
+     "Saturated chains would pack and stiffen in the cold; kinked unsaturated chains keep the membrane fluid."]]},
+  { name:"Rates and reaction dynamics", qs:[
+    ["Rate = k[A]²[B]. If [A] is doubled and [B] halved, by what factor does the rate change?","× 2","2² × ½ = 2.",
+     "Initial rates for A + B → products. Exp 1: [A] = 0.1, [B] = 0.1, rate 2 × 10⁻³. Exp 2: [A] = 0.2, [B] = 0.1, rate 8 × 10⁻³. Exp 3: [A] = 0.1, [B] = 0.2, rate 4 × 10⁻³.",
+     "What is the rate law?",
+     ["rate = k[A][B]","rate = k[A][B]²","rate = k[A]²[B]","rate = k[A]²"],2,
+     "Doubling [A] quadruples the rate (second order in A); doubling [B] doubles it (first order in B)."],
+    ["Give two reasons a higher temperature speeds up a reaction.","More frequent collisions, and more collisions with energy above Ea","The second effect is much larger.",
+     "As a rule of thumb, many reaction rates roughly double for each 10 °C rise. Food spoilage reactions follow this rule.",
+     "Roughly how many times longer does food keep at 4 °C than at 24 °C?",
+     ["2","4","8","20"],1,
+     "A 20 °C drop halves the rate twice, so spoilage is 4 times slower."],
+    ["For a first-order reaction, does the half-life depend on starting concentration?","No","It is constant: t½ = ln 2 / k.",
+     "A drug is eliminated by first-order kinetics with a half-life of 6 hours. A patient's plasma level is 80 mg/L.",
+     "What is the level after 24 hours, and what happens to the half-life if the dose is doubled?",
+     ["20 mg/L; it doubles","5 mg/L; it doubles","0 mg/L; it halves","5 mg/L; it is unchanged"],3,
+     "24 h is 4 half-lives: 80 → 40 → 20 → 10 → 5. First-order half-life does not depend on concentration."]]}
+]},
+{ name:"Physics", topics:[
+  { name:"Motion in one and two dimensions", qs:[
+    ["A ball rolls off a horizontal table at 3 m/s and lands 0.4 s later. How far from the table does it land, and how high is the table? (g = 10)","1.2 m away; 0.8 m high","Horizontal: 3 × 0.4. Vertical from rest: ½ × 10 × 0.4².",
+     "Two balls leave the edge of a 1.25 m high table at the same moment: P is simply dropped, and Q is pushed horizontally at 4 m/s. Ignore air resistance; g = 10 m/s².",
+     "Which lands first, and how far from the table does Q land?",
+     ["P first; 2 m","At the same time; 2 m","Q first; 4 m","At the same time; 4 m"],1,
+     "Both fall from rest vertically: 1.25 = ½ × 10 × t² gives t = 0.5 s for each. Q travels 4 × 0.5 = 2 m."],
+    ["Distinguish distance from displacement, and speed from velocity.","Distance and speed are scalars; displacement and velocity are vectors","",
+     "A runner completes 2.5 laps of a 400 m circular track in 200 s, finishing directly opposite the start. The track's diameter is about 127 m.",
+     "What are the average speed and the size of the average velocity?",
+     ["5 m/s and 5 m/s","5 m/s and 0","5 m/s and about 0.64 m/s","0.64 m/s and 5 m/s"],2,
+     "Speed: 1000 m ÷ 200 s = 5 m/s. Displacement is one diameter, 127 m, so velocity ≈ 127 ÷ 200 ≈ 0.64 m/s."],
+    ["On a velocity–time graph, what do the gradient and the area under the line represent?","Gradient = acceleration; area = displacement","",
+     "A lift speeds up uniformly from rest to 2 m/s over 2 s, travels at 2 m/s for 6 s, then slows uniformly to rest over 2 s.",
+     "How far does it travel, and what is its acceleration in the first 2 s?",
+     ["16 m; 1 m/s²","20 m; 2 m/s²","12 m; 1 m/s²","16 m; 2 m/s²"],0,
+     "Area: 2 + 12 + 2 = 16 m. Gradient of the first section: 2 ÷ 2 = 1 m/s²."]]},
+  { name:"Newton's laws and forces", qs:[
+    ["A 5 kg box is pulled with 30 N against 10 N of friction. What is its acceleration?","4 m/s²","Net force 20 N; a = F/m.",
+     "A 1200 kg car brakes uniformly from 20 m/s to rest in 4 s.",
+     "What braking force acts on the car?",
+     ["300 N","4800 N","6000 N","24 000 N"],2,
+     "a = 20 ÷ 4 = 5 m/s², so F = 1200 × 5 = 6000 N."],
+    ["A person stands in a lift accelerating upwards. Is the normal force greater or less than their weight?","Greater: N = m(g + a)","The floor supplies the extra force needed to accelerate them upward.",
+     "A 60 kg person stands on scales in a lift; the scales show the normal force in newtons. g = 10 m/s².",
+     "The lift is moving upward but slowing down at 2 m/s². What do the scales read?",
+     ["720 N","480 N","600 N","120 N"],1,
+     "Slowing while going up means acceleration is downward: N = m(g − a) = 60 × 8 = 480 N."],
+    ["Which of Newton's laws explains the recoil of a gun?","The third law","The gun pushes the bullet forward; the bullet pushes the gun back equally.",
+     "An 80 kg astronaut floating at rest in space throws a 2 kg tool at 8 m/s.",
+     "What is the astronaut's velocity afterwards?",
+     ["8 m/s, opposite to the tool","0.2 m/s, in the same direction as the tool","Zero, since there is nothing to push against","0.2 m/s, opposite to the tool"],3,
+     "The tool pushes back on the astronaut; momentum is conserved: 2 × 8 = 80 × v, so v = 0.2 m/s backwards."]]},
+  { name:"Torque", qs:[
+    ["A 600 N person sits 1.5 m from a seesaw pivot. Where must a 400 N person sit to balance?","2.25 m on the other side","600 × 1.5 = 400 × d.",
+     "The forearm acts as a lever pivoting at the elbow. The biceps attaches 4 cm from the elbow; a 50 N weight is held in the hand 32 cm from the elbow, with the forearm horizontal. Ignore the forearm's weight.",
+     "What force must the biceps provide?",
+     ["6.25 N","50 N","200 N","400 N"],3,
+     "Balance torques about the elbow: F × 4 = 50 × 32, so F = 400 N; the short lever arm means a large force."],
+    ["Why are door handles placed far from the hinge?","A larger distance gives more torque for the same force","τ = Fd.",
+     "A spanner 0.25 m long must apply 50 N m of torque to undo a nut. A force at angle θ to the spanner gives τ = Fd sin θ.",
+     "What is the smallest force that will work, and in what direction?",
+     ["12.5 N along the handle","200 N perpendicular to the handle","200 N along the handle","400 N at 30° to the handle"],1,
+     "sin θ is largest (1) at 90°, giving F = 50 ÷ 0.25 = 200 N. 400 N at 30° also works but is larger; along the handle gives no torque."],
+    ["What two conditions must hold for an object to be in static equilibrium?","Net force = 0 and net torque = 0","",
+     "A uniform 4 m plank weighing 200 N rests on supports at each end. A 600 N person stands 1 m from the left end.",
+     "What upward force does the right-hand support provide?",
+     ["550 N","400 N","250 N","800 N"],2,
+     "Torques about the left end: R × 4 = 200 × 2 + 600 × 1 = 1000, so R = 250 N (and the left support gives 550 N)."]]},
+  { name:"Energy, work, momentum", qs:[
+    ["A 2 kg object falls 5 m from rest. What is its speed at the bottom? (g = 10, no air resistance)","10 m/s","mgh = ½mv², so v = √(2gh) = √100.",
+     "A 0.5 kg ball is dropped from 5 m and rebounds to 3.2 m. g = 10 m/s².",
+     "What fraction of its energy is lost in the bounce, and what is its speed just after bouncing?",
+     ["64%; 8 m/s","36%; 8 m/s","36%; 10 m/s","18%; 6.4 m/s"],1,
+     "Energy is proportional to height: (5 − 3.2) ÷ 5 = 36% lost. Rising to 3.2 m needs v = √(2 × 10 × 3.2) = 8 m/s."],
+    ["A 1 kg cart at 4 m/s hits a stationary 3 kg cart and they stick together. What is their speed, and is kinetic energy conserved?","1 m/s; no","Momentum 4 = 4v. KE falls from 8 J to 2 J.",
+     "In a ballistic pendulum, a 0.02 kg bullet embeds in a 1.98 kg block hanging at rest, and the block swings up 0.2 m. g = 10 m/s².",
+     "What was the bullet's speed?",
+     ["2 m/s","20 m/s","200 m/s","400 m/s"],2,
+     "After impact, ½v² = gh gives v = 2 m/s for the 2 kg total. Momentum: 0.02u = 2 × 2, so u = 200 m/s. Energy is not conserved in the collision itself."],
+    ["How much power is needed to lift 50 kg up 4 m in 5 s? (g = 10)","400 W","Work 2000 J ÷ 5 s.",
+     "The heart does about 1 J of useful work per beat and beats 72 times a minute. Its efficiency (useful work ÷ energy used) is about 20%.",
+     "What is the heart's total rate of energy use?",
+     ["1.2 W","0.24 W","72 W","6 W"],3,
+     "Useful power = 72 J ÷ 60 s = 1.2 W; at 20% efficiency, total = 1.2 ÷ 0.2 = 6 W."]]},
+  { name:"Physics of liquids", qs:[
+    ["What is the gauge pressure 2 m below the surface of water? (ρ = 1000 kg/m³, g = 10)","2 × 10⁴ Pa","P = ρgh.",
+     "An IV bag hangs with its fluid surface a height h above the vein. Pressure in the vein is about 1300 Pa above atmospheric. The fluid's density is 1000 kg/m³ and g = 10 m/s².",
+     "What is the minimum height for fluid to flow into the vein?",
+     ["1.3 cm","1.3 m","13 cm","13 m"],2,
+     "The fluid's pressure ρgh must exceed 1300 Pa: h = 1300 ÷ (1000 × 10) = 0.13 m."],
+    ["A block floats with 60% of its volume under water. What is its density?","600 kg/m³","The fraction submerged equals the ratio of densities.",
+     "An object floats in fresh water (1000 kg/m³) with 90% of its volume submerged. It is moved into seawater (1030 kg/m³).",
+     "What fraction is submerged in seawater, and does it float higher or lower?",
+     ["About 87%; higher","About 93%; lower","90%; the same","About 87%; lower"],0,
+     "Its density is 900 kg/m³; fraction submerged = 900 ÷ 1030 ≈ 0.87, so it floats higher."],
+    ["Why does a steel ship float?","Its average density is less than water's","It displaces a weight of water equal to its own weight.",
+     "A crown weighs 10 N in air and 9.4 N when fully submerged in water (1000 kg/m³, g = 10 m/s²). Gold has a density of 19 300 kg/m³.",
+     "What is the crown's density, and is it pure gold?",
+     ["19 300 kg/m³; pure gold","About 16 700 kg/m³; not pure gold","About 1670 kg/m³; not pure gold","About 10 000 kg/m³; not pure gold"],1,
+     "Buoyancy = 0.6 N = weight of displaced water, so V = 6 × 10⁻⁵ m³. Mass = 1 kg, so density = 1 ÷ (6 × 10⁻⁵) ≈ 16 700 kg/m³."]]},
+  { name:"Electricity and magnetism", qs:[
+    ["Two charges repel with force F. The distance is doubled and one charge is tripled. What is the new force?","¾F","× 3 for the charge, × ¼ for the distance.",
+     "Coulomb's law: F = kq₁q₂/r². When salt dissolves, water reduces the force between ions by a factor of about 80.",
+     "If two ions in water are also twice as far apart as in the crystal, how does the force compare with in the crystal?",
+     ["1/160","1/80","1/320","1/40"],2,
+     "Water divides the force by 80, and doubling r divides it by 4 more: 1/320."],
+    ["Which way do electric field lines point around a positive charge, and how would an electron placed there move?","Outward; the electron accelerates towards the charge","Negative charges feel a force opposite to the field.",
+     "In gel electrophoresis, the electric field points from the positive electrode to the negative electrode. DNA is negatively charged. The gel slows larger fragments more.",
+     "Which way does DNA move, and which fragments travel furthest?",
+     ["With the field, towards the negative electrode; large fragments","Against the field, towards the positive electrode; small fragments","Against the field; large fragments","It does not move"],1,
+     "Negative charges move opposite to the field, towards the positive electrode, and small fragments move through the gel fastest."],
+    ["A charged particle moves parallel to a magnetic field. What magnetic force does it feel?","None","F = qvB sin θ, and sin 0° = 0.",
+     "The magnetic force on a moving charge is F = qvB sin θ, and it always acts at right angles to the velocity.",
+     "A proton moves at right angles to a uniform magnetic field. Which describes its motion?",
+     ["A circle at constant speed","A straight line, speeding up","A spiral inward, slowing down","A straight line at constant speed"],0,
+     "A force always perpendicular to velocity changes direction but never speed, giving circular motion."]]},
+  { name:"Circular motion", qs:[
+    ["What provides the centripetal force for a car turning on a flat road, and for the Moon orbiting Earth?","Friction; gravity","Centripetal force is the net inward force, not an extra force.",
+     "On a flat road, the maximum friction force is μmg, and turning needs a centripetal force of mv²/r. Take μ = 0.5 and g = 10 m/s².",
+     "What is the fastest a car can take a bend of radius 20 m?",
+     ["5 m/s","10 m/s","14 m/s","100 m/s"],1,
+     "μmg = mv²/r gives v² = μgr = 0.5 × 10 × 20 = 100, so v = 10 m/s; mass cancels."],
+    ["At the same radius, speed doubles. By what factor does the centripetal force change?","× 4","F = mv²/r.",
+     "A centrifuge spins samples at a radius of 0.1 m. Centripetal acceleration is ω²r, and 'g-force' is that acceleration divided by 10 m/s².",
+     "At about 630 rad/s, roughly what g-force is produced, and what happens if the spin rate doubles?",
+     ["About 400 g; doubles","About 4000 g; doubles","About 4000 g; quadruples","About 40 000 g; quadruples"],2,
+     "630² × 0.1 ≈ 40 000 m/s², about 4000 g. Acceleration goes with ω², so doubling ω multiplies it by 4."],
+    ["A ball whirled in a horizontal circle has its string cut. Which way does it go?","Along the tangent","With no inward force it moves in a straight line.",
+     "A hammer thrower spins a ball anticlockwise in a horizontal circle, viewed from above. At the moment of release, the ball is directly north of the thrower.",
+     "In which direction does the ball travel just after release?",
+     ["North","East","West","South"],2,
+     "It leaves along the tangent; going anticlockwise (east → north → west), at the northern point it is heading west."]]},
+  { name:"Electric circuits", qs:[
+    ["What is the total resistance of three 6 Ω resistors in series, and in parallel?","18 Ω in series; 2 Ω in parallel","Parallel: 1/R = 3/6.",
+     "Two identical 12 Ω bulbs are connected to a 6 V battery, first in series and then in parallel. Power P = V²/R.",
+     "What is the total power in each arrangement?",
+     ["1.5 W in series; 6 W in parallel","3 W in both","6 W in series; 1.5 W in parallel","1.5 W in series; 3 W in parallel"],0,
+     "Series: R = 24 Ω, P = 36 ÷ 24 = 1.5 W. Parallel: R = 6 Ω, P = 36 ÷ 6 = 6 W."],
+    ["12 V is applied across 4 Ω. What are the current and the power?","3 A and 36 W","I = V/R; P = VI.",
+     "Skin resistance is about 100 000 Ω when dry and about 1000 Ω when wet. A current of about 10 mA through the body can make muscles lock.",
+     "At 240 V, what current flows through dry and wet skin?",
+     ["2.4 mA for both","240 mA dry; 2.4 mA wet","24 A for both","2.4 mA dry (safer); 240 mA wet (dangerous)"],3,
+     "I = V/R: 240 ÷ 100 000 = 2.4 mA; 240 ÷ 1000 = 0.24 A, far above 10 mA."],
+    ["What is the same for every branch of a parallel circuit, and for every component in series?","Parallel: voltage; series: current","",
+     "Household appliances are wired in parallel to a 240 V supply. A 2400 W kettle and a 60 W lamp are both switched on.",
+     "Which statement is correct?",
+     ["The kettle gets a higher voltage than the lamp","Both get 240 V, and the total current is 10.25 A","The same current flows through each","The lamp goes off when the kettle is switched on"],1,
+     "In parallel each gets the full 240 V. Currents: 2400 ÷ 240 = 10 A and 60 ÷ 240 = 0.25 A."]]},
+  { name:"Optics", qs:[
+    ["Light passes from air into glass. What happens to its speed, wavelength, frequency and direction?","Speed and wavelength fall; frequency is unchanged; it bends towards the normal","",
+     "Refractive index n = c/v. When light enters a new medium its frequency stays the same, so wavelength changes in proportion to speed. Light of wavelength 600 nm in air enters water (n = 1.33).",
+     "What are its wavelength and frequency in water?",
+     ["800 nm; lower frequency","About 450 nm; same frequency","About 450 nm; higher frequency","600 nm; lower frequency"],1,
+     "Speed falls by 1.33, so wavelength = 600 ÷ 1.33 ≈ 450 nm; frequency is fixed by the source."],
+    ["A converging lens has f = 10 cm and an object sits 30 cm away. Using 1/f = 1/u + 1/v, find the image distance and magnification.","15 cm; magnification 0.5","1/v = 1/10 − 1/30 = 1/15; m = v/u.",
+     "The eye's lens system focuses images on the retina about 2 cm behind it, with 1/f = 1/u + 1/v. A person reads a page 25 cm away.",
+     "What focal length must the eye's lens system have?",
+     ["2.0 cm","About 2.17 cm","About 1.85 cm","23 cm"],2,
+     "1/f = 1/25 + 1/2 = 27/50, so f ≈ 1.85 cm. Shorter than 2 cm because near objects need more focusing power."],
+    ["When does total internal reflection occur?","Light travels from a higher to a lower refractive index, beyond the critical angle","Used in optical fibres and endoscopes.",
+     "An optical fibre has a core of refractive index 1.50 and cladding of 1.45. Light is totally internally reflected at the boundary if it strikes at more than the critical angle, where sin θc = n(cladding)/n(core). (sin 75° ≈ 0.97)",
+     "Why must the cladding have a lower index than the core, and roughly what is θc?",
+     ["So light slows in the cladding; about 15°","Because reflection only occurs going into higher n; about 75°","Because the cladding absorbs stray light; about 45°","Total internal reflection only occurs going towards lower n; about 75°"],3,
+     "sin θc = 1.45 ÷ 1.50 ≈ 0.97, so θc ≈ 75°; total internal reflection needs light travelling into a lower-index medium."]]},
+  { name:"Radioactive decay", qs:[
+    ["Uranium-238 (Z = 92) undergoes α decay. What are the mass number and atomic number of the daughter?","234 and 90 (thorium)","An α particle is a helium nucleus: A − 4, Z − 2.",
+     "Radon-222 (Z = 86) undergoes α decay, its daughter undergoes α decay, and then two β⁻ decays follow.",
+     "What are the mass number and atomic number of the final nucleus?",
+     ["214 and 82","214 and 84","218 and 84","210 and 86"],1,
+     "Two α decays: A 222 → 214, Z 86 → 82. Two β⁻ decays: Z 82 → 84, A unchanged."],
+    ["What happens inside the nucleus in β⁻ decay?","A neutron becomes a proton and emits an electron","Z rises by 1; A is unchanged.",
+     "Carbon-14 (6 protons) decays by β⁻ emission with a half-life of 5730 years. Living things keep a constant carbon-14 level; after death it is not replaced.",
+     "What does carbon-14 decay into, and how old is a bone with 1/8 of the living level?",
+     ["Boron-14; about 17 000 years","Nitrogen-14; about 17 000 years","Nitrogen-14; about 23 000 years","Carbon-13; 5730 years"],1,
+     "β⁻ raises Z from 6 to 7 (nitrogen) with A unchanged. 1/8 is three half-lives: 3 × 5730 ≈ 17 190 years."],
+    ["Rank α, β and γ radiation by penetrating power and by ionising ability.","Penetration: γ > β > α; ionisation: α > β > γ","The two orders are reversed.",
+     "In a smoke detector, americium-241 emits α particles that ionise the air between two plates, so a small current flows. Smoke absorbs the α particles, the current drops, and the alarm sounds.",
+     "Why is an α source suitable and safe here?",
+     ["α passes through walls, so it detects smoke in other rooms","α is a form of light","α is strongly ionising but is stopped by a few centimetres of air or the casing","α radiation does not ionise air"],2,
+     "Strong ionisation gives a measurable current, and low penetration means the radiation does not escape the detector."]]}
+]},
+{ name:"Mathematics", topics:[
+  { name:"Exponential patterns on linear and log scales", qs:[
+    ["An exponential decay curves on linear axes. What does it look like with a log y-axis, and what does the gradient tell you?","A straight line sloping down","The gradient is the log of the factor change per unit time.",
+     "A drug's plasma concentration is plotted against time with a logarithmic y-axis. The points lie on a straight line that falls from 100 mg/L to 10 mg/L over 6 hours. (√10 ≈ 3.2, log 2 ≈ 0.3)",
+     "What is the concentration at 9 hours, and roughly what is the half-life?",
+     ["5 mg/L; 3 h","About 3.2 mg/L; about 1.8 h","1 mg/L; about 1.8 h","About 3.2 mg/L; 3 h"],1,
+     "A tenfold drop every 6 h: 9 h is 1.5 tenfold drops, so 100 ÷ 10¹·⁵ ≈ 3.2. Halving takes 0.3 of a tenfold drop: 0.3 × 6 = 1.8 h."],
+    ["A quantity triples every 2 hours. By what factor does it grow in 8 hours?","81","Four tripling periods: 3⁴.",
+     "A virus population triples every 2 days, starting from 100 particles on day 0. (3⁸ = 6561)",
+     "On which day does it first exceed one million?",
+     ["Day 9","Day 16","Day 18","Day 20"],2,
+     "It must grow 10⁴-fold. 3⁸ = 6561 is too few, 3⁹ = 19 683 is enough, so 9 triplings = day 18."],
+    ["On a log axis, 1, 10, 100 and 1000 are equally spaced. What does each equal step represent?","Multiplying by 10","Equal distances mean equal ratios.",
+     "Earthquake magnitude is a log scale: each increase of 1 means 10 times the wave amplitude and about 32 times the energy released.",
+     "Compared with a magnitude 5 quake, how much larger are the amplitude and energy of a magnitude 7?",
+     ["× 2 amplitude; × 64 energy","× 20 amplitude; × 64 energy","× 100 amplitude; × 64 energy","× 100 amplitude; about × 1000 energy"],3,
+     "Two steps multiply: 10 × 10 = 100 for amplitude and 32 × 32 ≈ 1000 for energy."]]},
+  { name:"Arithmetic and estimation", qs:[
+    ["Estimate 0.049 × 612 ÷ 0.0198 without a calculator.","About 1500","Round to 0.05 × 600 ÷ 0.02.",
+     "A ward uses 2.4 boxes of gloves per patient per day. A box costs $9.80, and the ward has 28 patients.",
+     "Estimate the cost of gloves for a 30-day month.",
+     ["About $20 000","About $2000","About $6600","About $200 000"],0,
+     "2.4 × 28 × 30 ≈ 2000 boxes, × about $10 ≈ $20 000."],
+    ["What is 15% of 260?","39","10% is 26 and 5% is 13.",
+     "In a trial, 15% of 260 patients on placebo had a heart attack, compared with 10% of 240 patients on a drug.",
+     "How many heart attacks are prevented per 100 patients treated, and how many patients must be treated to prevent one?",
+     ["15 per 100; 7","5 per 100; 20","5 per 100; 5","33 per 100; 3"],1,
+     "The absolute risk drops by 15% − 10% = 5 per 100, so 100 ÷ 5 = 20 must be treated to prevent one."],
+    ["Write 7/8 as a percentage.","87.5%","1/8 = 12.5%.",
+     "A test's sensitivity is the fraction of people with a disease who test positive. Of 56 patients with the disease, 49 test positive.",
+     "What is the sensitivity?",
+     ["49%","78.5%","87.5%","89.1%"],2,
+     "49/56 simplifies to 7/8 = 87.5%."]]},
+  { name:"Scientific notation and index/log laws", qs:[
+    ["Simplify (2 × 10⁴)³ ÷ (4 × 10⁻²).","2 × 10¹⁴","8 × 10¹² ÷ 4 × 10⁻².",
+     "An adult has about 3 × 10¹³ red blood cells, each holding about 2.7 × 10⁸ haemoglobin molecules.",
+     "Roughly how many haemoglobin molecules are in the body?",
+     ["5.7 × 10²¹","8.1 × 10⁵","8.1 × 10²¹","1.1 × 10⁵"],2,
+     "Multiply the numbers (3 × 2.7 = 8.1) and add the exponents (13 + 8 = 21)."],
+    ["Write log(a²b/c) in terms of log a, log b and log c.","2 log a + log b − log c","",
+     "pH = −log[H⁺], and log(ab) = log a + log b. Solution Y has pH 6.0, and solution X has 50 times its [H⁺]. (log 5 ≈ 0.70)",
+     "What is the pH of X?",
+     ["5.0","4.3","4.7","7.7"],1,
+     "log 50 = log 5 + log 10 = 1.70, so pH falls by 1.7: 6.0 − 1.7 = 4.3."],
+    ["Evaluate 16^(−3/4).","1/8","Fourth root of 16 is 2; cubed is 8; the negative power gives the reciprocal.",
+     "In mammals, resting heart rate scales roughly as body mass to the power −1/4. A 16 kg dog has a heart rate of 100 per minute.",
+     "What heart rate is predicted for a 256 kg animal?",
+     ["6.25 per minute","25 per minute","400 per minute","50 per minute"],3,
+     "Mass is 16 times larger, and 16^(−1/4) = 1/2, so 100 × 1/2 = 50."]]},
+  { name:"Logs and trigonometric ratios", qs:[
+    ["Give the exact sin, cos and tan of 30°, 45° and 60°.","30°: ½, √3/2, 1/√3; 45°: √2/2, √2/2, 1; 60°: √3/2, ½, √3","From the 30–60–90 and 45–45–90 triangles.",
+     "A loading ramp rises 2 m at an angle of 30° to the ground. (√3 ≈ 1.73)",
+     "How long is the ramp surface, and how far does it extend horizontally?",
+     ["4 m; about 3.5 m","2.3 m; 1.2 m","4 m; 2 m","3.5 m; 4 m"],0,
+     "sin 30° = ½ = 2/L, so L = 4 m; horizontal = 4 cos 30° = 2√3 ≈ 3.5 m."],
+    ["If log₁₀ x = 2.5, roughly what is x?","About 316","10^2.5 = 100 × √10.",
+     "Sound level L = 10 log(I/I₀) dB. A conversation is 60 dB and a rock concert is 115 dB. (√10 ≈ 3.16)",
+     "How many times more intense is the concert?",
+     ["About 3 × 10⁵","55","1.9","10⁵⁵"],0,
+     "55 dB difference means log(ratio) = 5.5, so 10⁵·⁵ = 10⁵ × √10 ≈ 3.2 × 10⁵."],
+    ["What is sin²θ + cos²θ, and why?","1","Pythagoras on a right triangle with hypotenuse 1.",
+     "A 10 N force acts at an angle above the horizontal. Its horizontal component is measured as 6 N.",
+     "What is its vertical component?",
+     ["4 N","8 N","10 N","16 N"],1,
+     "Components satisfy 6² + y² = 10², the same as sin²θ + cos²θ = 1, so y = 8 N."]]},
+  { name:"Area and volume", qs:[
+    ["Find the area of a circle of diameter 10 cm, and the volume of a cylinder with that base and height 4 cm.","25π ≈ 78.5 cm²; 100π ≈ 314 cm³","Use the radius, 5 cm.",
+     "A syringe barrel has an internal diameter of 2 cm. 1 mL = 1 cm³; take π ≈ 3.14.",
+     "How far must the plunger move to deliver 6.28 mL, and how far if the barrel's diameter were halved?",
+     ["2 cm; 4 cm","1 cm; 2 cm","2 cm; 8 cm","0.5 cm; 2 cm"],2,
+     "Area = π × 1² ≈ 3.14 cm², so 6.28 ÷ 3.14 = 2 cm. Halving the diameter quarters the area, so 8 cm."],
+    ["A cube's sides are doubled. By what factors do its surface area and volume change?","× 4 and × 8","Area scales as k², volume as k³.",
+     "Heat loss is proportional to surface area; heat produced by metabolism is proportional to volume. Model two animals as cubes, one with 3 times the side length of the other.",
+     "How do heat production and heat loss compare between the larger and smaller animal?",
+     ["Production × 9, loss × 3","Production × 27, loss × 9, so the larger keeps heat 3 times better","Both × 27","Production × 3, loss × 9"],1,
+     "Volume scales as 3³ = 27 and area as 3² = 9, so the production-to-loss ratio rises 3-fold."],
+    ["Find the volume of a cone of radius 3 and height 4 (V = ⅓πr²h), and its slant height.","12π ≈ 37.7; slant height 5","Slant height from the 3–4–5 triangle.",
+     "A conical paper cup has a rim radius of 3 cm and a depth of 9 cm. V = ⅓πr²h; take π ≈ 3.",
+     "Roughly what volume does it hold when full, and when filled to half its depth?",
+     ["81 cm³ and 40 cm³","243 cm³ and 30 cm³","27 cm³ and 13.5 cm³","81 cm³ and about 10 cm³"],3,
+     "Full: ⅓ × 3 × 9 × 9 = 81 cm³. Half depth also halves the radius, so the volume is (½)³ = 1/8 of 81 ≈ 10 cm³."]]}
+]}
+];
+
+// Theory cards: everything needed for every question set in each topic.
+const FUND_NOTES = {
+"Biomolecules and the cell":[
+ "Secretory pathway: proteins for export are made on ribosomes on the rough ER → modified and sorted in the Golgi → packaged into secretory vesicles → released by exocytosis. Smooth ER makes lipids; lysosomes digest material.",
+ "Macromolecules and their monomers: proteins ← amino acids (peptide bonds); nucleic acids ← nucleotides (phosphodiester bonds); polysaccharides ← monosaccharides (glycosidic bonds).",
+ "These bonds form by condensation (water released) and break by hydrolysis (water added).",
+ "Enzymes are specific: each breaks one kind of bond in its substrate (lactase: the glycosidic bond in lactose; proteases: peptide bonds; nucleases: phosphodiester bonds).",
+ "The plasma membrane is a phospholipid bilayer with a hydrophobic core. Small non-polar molecules (O₂, CO₂) diffuse straight through; water and small polar molecules cross slowly; large polar molecules (glucose) and ions (Na⁺, K⁺) need channels, carriers or pumps.",
+ "Charge is the biggest barrier to crossing the bilayer, more than size."],
+"Enzymes, metabolism and the central dogma":[
+ "Enzymes lower activation energy. Vmax = the maximum rate when the enzyme is saturated; Km = the substrate concentration at half Vmax (low Km = high affinity).",
+ "Competitive inhibitor: binds the active site. Vmax unchanged (enough substrate outcompetes it); apparent Km rises. Another substrate for the same active site behaves the same way.",
+ "Non-competitive (allosteric) inhibitor: binds elsewhere. Vmax falls; Km unchanged.",
+ "Central dogma: DNA → (transcription, nucleus) → mRNA → (translation, ribosome) → protein.",
+ "mRNA is complementary and antiparallel to the template strand, with U instead of T (so it matches the coding strand). It is read 5′→3′ in codons of three bases. AUG = start (methionine); UAA, UAG, UGA = stop.",
+ "Point mutations: missense (one amino acid changes), nonsense (creates a stop codon → shortened protein), silent (no change). Inserting or deleting bases (not in threes) causes a frameshift.",
+ "Respiration: glycolysis (cytoplasm; glucose → 2 pyruvate, a little ATP, needs NAD⁺) → Krebs cycle (mitochondrial matrix) → electron transport chain / oxidative phosphorylation (inner mitochondrial membrane; most ATP; O₂ is the final electron acceptor).",
+ "Without O₂, or if the electron transport chain is blocked, only glycolysis can run. Pyruvate is turned into lactate to regenerate NAD⁺ so glycolysis can continue."],
+"Cell division":[
+ "Cell cycle: G1 → S (DNA replicated; each chromosome now has two sister chromatids) → G2 → mitosis. Count chromosomes by centromeres; chromatids double after S phase.",
+ "Mitosis: one division → 2 genetically identical diploid cells. Used for growth, repair and asexual reproduction (offspring are clones).",
+ "Meiosis: two divisions → 4 genetically different haploid gametes. Meiosis I: homologues pair, crossing over in prophase I, homologues separate in anaphase I. Meiosis II: sister chromatids separate in anaphase II.",
+ "DNA content: if a G1 cell has 2 units → 4 after S phase → 2 per cell after meiosis I → 1 per gamete.",
+ "Nondisjunction in meiosis I → all 4 gametes abnormal (2 with an extra chromosome, 2 missing one). In one cell during meiosis II → 2 normal, 1 extra, 1 missing.",
+ "Sexual reproduction creates variation by crossing over, independent assortment and random fertilisation, so some offspring may survive a new threat that wipes out clones."],
+"Gene expression and inheritance":[
+ "Codons are triplets, and the code is degenerate: most amino acids have several codons, usually differing in the third base. Third-position changes are often silent; first- or second-position changes usually change the amino acid.",
+ "Eukaryotic genes contain exons (kept) and introns (removed by splicing in the nucleus before export).",
+ "Alternative splicing can include or skip exons, so one gene can make different proteins in different tissues. Mature mRNA coding length = the sum of the exons kept.",
+ "Dominant/recessive: the heterozygote shows the dominant phenotype.",
+ "Codominance: both alleles fully shown in the heterozygote (AB blood group). Incomplete dominance: the heterozygote is intermediate (red × white → pink).",
+ "Crossing two heterozygotes gives genotypes 1 AA : 2 Aa : 1 aa. Phenotypes are 3 : 1 with full dominance, or 1 : 2 : 1 with incomplete dominance or codominance."],
+"Nervous system":[
+ "Resting potential ≈ −70 mV, set mainly by K⁺ leaking out. The Na⁺/K⁺ pump keeps Na⁺ high outside and K⁺ high inside.",
+ "Action potential: stimulus reaches threshold → voltage-gated Na⁺ channels open, Na⁺ rushes in (depolarisation) → Na⁺ channels close and K⁺ channels open, K⁺ flows out (repolarisation) → brief hyperpolarisation. It is all-or-nothing.",
+ "Blocking voltage-gated Na⁺ channels stops action potentials, but leaves the resting potential largely intact.",
+ "Myelin insulates axons; impulses jump from node to node (saltatory conduction), which is much faster. Wider axons also conduct faster. Losing myelin slows or blocks conduction.",
+ "Divisions: central (brain, spinal cord) and peripheral. The autonomic system has two branches that oppose each other.",
+ "Sympathetic (fight or flight): faster heart rate, dilated pupils, airways widen, digestion slows. Parasympathetic (rest and digest): slower heart rate, constricted pupils, digestion increases.",
+ "Blocking one branch leaves the other's effects unopposed."],
+"Musculoskeletal system":[
+ "The skeleton supports, protects, allows movement, makes blood cells (marrow) and stores minerals.",
+ "Tendons join muscle to bone; ligaments join bone to bone (and limit joint movement); cartilage cushions joints.",
+ "Contraction: motor neuron releases acetylcholine → muscle action potential → Ca²⁺ released from the sarcoplasmic reticulum → Ca²⁺ binds troponin → tropomyosin moves off actin's binding sites → myosin heads form cross-bridges and pull. ATP lets myosin release and re-cock.",
+ "Removing Ca²⁺ (or stopping its release) lets tropomyosin block actin again, so the muscle relaxes.",
+ "Sarcomere (Z disc to Z disc): A band = length of the thick (myosin) filaments, never changes. I band = thin (actin) filaments only, shortens. H zone = thick filaments only, shortens.",
+ "Sliding filament model: filaments slide past each other; neither shortens. I band width = sarcomere length − A band length.",
+ "Muscles only pull, so they work in antagonistic pairs (biceps and triceps)."],
+"Cardiovascular system":[
+ "Route: vena cavae → right atrium → tricuspid valve → right ventricle → pulmonary valve → pulmonary artery → lungs → pulmonary veins → left atrium → mitral valve → left ventricle → aortic valve → aorta → body.",
+ "The right side pumps deoxygenated blood to the low-resistance lungs; the left side pumps oxygenated blood to the high-resistance body, so the left ventricle wall is thicker.",
+ "A chamber that has to pump against higher pressure thickens over time.",
+ "Blood flows from high to low pressure; valves stop backflow. A hole between chambers lets blood flow from the high-pressure side to the low-pressure side.",
+ "Cardiac output = heart rate × stroke volume (about 5 L/min at rest).",
+ "Mean arterial pressure ≈ cardiac output × peripheral resistance. Dilated blood vessels lower resistance (as in exercising muscle).",
+ "Arteries carry blood away from the heart (thick, elastic walls); veins carry it back (low pressure, valves); capillaries are where exchange happens."],
+"Respiratory system":[
+ "Airway: nose/mouth → trachea → bronchi → bronchioles → alveoli. Gas exchange is by diffusion between alveoli and capillaries.",
+ "Exchange is efficient because of the huge surface area, walls one cell thick, a dense capillary network, and ventilation keeping gradients steep.",
+ "Fick's law: diffusion rate ∝ surface area × concentration difference ÷ membrane thickness. Losing alveolar surface (as in emphysema) or thickening the membrane reduces exchange.",
+ "Breathing in: diaphragm contracts and flattens, intercostals lift the ribs → chest volume rises → lung pressure falls below atmospheric → air flows in. Breathing out at rest is passive recoil.",
+ "The lungs stay inflated because pressure in the pleural space is lower than inside the lungs. Air in the pleural space (pneumothorax) removes that difference and the lung collapses.",
+ "CO₂ travels mostly as bicarbonate (via carbonic anhydrase in red cells), some on haemoglobin, a little dissolved.",
+ "CO₂ + H₂O ⇌ H₂CO₃ ⇌ H⁺ + HCO₃⁻: more CO₂ → more H⁺ → lower pH. Breathing CO₂ off quickly → less H⁺ → higher pH."],
+"Gastrointestinal system":[
+ "Route: mouth → oesophagus → stomach (acid, pepsin) → small intestine (duodenum, jejunum, ileum) → large intestine (absorbs water) → rectum. Accessory organs: liver, gallbladder, pancreas.",
+ "Most nutrients are absorbed in the small intestine. Villi and microvilli greatly increase the surface area; if they are damaged, nutrients are poorly absorbed.",
+ "The liver makes bile; the gallbladder stores it; it is released into the duodenum. Bile salts emulsify fat into small droplets for lipase.",
+ "Bile also carries bilirubin, which makes faeces brown. A blocked bile duct gives pale, fatty stools (and jaundice).",
+ "The pancreas secretes most digestive enzymes (amylase, lipase, proteases) plus bicarbonate to neutralise stomach acid, because pancreatic enzymes work best near neutral pH.",
+ "The pancreas is also an endocrine gland, making insulin and glucagon."],
+"Renal system":[
+ "The kidneys filter blood, remove wastes such as urea, and control water and salt balance, blood pressure and pH.",
+ "Nephron: glomerulus → Bowman's capsule (filtration) → proximal tubule (reabsorbs most water and all glucose and amino acids) → loop of Henle → distal tubule → collecting duct (final water control) → ureter → bladder.",
+ "Filtration is driven by blood pressure in the glomerulus. Blood enters by the afferent arteriole and leaves by the efferent arteriole.",
+ "Narrowing the efferent arteriole (or widening the afferent) raises glomerular pressure and filtration rate; the reverse lowers it.",
+ "ADH (posterior pituitary) is released when blood is too concentrated. It makes the collecting duct permeable to water → more water reabsorbed → small volume of concentrated urine. Less ADH (e.g. after alcohol) → lots of dilute urine.",
+ "Glucose is reabsorbed by carriers with a maximum rate. Filtered load = GFR × plasma concentration; when it exceeds the maximum, glucose appears in urine."],
+"Endocrine system":[
+ "Hormones travel in the blood and act on cells with matching receptors. Main glands: hypothalamus, pituitary, thyroid, adrenals, pancreas, gonads.",
+ "Pancreatic β cells make insulin: cells take up glucose and store glycogen → blood glucose falls. α cells make glucagon: glycogen broken down → glucose rises.",
+ "Type 1 diabetes: β cells destroyed → no insulin → high blood glucose; cells burn fat instead → ketones.",
+ "Peptide hormones (insulin, ADH) are water-soluble: bind surface receptors and act via second messengers → fast, short-lived effects.",
+ "Steroid hormones (cortisol, oestrogen, testosterone) are lipid-soluble: cross the membrane, bind receptors inside the cell and change gene transcription → slow, longer-lasting effects.",
+ "Negative feedback axis: hypothalamus (releasing hormone, e.g. TRH) → anterior pituitary (stimulating hormone, e.g. TSH) → gland hormone (e.g. T3/T4), which inhibits the first two.",
+ "If the gland fails, its hormone is low and the pituitary hormone is high. If the pituitary fails, both are low."],
+"Immune system":[
+ "Innate immunity: fast, non-specific, no memory. Skin, mucus, inflammation, phagocytes (neutrophils, macrophages).",
+ "Adaptive immunity: specific, slow the first time (days), has memory.",
+ "B cells → plasma cells → antibodies, which neutralise pathogens outside cells. Helper T cells coordinate. Cytotoxic T cells kill infected cells that display foreign antigen on MHC class I.",
+ "First exposure: the few matching lymphocytes must be activated and multiply (clonal expansion), so antibodies take about a week to appear.",
+ "Memory B and T cells persist, so a second exposure or booster gives a faster, larger, longer-lasting response. This is how vaccination works."],
+"Genetics and evolution":[
+ "Natural selection: individuals vary; some variation is heritable; those better suited to the environment survive and reproduce more; their alleles become more common.",
+ "Selection acts on variation that already exists. It does not create the mutations it favours.",
+ "Genetic drift: random changes in allele frequency by chance. Strongest in small populations: bottlenecks (after disasters) and founder effects.",
+ "Other forces: mutation (new alleles) and gene flow (migration between populations).",
+ "Homologous structures share an underlying structure from a common ancestor, even if their function differs (human arm, bat wing, dolphin flipper).",
+ "Analogous structures do the same job but evolved separately (bird and insect wings; shark and dolphin body shape): convergent evolution."],
+"Reproductive systems":[
+ "Female: ovaries (eggs, oestrogen, progesterone) → uterine (fallopian) tubes, where fertilisation usually happens → uterus, where the embryo implants in the endometrium.",
+ "If the embryo is delayed in the tube (e.g. by scarring), it may implant there: an ectopic pregnancy.",
+ "Cycle: FSH grows a follicle → rising oestrogen triggers an LH surge (positive feedback) → ovulation → the corpus luteum makes progesterone to keep the lining.",
+ "Steady oestrogen and progesterone (e.g. the combined pill) give negative feedback, keeping FSH and LH low, so there is no LH surge and no ovulation.",
+ "Male: testes make sperm and testosterone; sperm mature in the epididymis; the vas deferens carries them; the prostate and seminal vesicles add fluid.",
+ "The testes sit in the scrotum because sperm production needs a temperature a few degrees below core body temperature."],
+"Experimental design and data analysis":[
+ "Independent variable: what you change. Dependent variable: what you measure. Controlled variables: kept the same. A confounding variable differs between groups and could explain the result instead.",
+ "A control group gives a baseline; a placebo group controls for expectation effects.",
+ "Blinding removes bias: single-blind (participants don't know), double-blind (participants and researchers don't know). Randomisation spreads unknown confounders evenly.",
+ "A treatment's real effect = treatment group result − placebo group result.",
+ "Correlation does not prove causation: a third variable may drive both, or the direction may be reversed.",
+ "The correlation coefficient r runs from −1 to +1 and measures only the strength of a linear relationship."]
+,
+"Atoms and atomic structure":[
+ "Atomic number Z = number of protons (defines the element). Mass number A = protons + neutrons.",
+ "A neutral atom has electrons = protons. An ion with charge n+ has lost n electrons; n− has gained n.",
+ "Isotopes: same Z, different numbers of neutrons. Same chemistry (same electrons), different mass.",
+ "Relative atomic mass = abundance-weighted average of the isotope masses. E.g. 75% of 35 + 25% of 37 = 35.5.",
+ "Electrons fill 1s, 2s, 2p, 3s, 3p, 4s, 3d… Atoms gain or lose electrons to reach a noble-gas configuration (Na → Na⁺; Cl → Cl⁻).",
+ "Ionisation energy = energy to remove an electron. Successive values rise steadily, with a huge jump when the next electron comes from a full inner shell.",
+ "The number of electrons removed before the big jump = number of outer electrons = the group (groups 1 and 2)."],
+"Stoichiometry":[
+ "n = m ÷ M (moles = mass ÷ molar mass). c = n ÷ V, with V in litres.",
+ "A balanced equation gives the mole ratios. Balance C first, then H, then O last.",
+ "Limiting reagent: convert each reactant to moles and divide by its coefficient; the smallest runs out first and sets how much product forms.",
+ "Percentage yield = actual mass ÷ theoretical maximum mass × 100.",
+ "For a salt like KCl, moles of K⁺ = moles of KCl."],
+"Electronegativity and polarity":[
+ "Electronegativity is an atom's pull on shared electrons. It increases across a period and decreases down a group: F is highest, then O, then N and Cl.",
+ "Bond type by difference in electronegativity: small (below about 0.4) non-polar covalent; moderate polar covalent; large (above about 1.7) ionic.",
+ "A molecule is polar if it has polar bonds and its shape does not cancel them.",
+ "Symmetrical shapes cancel: linear CO₂, trigonal planar BF₃, tetrahedral CCl₄. Bent H₂O, pyramidal NH₃ and unevenly substituted CH₂Cl₂ do not.",
+ "Intermolecular forces, weakest to strongest: dispersion (all molecules; grows with size) < dipole–dipole (polar molecules) < hydrogen bonding (H bonded to N, O or F).",
+ "Stronger intermolecular forces → higher boiling point."],
+"Gases and gas laws":[
+ "Ideal gas law: PV = nRT. Temperature must be in kelvin (K = °C + 273), because the laws scale with absolute temperature.",
+ "Boyle (constant T): P₁V₁ = P₂V₂. Charles (constant P): V ∝ T. Gay-Lussac (constant V): P ∝ T.",
+ "Avogadro: equal volumes of gases at the same temperature and pressure contain the same number of moles. So molar mass = mass ÷ moles.",
+ "Several changes at once: combine them by multiplying, e.g. V ∝ nT/P."],
+"Thermodynamics and kinetics":[
+ "ΔH = heat change: negative = exothermic, positive = endothermic.",
+ "Breaking bonds absorbs energy; forming bonds releases it. ΔH ≈ (bonds broken) − (bonds formed).",
+ "ΔS = change in disorder. ΔG = ΔH − TΔS, and a process is spontaneous when ΔG < 0.",
+ "If ΔH and ΔS are both positive, the process is spontaneous above T = ΔH ÷ ΔS. Convert kJ to J so the units match ΔS.",
+ "Energy profile: ΔH = products − reactants; activation energy Ea = peak − reactants.",
+ "Catalysts (including enzymes) provide a lower-Ea pathway: faster in both directions, with no change to ΔH or the equilibrium position."],
+"Acids and bases":[
+ "Brønsted–Lowry: an acid donates H⁺, a base accepts H⁺. Conjugate pairs differ by one H⁺. Water and HCO₃⁻ can act as either.",
+ "pH = −log[H⁺]; pOH = −log[OH⁻]. Kw = [H⁺][OH⁻] = 10⁻¹⁴ at 25 °C, so pH + pOH = 14.",
+ "Kw increases with temperature, so neutral water has pH below 7 when hot. Neutral always means [H⁺] = [OH⁻].",
+ "Strong acids and bases ionise completely; weak ones only partly.",
+ "A buffer is a weak acid plus its conjugate base. The base mops up added H⁺; the acid neutralises added OH⁻.",
+ "Henderson–Hasselbalch: pH = pKa + log([A⁻]/[HA]). A tenfold change in the ratio shifts pH by 1."],
+"Electrochemistry":[
+ "Oxidation is loss of electrons (oxidation number goes up); reduction is gain (goes down): OIL RIG. The species oxidised is the reducing agent.",
+ "Oxidation numbers: O is usually −2 and H +1; they add up to the overall charge.",
+ "Galvanic cell (spontaneous): oxidation at the anode (−), reduction at the cathode (+); electrons flow anode → cathode.",
+ "The half-reaction with the more positive reduction potential is the one reduced. E(cell) = E(cathode) − E(anode).",
+ "Electrolytic cell (driven by a power supply): oxidation is still at the anode, but the anode is + and the cathode −.",
+ "Electrolysing a molten salt: metal ions are reduced at the cathode; non-metal ions are oxidised at the anode."],
+"Organic chemistry":[
+ "Functional groups: alcohol –OH; phenol –OH on a benzene ring; aldehyde –CHO; ketone C=O inside the chain; carboxylic acid –COOH; ester –COO–; amine –NH₂; amide –CONH–; ether C–O–C; alkene C=C.",
+ "Groups that hydrogen-bond with water (–OH, –COOH, –NH₂) make small molecules soluble; longer hydrocarbon chains make them less soluble.",
+ "Boiling point rises with hydrogen bonding and chain length; branching lowers it.",
+ "Structural isomers: same molecular formula, atoms joined differently (butane vs 2-methylpropane; ethanol vs dimethyl ether). Their properties can differ a lot."],
+"Common and special organic reactions":[
+ "Esterification (a condensation): carboxylic acid + alcohol ⇌ ester + water, with an acid catalyst. Hydrolysis reverses it.",
+ "Ester names: alkyl part from the alcohol + '-oate' from the acid. Ethanol + ethanoic acid → ethyl ethanoate.",
+ "Oxidation with acidified dichromate (orange → green) or permanganate: primary alcohol → aldehyde → carboxylic acid; secondary alcohol → ketone; tertiary alcohol → no reaction (no H on the C–OH carbon).",
+ "Addition: atoms add across a C=C (alkene + Br₂, H₂, HBr or H₂O). Bromine water decolourising is the test for C=C.",
+ "Substitution: one atom replaces another (alkane + halogen in UV light). Elimination removes a small molecule to form a C=C."],
+"Stereochemistry and projections":[
+ "A chiral carbon has four different groups attached. n chiral centres give up to 2ⁿ stereoisomers.",
+ "Enantiomers: non-superimposable mirror images. Same physical properties except the direction they rotate plane-polarised light; can differ in biological activity.",
+ "Diastereomers: stereoisomers that are not mirror images (e.g. differing at some but not all chiral centres, or cis/trans isomers). Their physical properties differ.",
+ "Fischer projection: horizontal bonds point towards the viewer, vertical bonds away.",
+ "Swapping two groups on a chiral centre inverts it (gives the enantiomer at that centre); a second swap restores the original.",
+ "Cis/trans isomers exist because rotation about C=C is restricted."],
+"Biochemistry":[
+ "Protein structure: primary = amino acid sequence; secondary = α-helices and β-sheets held by hydrogen bonds between backbone C=O and N–H; tertiary = 3D fold from R-group interactions (hydrogen bonds, ionic, hydrophobic, disulfide bridges); quaternary = several chains.",
+ "Proline has no backbone N–H to donate and a rigid ring, so it breaks α-helices.",
+ "Denaturation (heat, extreme pH) breaks the bonds holding the 3D shape, so the active site changes shape; usually irreversible.",
+ "Enzyme activity rises with temperature (more collisions) up to an optimum, then falls sharply as the enzyme denatures.",
+ "Saturated fatty acids: no C=C, straight chains, pack tightly, higher melting point (solid fats). Unsaturated: cis C=C kinks, pack loosely, lower melting point (oils).",
+ "More unsaturated fatty acids keep membranes fluid in the cold."],
+"Rates and reaction dynamics":[
+ "Rate law: rate = k[A]ˣ[B]ʸ. Orders come from experiments, not from the equation.",
+ "Compare experiments where only one concentration changes: doubling it doubles the rate → first order; quadruples → second order; no change → zero order.",
+ "Rate increases with concentration, surface area, catalysts and temperature.",
+ "Temperature mainly works by raising the fraction of collisions with energy ≥ Ea. Rule of thumb: rate roughly doubles per 10 °C.",
+ "First-order reactions (including most drug elimination) have a constant half-life that does not depend on concentration. After n half-lives, (½)ⁿ remains."]
+,
+"Motion in one and two dimensions":[
+ "Scalars have size only (distance, speed); vectors have direction too (displacement, velocity, acceleration).",
+ "Average speed = total distance ÷ time; average velocity = displacement ÷ time. Going round a loop can give a large speed but a small or zero velocity.",
+ "Velocity–time graph: gradient = acceleration; area under the line = displacement. Distance–time graph: gradient = speed.",
+ "Constant acceleration: v = u + at; s = ut + ½at²; v² = u² + 2as. Take g ≈ 10 m/s².",
+ "Projectiles: horizontal and vertical motion are independent. Horizontal velocity stays constant; vertical motion accelerates at g.",
+ "An object launched horizontally falls at the same rate as one simply dropped from the same height."],
+"Newton's laws and forces":[
+ "First law: an object keeps its velocity unless a net force acts. Second law: F(net) = ma. Third law: forces come in equal and opposite pairs acting on different objects.",
+ "Weight W = mg. Friction opposes motion: net force = applied force − friction.",
+ "Apparent weight (normal force) in a lift: N = m(g + a), taking upward acceleration as positive.",
+ "Accelerating upward, or slowing while moving down → feel heavier. Accelerating downward, or slowing while moving up → feel lighter.",
+ "Momentum p = mv is conserved when no outside force acts. If everything starts at rest, total momentum stays zero, so pushing something away sends you the other way (recoil)."],
+"Torque":[
+ "Torque τ = Fd sin θ, where d is the distance from the pivot and θ the angle between the force and the lever. It is largest when the force is perpendicular (sin 90° = 1) and zero when the force points along the lever.",
+ "Equilibrium needs net force = 0 and net torque = 0: clockwise moments = anticlockwise moments about any point.",
+ "Taking moments about one support makes its unknown force drop out. A uniform object's weight acts at its centre.",
+ "A short lever arm needs a large force: muscles attach close to joints, so they pull much harder than the load they hold."],
+"Energy, work, momentum":[
+ "Kinetic energy KE = ½mv². Gravitational potential energy PE = mgh. Without friction, mgh = ½mv², so v = √(2gh) and mass cancels.",
+ "Energy lost in a bounce shows as a lower rebound height: fraction lost = height lost ÷ starting height.",
+ "Work = force × distance. Power = work ÷ time. Efficiency = useful energy out ÷ total energy in.",
+ "Momentum p = mv is conserved in every collision. Kinetic energy is conserved only in elastic collisions; when objects stick together, KE is lost.",
+ "Ballistic pendulum: use momentum for the collision, then energy for the swing up."],
+"Physics of liquids":[
+ "Pressure = force ÷ area. Pressure at depth in a fluid: P = ρgh (gauge), plus atmospheric pressure on top. Fluids flow from higher to lower pressure.",
+ "Archimedes: buoyant force = weight of fluid displaced = ρ(fluid) × V(submerged) × g.",
+ "A floating object's weight equals the buoyant force, so fraction submerged = ρ(object) ÷ ρ(fluid). In a denser fluid it floats higher.",
+ "Ships float because their average density (steel plus the air inside) is less than water's.",
+ "Weight lost when an object is fully submerged = buoyant force. Use it to find the volume, then density = mass ÷ volume."],
+"Electricity and magnetism":[
+ "Coulomb's law: F = kq₁q₂/r². Like charges repel, unlike attract. Inverse square: double the distance → ¼ the force.",
+ "A surrounding medium such as water weakens the force by a factor (its dielectric constant, about 80 for water).",
+ "Electric field lines point away from positive charges and towards negative ones. Positive charges move along the field; negative charges (electrons, DNA) move against it.",
+ "Magnetic force on a moving charge: F = qvB sin θ. Zero when moving parallel to the field; largest when perpendicular.",
+ "The magnetic force is always perpendicular to the velocity, so it changes direction but not speed, giving circular motion."],
+"Circular motion":[
+ "Moving in a circle means direction keeps changing, so there is an acceleration towards the centre: a = v²/r = ω²r.",
+ "The centripetal force F = mv²/r is provided by a real force: friction for a car, tension in a string, gravity for orbits.",
+ "F ∝ v², so doubling speed (or spin rate) needs four times the force.",
+ "If the inward force disappears, the object moves off in a straight line along the tangent.",
+ "Fastest speed round a flat bend: μmg = mv²/r → v = √(μgr). Mass cancels.",
+ "g-force = acceleration ÷ g."],
+"Electric circuits":[
+ "Ohm's law: V = IR. Power: P = VI = I²R = V²/R.",
+ "Series: the same current through each component; resistances add (R = R₁ + R₂); the voltage is shared.",
+ "Parallel: the same voltage across each branch; currents add; 1/R = 1/R₁ + 1/R₂, so the total is less than the smallest. n identical resistors R in parallel give R/n.",
+ "Household appliances are wired in parallel so each gets the full voltage and can be switched separately.",
+ "Danger depends on current, and I = V/R: lower resistance (e.g. wet skin) means much more current at the same voltage."],
+"Optics":[
+ "Refractive index n = c/v. Going into a higher-n medium, light slows down, its wavelength shortens, its frequency stays the same, and it bends towards the normal.",
+ "Snell's law: n₁ sin θ₁ = n₂ sin θ₂.",
+ "Total internal reflection: only when light travels into a lower-n medium at more than the critical angle, where sin θc = n₂/n₁. Used in optical fibres and endoscopes.",
+ "Thin lens equation: 1/f = 1/u + 1/v (u = object distance, v = image distance). Magnification m = v/u.",
+ "A converging lens with the object beyond 2f gives a real, inverted, smaller image. The eye changes its focal length to focus objects at different distances on the retina."],
+"Radioactive decay":[
+ "α decay: emits a helium nucleus, so A − 4 and Z − 2. Most ionising, least penetrating (stopped by paper or a few cm of air).",
+ "β⁻ decay: a neutron becomes a proton and emits an electron, so Z + 1 and A unchanged. Medium ionising and penetrating.",
+ "γ decay: high-energy electromagnetic radiation; A and Z unchanged. Least ionising, most penetrating.",
+ "Half-life: the time for half the nuclei to decay; it stays constant. After n half-lives, (½)ⁿ remains (1/8 = 3 half-lives).",
+ "Carbon dating uses carbon-14, half-life 5730 years."]
+,
+"Exponential patterns on linear and log scales":[
+ "Exponential change multiplies by the same factor in equal time steps (doubling time, half-life, tenfold time). N = N₀ × factor^(t ÷ step).",
+ "On a linear y-axis an exponential curves; on a log y-axis (semi-log) it is a straight line. Gradient of log N against t = log of the factor per unit time.",
+ "Half-life from a semi-log graph = 0.30 ÷ |gradient|, or 0.3 × the time for a tenfold drop.",
+ "On a log scale, equal spacing means equal ratios: one step on a log₁₀ scale = × 10, and steps multiply (two steps = × 100). Examples: pH, decibels, the Richter scale.",
+ "Useful values: 2¹⁰ ≈ 10³; log 2 ≈ 0.30; log 3 ≈ 0.48; √10 ≈ 3.16."],
+"Arithmetic and estimation":[
+ "Estimate by rounding each number to one significant figure, then calculate (e.g. 0.049 ≈ 0.05, 612 ≈ 600, 0.0198 ≈ 0.02).",
+ "Percentages: build from 10% and 1%; 5% is half of 10%. Percentage change = change ÷ original × 100.",
+ "Fraction ↔ percentage: 1/2 = 50%, 1/4 = 25%, 1/5 = 20%, 1/8 = 12.5%, 1/3 ≈ 33.3%. Simplify the fraction first (49/56 = 7/8).",
+ "Absolute risk reduction = control rate − treatment rate. Number needed to treat = 1 ÷ absolute risk reduction (as a fraction).",
+ "Sensitivity = true positives ÷ everyone with the disease."],
+"Scientific notation and index/log laws":[
+ "Scientific notation: a × 10ⁿ with 1 ≤ a < 10. Multiplying: multiply the numbers, add the exponents. Dividing: divide the numbers, subtract the exponents. (a × 10ⁿ)ᵏ = aᵏ × 10ⁿᵏ.",
+ "Index laws: xᵃ × xᵇ = xᵃ⁺ᵇ; xᵃ ÷ xᵇ = xᵃ⁻ᵇ; (xᵃ)ᵇ = xᵃᵇ; x⁻ᵃ = 1/xᵃ; x^(1/n) = nth root of x; x^(m/n) = (nth root of x)ᵐ.",
+ "Log laws: log(ab) = log a + log b; log(a/b) = log a − log b; log(aⁿ) = n log a; log 10ⁿ = n.",
+ "pH: multiplying [H⁺] by 10 lowers pH by 1; multiplying by 50 lowers it by log 50 = 1.7."],
+"Logs and trigonometric ratios":[
+ "SOH CAH TOA: sin = opposite ÷ hypotenuse; cos = adjacent ÷ hypotenuse; tan = opposite ÷ adjacent.",
+ "Exact values: sin 30° = cos 60° = ½; sin 60° = cos 30° = √3/2 ≈ 0.87; sin 45° = cos 45° = √2/2 ≈ 0.71; tan 45° = 1; tan 30° ≈ 0.58; tan 60° ≈ 1.73.",
+ "sin²θ + cos²θ = 1 (Pythagoras), so a vector's components satisfy x² + y² = (size)².",
+ "log₁₀ x = y means x = 10ʸ. 10^0.5 = √10 ≈ 3.16, so 10^2.5 ≈ 316.",
+ "Decibels: L = 10 log(I/I₀), so each 10 dB means × 10 intensity."],
+"Area and volume":[
+ "Circle: area πr², circumference 2πr. Use the radius, not the diameter. Rectangle: length × width. Triangle: ½ × base × height.",
+ "Cylinder V = πr²h. Sphere V = 4/3 πr³, surface area 4πr². Cone V = ⅓πr²h. Cube V = s³, surface area 6s².",
+ "Volume of liquid in a tube or syringe = cross-sectional area × length.",
+ "Scaling: multiply every length by k → areas × k², volumes × k³, so surface area to volume ratio × 1/k (big animals keep heat better). A cone filled to half its depth holds (½)³ = 1/8 of its volume.",
+ "Units: 1 mL = 1 cm³; 1 L = 1000 cm³."]
+};
+
+// ---- Build the question sets ----
+function buildTopicSet(topics, seedTag, dateStr, perTopic){
+  return topics.map((topic, ti)=>{
+    const R = dmRng(`${seedTag}|${dateStr}|${ti}`);
+    const order = R.shuffle(topic.gens.map((_,i)=>i)).slice(0, perTopic);
+    return { name: topic.name, items: order.map(gi=>{ const [q,a] = topic.gens[gi](R); return {q,a}; }) };
   });
-  sheet.innerHTML = `
-    <div class="daily-head">
-      <div>
-        <div class="daily-title">GAMSAT daily maths</div>
-        <div class="daily-meta">${pretty} &middot; ${total} questions &middot; target ${Math.round(total*1.5)} min &middot; no calculator</div>
+}
+// Combined daily sheet: per topic, core questions first, then two-step (GAMSAT-style) ones.
+const DAILY_CORE = 2, DAILY_TWO_STEP = 2;
+function buildDailySet(dateStr){
+  const core = buildTopicSet(DAILY_TOPICS, "gamsat-daily", dateStr, DAILY_CORE);
+  const hard = buildTopicSet(HARD_TOPICS, "gamsat-hard", dateStr, DAILY_TWO_STEP);
+  return core.map((t,i)=>({ name: t.name, items: t.items.concat(hard[i].items.map(it=>Object.assign({label:"Two-step"}, it))) }));
+}
+function buildFundSet(dateStr){
+  const dn = dayNumber(dateStr), L = "ABCD";
+  return FUND_SUBJECTS.map(sub=>({ name: sub.name, items: sub.topics.map((t, ti)=>{
+    // rotate through each topic's sets so consecutive days never repeat
+    const off = dmRng(`gamsat-fund|${sub.name}|${ti}`).int(0, t.qs.length-1);
+    const [tq, ta, tw, stem, gq, opts0, ai0, gw] = t.qs[(dn + off) % t.qs.length];
+    // shuffle option order by date so the answer position isn't a cue
+    const order = dmRng(`gamsat-fund-opts|${dateStr}|${sub.name}|${ti}`).shuffle([0,1,2,3]);
+    const opts = order.map(i=>opts0[i]), ai = order.indexOf(ai0);
+    const tag = (x)=> `<span class="fund-tag">${x}</span>`;
+    return {
+      label: t.name,
+      q: `<div class="flip">
+          <button class="flip-btn no-print" type="button" aria-pressed="false">Theory card ↻</button>
+          <div class="flip-inner">
+            <div class="flip-face flip-front">
+              <div class="fund-part">${tag("Theory")}${escapeHtml(tq)}</div>
+              <div class="fund-part">${tag("GAMSAT-style")}<div class="fund-stem">${escapeHtml(stem)}</div>
+              <div class="fund-gq">${escapeHtml(gq)}</div>
+              <ol class="mcq">${opts.map(o=>`<li>${escapeHtml(o)}</li>`).join("")}</ol></div>
+            </div>
+            <div class="flip-face flip-back no-print" aria-hidden="true">
+              <div class="flip-title">What you need to know: ${escapeHtml(t.name)}</div>
+              <ul>${(FUND_NOTES[t.name]||[]).map(n=>`<li>${escapeHtml(n)}</li>`).join("")}</ul>
+            </div>
+          </div>
+        </div>`,
+      a: `<div class="fund-part">${tag("Theory")}${B(escapeHtml(ta))}${tw ? ". " + escapeHtml(tw) : ""}</div>
+          <div class="fund-part">${tag("GAMSAT-style")}${B(L[ai] + ". " + escapeHtml(opts[ai]))}. ${escapeHtml(gw)}</div>`
+    };
+  }) }));
+}
+
+// ---- One renderer and set of controls for every printable sheet ----
+function setupSheet(cfg){
+  const el = (s)=> $(cfg.p + s);
+  const st = { date: localDateStr(new Date()), show: false };
+  function render(){
+    const set = cfg.build(st.date);
+    const total = set.reduce((a,t)=>a+t.items.length, 0) * (cfg.perItem || 1);
+    const [y,m,d] = st.date.split("-").map(Number);
+    const pretty = new Date(y, m-1, d).toLocaleDateString(undefined,{weekday:"long", day:"numeric", month:"long", year:"numeric"});
+    const tag = (it)=> it.label ? `<div class="daily-label">${escapeHtml(it.label)}</div>` : "";
+    const head = (sec, ti)=> cfg.numberHeads ? `${ti+1}. ${sec.name}` : sec.name;
+    let n = 0, qHtml = "", aHtml = "";
+    set.forEach((sec, ti)=>{
+      const start = n + 1;
+      qHtml += `<div class="daily-topic"><h3>${head(sec,ti)}</h3>` +
+        sec.items.map(it=>`<div class="daily-q"><span class="daily-n">${++n}.</span><div>${tag(it)}${it.q}</div></div>`).join("") + `</div>`;
+      let k = start;
+      aHtml += `<div class="daily-topic"><h3>${head(sec,ti)}</h3>` +
+        sec.items.map(it=>`<div class="daily-q daily-a"><span class="daily-n">${k++}.</span><div>${tag(it)}${it.a}</div></div>`).join("") + `</div>`;
+    });
+    el('Sheet').innerHTML = `
+      <div class="daily-head">
+        <div>
+          <div class="daily-title">${cfg.title}</div>
+          <div class="daily-meta">${pretty} &middot; ${cfg.perItem ? (total/cfg.perItem)+" topics, " : ""}${total} questions &middot; target ${Math.round(total*cfg.minsPer)} min &middot; no calculator</div>
+        </div>
+        <div class="daily-score">Score ____ / ${total}</div>
       </div>
-      <div class="daily-score">Score ____ / ${total}</div>
-    </div>
-    ${qHtml}
-    <div class="daily-answers${dailyState.showAnswers ? " is-open" : ""}">
-      <div class="daily-head"><div><div class="daily-title">Answers</div><div class="daily-meta">${pretty}</div></div></div>
-      ${aHtml}
-    </div>`;
-  $('dailyToggleAnswers').textContent = dailyState.showAnswers ? "Hide answers" : "Show answers";
+      ${qHtml}
+      <div class="daily-answers${st.show ? " is-open" : ""}">
+        <div class="daily-head"><div><div class="daily-title">Answers</div><div class="daily-meta">${cfg.title} &middot; ${pretty}</div></div></div>
+        ${aHtml}
+      </div>`;
+    el('ToggleAnswers').textContent = st.show ? "Hide answers" : "Show answers";
+  }
+  el('Date').value = st.date;
+  el('Date').addEventListener('change', e=>{ st.date = e.target.value || localDateStr(new Date()); st.show = false; render(); });
+  el('Today').addEventListener('click', ()=>{ st.date = localDateStr(new Date()); el('Date').value = st.date; st.show = false; render(); });
+  el('ToggleAnswers').addEventListener('click', ()=>{ st.show = !st.show; render(); });
+  el('PdfBtn').addEventListener('click', ()=>{
+    const wrap = el('Wrap');
+    wrap.classList.add('print-target');
+    document.body.classList.add('print-daily');
+    document.body.classList.toggle('no-answers', !el('IncludeAnswers').checked);
+    const oldTitle = document.title;
+    document.title = cfg.title + " " + st.date;
+    const done = ()=>{ document.body.classList.remove('print-daily','no-answers'); wrap.classList.remove('print-target'); document.title = oldTitle; window.removeEventListener('afterprint', done); };
+    window.addEventListener('afterprint', done);
+    try{ window.print(); }catch(err){ done(); el('Status').textContent = "Printing is blocked here — open this file in your browser and try again."; }
+  });
+  render();
 }
 
 async function loadDaily(){
-  $('dailyDate').value = dailyState.date;
-  $('dailyDate').addEventListener('change', e=>{
-    dailyState.date = e.target.value || localDateStr(new Date());
-    dailyState.showAnswers = false;
-    renderDaily();
+  setupSheet({ p:"daily", title:"GAMSAT daily maths", build:buildDailySet, minsPer:2.25, numberHeads:true });
+  setupSheet({ p:"fund", title:"Section 3 fundamentals check", build:buildFundSet, minsPer:1.5, numberHeads:false, perItem:2 });
+  const setFlip = (card, on)=>{
+    card.classList.toggle('is-flipped', on);
+    const btn = card.querySelector('.flip-btn');
+    btn.setAttribute('aria-pressed', on ? "true" : "false");
+    btn.textContent = on ? "Back to question ↻" : "Theory card ↻";
+    card.querySelector('.flip-front').setAttribute('aria-hidden', on ? "true" : "false");
+    card.querySelector('.flip-back').setAttribute('aria-hidden', on ? "false" : "true");
+  };
+  $('fundSheet').addEventListener('click', e=>{
+    const btn = e.target.closest('.flip-btn'); if(!btn) return;
+    const card = btn.closest('.flip'); setFlip(card, !card.classList.contains('is-flipped'));
   });
-  $('dailyToday').addEventListener('click', ()=>{
-    dailyState.date = localDateStr(new Date());
-    $('dailyDate').value = dailyState.date;
-    dailyState.showAnswers = false;
-    renderDaily();
+  $('fundFlipAll').addEventListener('click', ()=>{
+    const cards = Array.from(document.querySelectorAll('#fundSheet .flip'));
+    const on = !cards.every(c=>c.classList.contains('is-flipped'));
+    cards.forEach(c=>setFlip(c, on));
+    $('fundFlipAll').textContent = on ? "Show all questions" : "Flip all to theory";
   });
-  $('dailyToggleAnswers').addEventListener('click', ()=>{
-    dailyState.showAnswers = !dailyState.showAnswers;
-    renderDaily();
-  });
-  $('dailyPdfBtn').addEventListener('click', ()=>{
-    document.body.classList.add('print-daily');
-    document.body.classList.toggle('no-answers', !$('dailyIncludeAnswers').checked);
-    const oldTitle = document.title;
-    document.title = "GAMSAT daily maths " + dailyState.date;
-    const done = ()=>{ document.body.classList.remove('print-daily','no-answers'); document.title = oldTitle; window.removeEventListener('afterprint', done); };
-    window.addEventListener('afterprint', done);
-    try{ window.print(); }catch(err){ done(); $('dailyStatus').textContent = "Printing is blocked here — open this file in your browser and try again."; }
-  });
-  renderDaily();
+  ['fundDate','fundToday'].forEach(id=>$(id).addEventListener(id==='fundDate'?'change':'click', ()=>{ $('fundFlipAll').textContent = "Flip all to theory"; }));
 }
 
 // ---- Daily Section 2 essays ----
